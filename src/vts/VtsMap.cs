@@ -29,13 +29,9 @@ using vts;
 
 public class VtsMap : MonoBehaviour
 {
-    VtsMap()
-    {
-        VtsLog.Dummy();
-    }
-
     void OnEnable()
     {
+        VtsLog.Dummy();
         Debug.Assert(map == null);
         map = new Map("");
         map.DataInitialize();
@@ -123,18 +119,31 @@ public class VtsMap : MonoBehaviour
         // assume that attribute 2 is external texture coordinates (used with textures that come from bound layers)
         u.uv2 = ExtractBuffer2(m, 2);
         // indices
+        // I do NOT know why flipping the winding order is required. There may be some mistake in projection matrices.
         if (m.indices != null)
+        {
+            for (int i = 0; i < m.indicesCount; i += 3)
+            {
+                ushort tmp = m.indices[i + 1];
+                m.indices[i + 2] = m.indices[i + 1];
+                m.indices[i + 1] = tmp;
+            }
             u.triangles = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+        }
         else
         {
             var t = new int[m.verticesCount];
-            for (int i = 0; i < m.verticesCount; i++)
-                t[i] = i;
+            for (int i = 0; i < m.verticesCount; i += 3)
+            {
+                t[i + 0] = i + 0;
+                t[i + 1] = i + 2;
+                t[i + 2] = i + 1;
+            }
             u.triangles = t;
         }
         // finalize
         u.RecalculateBounds();
-        //u.RecalculateNormals();
+        u.RecalculateNormals();
         return u;
     }
 
@@ -145,7 +154,7 @@ public class VtsMap : MonoBehaviour
         map.RenderDeinitialize();
         map = null;
     }
-    
+
     private uint frameIndex;
     private Map map;
 
