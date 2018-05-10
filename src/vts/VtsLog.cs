@@ -33,7 +33,7 @@ public static class VtsLog
 
     static VtsLog()
     {
-        BrowserInterop.vtsLogSetMaskCode((uint)LogLevel.all);
+        BrowserInterop.vtsLogSetMaskCode((uint)LogLevel.default_);
         Util.CheckError();
         BrowserInterop.vtsLogSetFile("vts-unity.log");
         Util.CheckError();

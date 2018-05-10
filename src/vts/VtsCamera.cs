@@ -121,8 +121,22 @@ public class VtsCamera : MonoBehaviour
         buffer.SetProjectionMatrix(cam.projectionMatrix);
         foreach (DrawTask t in tasks)
         {
-            Matrix4x4 m = VtsUtil.V2U44(t.data.mv);
-            buffer.DrawMesh(t.mesh as UnityEngine.Mesh, m, debugMaterial);
+            Matrix4x4 mv = VtsUtil.V2U44(t.data.mv);
+            Material mat = new Material(materialTemplate);
+            bool monochromatic = false;
+            if (t.texColor != null)
+            {
+                mat.SetTexture(Shader.PropertyToID("_MainTex"), (t.texColor as VtsTexture).texture);
+                monochromatic = (t.texColor as VtsTexture).monochromatic;
+            }
+            if (t.texMask != null)
+                mat.SetTexture(Shader.PropertyToID("_MaskTex"), t.texMask as Texture2D);
+            mat.SetMatrix(Shader.PropertyToID("_UvMat"), VtsUtil.V2U33(t.data.uvm));
+            mat.SetVector(Shader.PropertyToID("_UvClip"), VtsUtil.V2U4(t.data.uvClip));
+            mat.SetVector(Shader.PropertyToID("_Color"), VtsUtil.V2U4(t.data.color));
+            // flags: mask, monochromatic, flat shading, uv source
+            mat.SetVector(Shader.PropertyToID("_Flags"), new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
+            buffer.DrawMesh(t.mesh as UnityEngine.Mesh, mv, mat);
         }
     }
 
@@ -140,7 +154,7 @@ public class VtsCamera : MonoBehaviour
     public VtsDataControl controlNearFar;
     public VtsDataControl controlFov;
 
-    public Material debugMaterial;
+    public Material materialTemplate;
 
     protected Draws draws;
     protected Camera cam;
