@@ -47,7 +47,16 @@ public class VtsCamera : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         trans = GetComponent<Transform>();
+
+        shaderPropertyMainTex = Shader.PropertyToID("_MainTex");
+        shaderPropertyMaskTex = Shader.PropertyToID("_MaskTex");
+        shaderPropertyUvMat = Shader.PropertyToID("_UvMat");
+        shaderPropertyUvClip = Shader.PropertyToID("_UvClip");
+        shaderPropertyColor = Shader.PropertyToID("_Color");
+        shaderPropertyFlags = Shader.PropertyToID("_Flags");
+
         SetupCommandBuffers();
+        draws = new Draws();
     }
 
     protected virtual void SetupCommandBuffers()
@@ -111,7 +120,7 @@ public class VtsCamera : MonoBehaviour
         map.RenderTickRender();
         map.EventCameraView -= CamOverrideViewDel;
         map.EventCameraFovAspectNearFar -= CamOverrideParametersDel;
-        draws = map.Draws();
+        draws.Load(map);
         RegenerateCommandBuffers();
     }
 
@@ -124,22 +133,22 @@ public class VtsCamera : MonoBehaviour
             if (t.mesh == null)
                 continue;
             Matrix4x4 mv = VtsUtil.V2U44(t.data.mv);
-            Material mat = new Material(materialTemplate);
+            MaterialPropertyBlock mat = new MaterialPropertyBlock();
             bool monochromatic = false;
             if (t.texColor != null)
             {
                 var tt = t.texColor as VtsTexture;
-                mat.SetTexture(Shader.PropertyToID("_MainTex"), tt.Get());
+                mat.SetTexture(shaderPropertyMainTex, tt.Get());
                 monochromatic = tt.monochromatic;
             }
             if (t.texMask != null)
-                mat.SetTexture(Shader.PropertyToID("_MaskTex"), t.texMask as Texture2D);
-            mat.SetMatrix(Shader.PropertyToID("_UvMat"), VtsUtil.V2U33(t.data.uvm));
-            mat.SetVector(Shader.PropertyToID("_UvClip"), VtsUtil.V2U4(t.data.uvClip));
-            mat.SetVector(Shader.PropertyToID("_Color"), VtsUtil.V2U4(t.data.color));
+                mat.SetTexture(shaderPropertyMaskTex, t.texMask as Texture2D);
+            mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
+            mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
+            mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
             // flags: mask, monochromatic, flat shading, uv source
-            mat.SetVector(Shader.PropertyToID("_Flags"), new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
-            buffer.DrawMesh((t.mesh as VtsMesh).Get(), mv, mat);
+            mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
+            buffer.DrawMesh((t.mesh as VtsMesh).Get(), mv, material, 0, -1, mat);
         }
     }
 
@@ -157,7 +166,14 @@ public class VtsCamera : MonoBehaviour
     public VtsDataControl controlNearFar;
     public VtsDataControl controlFov;
 
-    public Material materialTemplate;
+    public Material material;
+
+    protected int shaderPropertyMainTex;
+    protected int shaderPropertyMaskTex;
+    protected int shaderPropertyUvMat;
+    protected int shaderPropertyUvClip;
+    protected int shaderPropertyColor;
+    protected int shaderPropertyFlags;
 
     protected Draws draws;
     protected Camera cam;

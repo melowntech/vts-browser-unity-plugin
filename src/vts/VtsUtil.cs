@@ -32,53 +32,35 @@ public static class VtsUtil
     public static Vector3 V2U3(double[] value)
     {
         Util.CheckArray(value, 3);
-        Vector3 r = new Vector3();
-        for (int i = 0; i < 3; i++)
-            r[i] = (float)value[i];
-        return r;
+        return new Vector3((float)value[0], (float)value[1], (float)value[2]);
     }
 
     public static Vector3 V2U3(float[] value)
     {
         Util.CheckArray(value, 3);
-        Vector3 r = new Vector3();
-        for (int i = 0; i < 3; i++)
-            r[i] = value[i];
-        return r;
+        return new Vector3(value[0], value[1], value[2]);
     }
 
     public static double[] U2V3(Vector3 value)
     {
-        double[] r = new double[3];
-        for (int i = 0; i < 3; i++)
-            r[i] = value[i];
-        return r;
+        return new double[3] { value[0], value[1], value[2] };
     }
 
     public static Vector4 V2U4(double[] value)
     {
         Util.CheckArray(value, 4);
-        Vector4 r = new Vector4();
-        for (int i = 0; i < 4; i++)
-            r[i] = (float)value[i];
-        return r;
+        return new Vector4((float)value[0], (float)value[1], (float)value[2], (float)value[3]);
     }
 
     public static Vector4 V2U4(float[] value)
     {
         Util.CheckArray(value, 4);
-        Vector4 r = new Vector4();
-        for (int i = 0; i < 4; i++)
-            r[i] = value[i];
-        return r;
+        return new Vector4(value[0], value[1], value[2], value[3]);
     }
 
     public static double[] U2V4(Vector4 value)
     {
-        double[] r = new double[4];
-        for (int i = 0; i < 4; i++)
-            r[i] = value[i];
-        return r;
+        return new double[4] { value[0], value[1], value[2], value[3] };
     }
 
     public static Matrix4x4 V2U44(double[] value)
@@ -107,7 +89,7 @@ public static class VtsUtil
         return r;
     }
 
-    // unity does not have Matrix3x3, so we use Matrix4x4 to pass the matrix to shader and the shader then converts it
+    // unity does not have Matrix3x3, so we use Matrix4x4 to pass the matrix to shader and the shader converts it
     public static Matrix4x4 V2U33(float[] value)
     {
         Util.CheckArray(value, 9);
