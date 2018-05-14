@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading;
 using UnityEngine;
 using vts;
 
@@ -34,12 +35,13 @@ public class VtsMap : MonoBehaviour
         VtsLog.Dummy();
         Debug.Assert(map == null);
         map = new Map("");
-        map.DataInitialize();
-        map.RenderInitialize();
-        map.SetMapConfigPath("https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json");
-
         map.EventLoadTexture += VtsResources.LoadTexture;
         map.EventLoadMesh += VtsResources.LoadMesh;
+        dataStop = false;
+        dataThread = new Thread(new ThreadStart(DataEntry));
+        dataThread.Start();
+        map.RenderInitialize();
+        map.SetMapConfigPath("https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json");
     }
 
     void Update()
@@ -51,18 +53,31 @@ public class VtsMap : MonoBehaviour
         pan[0] = 1;
         map.Pan(pan);
 
-        map.DataTick();
         map.RenderTickPrepare(Time.deltaTime);
     }
 
     void OnDisable()
     {
         Debug.Assert(map != null);
-        map.DataDeinitialize();
+        dataStop = true;
         map.RenderDeinitialize();
+        dataThread.Join();
         map = null;
     }
 
+    void DataEntry()
+    {
+        map.DataInitialize();
+        while (!dataStop)
+        {
+            map.DataTick();
+            Thread.Sleep(10);
+        }
+        map.DataDeinitialize();
+    }
+
+    private Thread dataThread;
+    private bool dataStop;
     private uint frameIndex;
     private Map map;
 

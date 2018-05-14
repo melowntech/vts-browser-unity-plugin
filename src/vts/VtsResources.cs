@@ -3,6 +3,19 @@ using vts;
 
 public static class VtsResources
 {
+    public static System.Object LoadTexture(vts.Texture t)
+    {
+        return new VtsTexture(t);
+    }
+
+    public static System.Object LoadMesh(vts.Mesh m)
+    {
+        return new VtsMesh(m);
+    }
+}
+
+public class VtsTexture
+{
     private static TextureFormat ExtractFormat(vts.Texture t)
     {
         switch (t.type)
@@ -36,17 +49,31 @@ public static class VtsResources
         throw new VtsException(-19, "Unsupported texture format");
     }
 
-    public static System.Object LoadTexture(vts.Texture t)
+    public VtsTexture(vts.Texture t)
     {
-        Texture2D tex = new Texture2D((int)t.width, (int)t.height, ExtractFormat(t), false);
-        tex.LoadRawTextureData(t.data);
-        tex.Apply();
-        VtsTexture vt = new VtsTexture();
-        vt.texture = tex;
-        vt.monochromatic = t.components == 1;
-        return vt;
+        vt = t;
+        monochromatic = t.components == 1;
     }
 
+    public Texture2D Get()
+    {
+        if (ut == null)
+        {
+            ut = new Texture2D((int)vt.width, (int)vt.height, ExtractFormat(vt), false);
+            ut.LoadRawTextureData(vt.data);
+            ut.Apply(false, true);
+            vt = null;
+        }
+        return ut;
+    }
+
+    private vts.Texture vt;
+    private Texture2D ut;
+    public readonly bool monochromatic;
+}
+
+public class VtsMesh
+{
     private static float ExtractFloat(vts.Mesh m, int byteOffset)
     {
         return System.BitConverter.ToSingle(m.vertices, byteOffset);
@@ -93,15 +120,14 @@ public static class VtsResources
         return r;
     }
 
-    public static System.Object LoadMesh(vts.Mesh m)
+    public VtsMesh(vts.Mesh m)
     {
-        UnityEngine.Mesh u = new UnityEngine.Mesh();
         // assume that attribute 0 is vertex positions
-        u.vertices = ExtractBuffer3(m, 0);
+        vertices = ExtractBuffer3(m, 0);
         // assume that attribute 1 is internal texture coordinates (used with textures that are packed with the mesh)
-        u.uv = ExtractBuffer2(m, 1);
+        uv0 = ExtractBuffer2(m, 1);
         // assume that attribute 2 is external texture coordinates (used with textures that come from bound layers)
-        u.uv2 = ExtractBuffer2(m, 2);
+        uv1 = ExtractBuffer2(m, 2);
         // indices
         // I do NOT know why flipping the winding order is required. There may be some mistake in projection matrices.
         if (m.indices != null)
@@ -112,28 +138,42 @@ public static class VtsResources
                 m.indices[i + 2] = m.indices[i + 1];
                 m.indices[i + 1] = tmp;
             }
-            u.triangles = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+            triangles = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
         }
         else
         {
-            var t = new int[m.verticesCount];
+            triangles = new int[m.verticesCount];
             for (int i = 0; i < m.verticesCount; i += 3)
             {
-                t[i + 0] = i + 0;
-                t[i + 1] = i + 2;
-                t[i + 2] = i + 1;
+                triangles[i + 0] = i + 0;
+                triangles[i + 1] = i + 2;
+                triangles[i + 2] = i + 1;
             }
-            u.triangles = t;
         }
-        // finalize
-        u.RecalculateBounds();
-        u.RecalculateNormals();
-        return u;
     }
-}
 
-public class VtsTexture
-{
-    public Texture2D texture;
-    public bool monochromatic;
+    public UnityEngine.Mesh Get()
+    {
+        if (um == null)
+        {
+            um = new UnityEngine.Mesh();
+            um.vertices = vertices;
+            um.uv = uv0;
+            um.uv2 = uv1;
+            um.triangles = triangles;
+            um.RecalculateBounds();
+            //um.RecalculateNormals();
+            um.UploadMeshData(true);
+            vertices = null;
+            uv0 = uv1 = null;
+            triangles = null;
+        }
+        return um;
+    }
+
+    private Vector3[] vertices;
+    private Vector2[] uv0;
+    private Vector2[] uv1;
+    private int[] triangles;
+    private UnityEngine.Mesh um;
 }

@@ -121,13 +121,16 @@ public class VtsCamera : MonoBehaviour
         buffer.SetProjectionMatrix(cam.projectionMatrix);
         foreach (DrawTask t in tasks)
         {
+            if (t.mesh == null)
+                continue;
             Matrix4x4 mv = VtsUtil.V2U44(t.data.mv);
             Material mat = new Material(materialTemplate);
             bool monochromatic = false;
             if (t.texColor != null)
             {
-                mat.SetTexture(Shader.PropertyToID("_MainTex"), (t.texColor as VtsTexture).texture);
-                monochromatic = (t.texColor as VtsTexture).monochromatic;
+                var tt = t.texColor as VtsTexture;
+                mat.SetTexture(Shader.PropertyToID("_MainTex"), tt.Get());
+                monochromatic = tt.monochromatic;
             }
             if (t.texMask != null)
                 mat.SetTexture(Shader.PropertyToID("_MaskTex"), t.texMask as Texture2D);
@@ -136,7 +139,7 @@ public class VtsCamera : MonoBehaviour
             mat.SetVector(Shader.PropertyToID("_Color"), VtsUtil.V2U4(t.data.color));
             // flags: mask, monochromatic, flat shading, uv source
             mat.SetVector(Shader.PropertyToID("_Flags"), new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
-            buffer.DrawMesh(t.mesh as UnityEngine.Mesh, mv, mat);
+            buffer.DrawMesh((t.mesh as VtsMesh).Get(), mv, mat);
         }
     }
 
