@@ -45,7 +45,6 @@
 				v2f o;
 				o.vertex = UnityObjectToClipPos(i.vertex);
 				o.uvTex = mul((float3x3)_UvMat, float3(_Flags.w > 0 ? i.uvExternal : i.uvInternal, 1.0)).xy;
-				o.uvTex = _Flags.w > 0 ? i.uvExternal : i.uvInternal; // temporary workaround
 				o.uvClip = i.uvExternal;
 				return o;
 			}

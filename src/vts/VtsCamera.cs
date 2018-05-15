@@ -31,8 +31,8 @@ using vts;
 
 public enum VtsDataControl
 {
-    Unity,
     Vts,
+    Unity,
 }
 
 public class VtsCamera : MonoBehaviour
@@ -142,7 +142,10 @@ public class VtsCamera : MonoBehaviour
                 monochromatic = tt.monochromatic;
             }
             if (t.texMask != null)
-                mat.SetTexture(shaderPropertyMaskTex, t.texMask as Texture2D);
+            {
+                var tt = t.texMask as VtsTexture;
+                mat.SetTexture(shaderPropertyMaskTex, tt.Get());
+            }
             mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
             mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
             mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
