@@ -1,4 +1,4 @@
-﻿Shader "Unlit/VtsSurfaceShader"
+﻿Shader "Vts/UnlitShader"
 {
 	SubShader
 	{
