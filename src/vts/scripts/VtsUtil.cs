@@ -112,4 +112,11 @@ public static class VtsUtil
         r[15] = 1;
         return r;
     }
+
+    public static readonly Matrix4x4 V2UM = new Matrix4x4(
+        new Vector4(1,0,0,0),
+        new Vector4(0,0,1,0),
+        new Vector4(0,1,0,0),
+        new Vector4(0,0,0,1)
+        );
 }

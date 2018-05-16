@@ -31,8 +31,8 @@ using vts;
 
 public enum VtsDataControl
 {
-    Vts,
     Unity,
+    Vts,
 }
 
 public class VtsCamera : MonoBehaviour
@@ -41,12 +41,13 @@ public class VtsCamera : MonoBehaviour
     {
         CamOverrideViewDel = CamOverrideView;
         CamOverrideParametersDel = CamOverrideParameters;
+        draws = new Draws();
     }
 
     protected virtual void Start()
     {
         cam = GetComponent<Camera>();
-        trans = GetComponent<Transform>();
+        mapTrans = mapObject.GetComponent<Transform>();
 
         shaderPropertyMainTex = Shader.PropertyToID("_MainTex");
         shaderPropertyMaskTex = Shader.PropertyToID("_MaskTex");
@@ -56,15 +57,18 @@ public class VtsCamera : MonoBehaviour
         shaderPropertyFlags = Shader.PropertyToID("_Flags");
 
         SetupCommandBuffers();
-        draws = new Draws();
     }
 
     protected virtual void SetupCommandBuffers()
     {
         opaque = new CommandBuffer();
+        opaque.name = "Vts Opaque";
         transparent = new CommandBuffer();
+        transparent.name = "Vts Transparent";
         geodata = new CommandBuffer();
+        geodata.name = "Vts Geodata";
         infographics = new CommandBuffer();
+        infographics.name = "Vts Infographics";
 
         cam.AddCommandBuffer(CameraEvent.AfterForwardOpaque, opaque);
         cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, transparent);
@@ -72,24 +76,24 @@ public class VtsCamera : MonoBehaviour
         cam.AddCommandBuffer(CameraEvent.AfterEverything, infographics);
     }
 
-    private Map.CameraOverrideHandler CamOverrideViewDel;
+    private readonly Map.CameraOverrideHandler CamOverrideViewDel;
     private void CamOverrideView(ref double[] values)
     {
+        Matrix4x4 Mu = mapTrans.localToWorldMatrix;
         // view matrix
         if (controlTransformation == VtsDataControl.Vts)
         {
-            Matrix4x4 m = VtsUtil.V2U44(values).inverse;
-            trans.localRotation = m.rotation;
-            trans.localPosition = m.MultiplyPoint(new Vector3(0, 0, 0));
+            Matrix4x4 Vv = VtsUtil.V2U44(values);
+            cam.worldToCameraMatrix = Vv * (Mu * VtsUtil.V2UM).inverse;
         }
         else
         {
-            Matrix4x4 m = Matrix4x4.TRS(trans.localPosition, trans.localRotation, trans.localScale).inverse;
-            values = VtsUtil.U2V44(m);
+            Matrix4x4 Vu = cam.worldToCameraMatrix;
+            values = VtsUtil.U2V44(Vu * Mu * VtsUtil.V2UM);
         }
     }
 
-    private Map.CameraOverrideParamsHandler CamOverrideParametersDel;
+    private readonly Map.CameraOverrideParamsHandler CamOverrideParametersDel;
     private void CamOverrideParameters(ref double fov, ref double aspect, ref double near, ref double far)
     {
         // fov
@@ -112,8 +116,7 @@ public class VtsCamera : MonoBehaviour
 
     protected virtual void Update()
     {
-        VtsMap vtsMap = mapObject.GetComponent<VtsMap>();
-        Map map = vtsMap.Handle;
+        Map map = mapObject.GetComponent<VtsMap>().map;
         map.SetWindowSize((uint)cam.scaledPixelWidth, (uint)cam.scaledPixelHeight);
         map.EventCameraView += CamOverrideViewDel;
         map.EventCameraFovAspectNearFar += CamOverrideParametersDel;
@@ -178,9 +181,9 @@ public class VtsCamera : MonoBehaviour
     protected int shaderPropertyColor;
     protected int shaderPropertyFlags;
 
-    protected Draws draws;
+    protected readonly Draws draws;
     protected Camera cam;
-    protected Transform trans;
+    protected Transform mapTrans;
 
     protected CommandBuffer opaque;
     protected CommandBuffer transparent;

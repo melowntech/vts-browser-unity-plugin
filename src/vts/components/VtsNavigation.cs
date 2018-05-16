@@ -24,57 +24,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Threading;
 using UnityEngine;
 using vts;
 
-public class VtsMap : MonoBehaviour
+public class VtsNavigation : MonoBehaviour
 {
-    void OnEnable()
+    void Update ()
     {
-        VtsLog.Dummy();
-        Debug.Assert(map == null);
-        map = new Map("");
-        map.EventLoadTexture += VtsResources.LoadTexture;
-        map.EventLoadMesh += VtsResources.LoadMesh;
-        dataStop = false;
-        dataThread = new Thread(new ThreadStart(DataEntry));
-        dataThread.Start();
-        map.RenderInitialize();
-        map.SetMapConfigPath("https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json");
-    }
-
-    void Update()
-    {
-        Util.Log(LogLevel.info2, "Unity update frame index: " + frameIndex++);
-        Debug.Assert(map != null);
-        map.RenderTickPrepare(Time.deltaTime);
-    }
-
-    void OnDisable()
-    {
-        Debug.Assert(map != null);
-        dataStop = true;
-        map.RenderDeinitialize();
-        dataThread.Join();
-        map = null;
-    }
-
-    void DataEntry()
-    {
-        map.DataInitialize();
-        while (!dataStop)
+        Map map = GetComponent<VtsMap>().map;
+        if (Input.GetMouseButton(0))
         {
-            map.DataTick();
-            Thread.Sleep(10);
+            double[] pan = new double[3];
+            pan[0] = Input.GetAxis("Mouse X") * mousePanSpeed;
+            pan[1] = -Input.GetAxis("Mouse Y") * mousePanSpeed;
+            map.Pan(pan);
         }
-        map.DataDeinitialize();
+        if (Input.GetMouseButton(1))
+        {
+            double[] rot = new double[3];
+            rot[0] = Input.GetAxis("Mouse X") * mouseRotateSpeed;
+            rot[1] = -Input.GetAxis("Mouse Y") * mouseRotateSpeed;
+            map.Rotate(rot);
+        }
+        {
+            double zoom = Input.GetAxis("Mouse ScrollWheel") * mouseZoomSpeed;
+            map.Zoom(zoom);
+        }
     }
 
-    private Thread dataThread;
-    private bool dataStop;
-    private uint frameIndex;
-    private Map map;
-
-    public Map Handle { get { return map; } }
+    public double mousePanSpeed = 20;
+    public double mouseRotateSpeed = 30;
+    public double mouseZoomSpeed = 10;
 }

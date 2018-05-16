@@ -24,41 +24,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Threading;
 using UnityEngine;
 using vts;
 
-public class VtsMouseControls : MonoBehaviour
+public class VtsMap : MonoBehaviour
 {
-    void Start ()
+    void OnEnable()
     {
-        map = GetComponent<VtsMap>().Handle;
+        VtsLog.Dummy();
+        Debug.Assert(map == null);
+        map = new Map("");
+        map.EventLoadTexture += VtsResources.LoadTexture;
+        map.EventLoadMesh += VtsResources.LoadMesh;
+        dataStop = false;
+        dataThread = new Thread(new ThreadStart(DataEntry));
+        dataThread.Start();
+        map.RenderInitialize();
+        map.SetMapConfigPath(configUrl, authUrl);
     }
 
-    void Update ()
+    void Update()
     {
-        if (Input.GetMouseButton(0))
-        {
-            double[] pan = new double[3];
-            pan[0] = Input.GetAxis("Mouse X") * mousePanSpeed;
-            pan[1] = -Input.GetAxis("Mouse Y") * mousePanSpeed;
-            map.Pan(pan);
-        }
-        if (Input.GetMouseButton(1))
-        {
-            double[] rot = new double[3];
-            rot[0] = Input.GetAxis("Mouse X") * mouseRotateSpeed;
-            rot[1] = -Input.GetAxis("Mouse Y") * mouseRotateSpeed;
-            map.Rotate(rot);
-        }
-        {
-            double zoom = Input.GetAxis("Mouse ScrollWheel") * mouseZoomSpeed;
-            map.Zoom(zoom);
-        }
+        Util.Log(LogLevel.info2, "Unity update frame index: " + frameIndex++);
+        Debug.Assert(map != null);
+        map.RenderTickPrepare(Time.deltaTime);
     }
 
-    public double mousePanSpeed = 20;
-    public double mouseRotateSpeed = 30;
-    public double mouseZoomSpeed = 10;
+    void OnDisable()
+    {
+        Debug.Assert(map != null);
+        dataStop = true;
+        map.RenderDeinitialize();
+        dataThread.Join();
+        map = null;
+    }
 
-    private Map map;
+    void DataEntry()
+    {
+        map.DataInitialize();
+        while (!dataStop)
+        {
+            map.DataTick();
+            Thread.Sleep(10);
+        }
+        map.DataDeinitialize();
+    }
+
+    private Thread dataThread;
+    private bool dataStop;
+    private uint frameIndex;
+
+    public string configUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
+    public string authUrl = "";
+
+    public Map map;
 }
