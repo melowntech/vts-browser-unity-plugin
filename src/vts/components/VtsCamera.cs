@@ -117,7 +117,7 @@ public class VtsCamera : MonoBehaviour
     protected virtual void Update()
     {
         Map map = mapObject.GetComponent<VtsMap>().map;
-        map.SetWindowSize((uint)cam.scaledPixelWidth, (uint)cam.scaledPixelHeight);
+        map.SetWindowSize((uint)cam.pixelWidth, (uint)cam.pixelHeight);
         map.EventCameraView += CamOverrideViewDel;
         map.EventCameraFovAspectNearFar += CamOverrideParametersDel;
         map.RenderTickRender();

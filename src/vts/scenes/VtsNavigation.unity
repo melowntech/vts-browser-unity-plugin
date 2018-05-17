@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2417faadb4a70914e870d66aa22cdff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mousePanSpeed: 20
+  mousePanSpeed: 30
   mouseRotateSpeed: 30
   mouseZoomSpeed: 10
 --- !u!1 &1245295808

@@ -160,10 +160,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 456690247cf362245afc78fdcbaa3500, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraMouseSensitivity: 10
-  fastSpeed: 1000000
-  normalSpeed: 10000
-  slowSpeed: 100
+  cameraMouseSensitivity: 8
+  currentSpeed: 50
 --- !u!81 &87850306
 AudioListener:
   m_ObjectHideFlags: 0
@@ -186,7 +184,7 @@ Camera:
   m_GameObject: {fileID: 87850303}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -194,8 +192,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 100000
-  far clip plane: 1e+9
+  near clip plane: 0.3
+  far clip plane: 1000
   field of view: 60
   orthographic: 0
   orthographic size: 5

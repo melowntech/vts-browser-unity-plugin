@@ -52,7 +52,7 @@ public class VtsNavigation : MonoBehaviour
         }
     }
 
-    public double mousePanSpeed = 20;
+    public double mousePanSpeed = 30;
     public double mouseRotateSpeed = 30;
     public double mouseZoomSpeed = 10;
 }

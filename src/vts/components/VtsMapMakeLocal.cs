@@ -41,7 +41,10 @@ public class VtsMapMakeLocal : MonoBehaviour
                 p[1] = p[2];
                 p[2] = tmp;
             }
-            transform.position = -VtsUtil.V2U3(p);
+            Vector3 v = VtsUtil.V2U3(p);
+            float m = v.magnitude;
+            transform.position = new Vector3(0, -m, 0);
+            transform.rotation = Quaternion.FromToRotation(-v, transform.position);
         }
     }
 

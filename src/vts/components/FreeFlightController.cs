@@ -28,10 +28,8 @@ using UnityEngine;
 
 public class FreeFlightController : MonoBehaviour
 {
-    public float cameraMouseSensitivity = 10;
-    public float fastSpeed = 1000000;
-    public float normalSpeed = 10000;
-    public float slowSpeed = 100;
+    public float cameraMouseSensitivity = 8;
+    public float currentSpeed = 50;
 
     private float yaw = 0.0f;
     private float pitch = 0.0f;
@@ -48,7 +46,7 @@ public class FreeFlightController : MonoBehaviour
         {
             yaw += Input.GetAxis("Mouse X") * cameraMouseSensitivity;
             pitch += Input.GetAxis("Mouse Y") * cameraMouseSensitivity;
-            //pitch = Mathf.Clamp(pitch, -80, 80);
+            pitch = Mathf.Clamp(pitch, -80, 80);
             transform.rotation = Quaternion.AngleAxis(yaw, Vector3.up) * Quaternion.AngleAxis(pitch, Vector3.left);
         }
         else
@@ -58,13 +56,12 @@ public class FreeFlightController : MonoBehaviour
             pitch = -transform.rotation.eulerAngles[0];
         }
 
-        float speed = normalSpeed;
-        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-            speed = fastSpeed;
-        else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-            speed = slowSpeed;
-        speed *= Time.deltaTime;
+        if (Input.GetKey(KeyCode.R))
+            currentSpeed *= 1.03f;
+        if (Input.GetKey(KeyCode.F))
+            currentSpeed /= 1.03f;
 
+        float speed = currentSpeed * Time.deltaTime;
         transform.position += transform.right * speed * Input.GetAxis("Horizontal");
         transform.position += transform.forward * speed * Input.GetAxis("Vertical");
 
