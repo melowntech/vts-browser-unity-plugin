@@ -162,6 +162,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraMouseSensitivity: 8
   currentSpeed: 50
+  horizontalOnly: 1
 --- !u!81 &87850306
 AudioListener:
   m_ObjectHideFlags: 0
@@ -280,9 +281,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3aa6ece2ffcce4a9b1d78425a5dce5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  latitude: 50.075538
-  longitude: 14.4378
-  altitude: 500
+  latitude: 50.07533045
+  longitude: 14.43625463
+  altitude: 350
 --- !u!1001 &1931042116
 Prefab:
   m_ObjectHideFlags: 0

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,13 @@ public class VtsMapMakeLocal : MonoBehaviour
             float m = v.magnitude;
             transform.position = new Vector3(0, -m, 0);
             transform.rotation = Quaternion.FromToRotation(-v, transform.position);
+            if (oneShot)
+                Destroy(this);
         }
     }
 
     public double latitude;
     public double longitude;
     public double altitude;
+    public bool oneShot = true;
 }

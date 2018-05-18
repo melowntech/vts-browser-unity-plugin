@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,18 +79,12 @@ public class VtsCamera : MonoBehaviour
     private readonly Map.CameraOverrideHandler CamOverrideViewDel;
     private void CamOverrideView(ref double[] values)
     {
-        Matrix4x4 Mu = mapTrans.localToWorldMatrix;
+        Matrix4x4 Mu = mapTrans.localToWorldMatrix * VtsUtil.UnityToVtsAxes;
         // view matrix
         if (controlTransformation == VtsDataControl.Vts)
-        {
-            Matrix4x4 Vv = VtsUtil.V2U44(values);
-            cam.worldToCameraMatrix = Vv * (Mu * VtsUtil.V2UM).inverse;
-        }
+            cam.worldToCameraMatrix = VtsUtil.V2U44(Math.Mul44x44(values, Math.Inverse44(VtsUtil.U2V44(Mu))));
         else
-        {
-            Matrix4x4 Vu = cam.worldToCameraMatrix;
-            values = VtsUtil.U2V44(Vu * Mu * VtsUtil.V2UM);
-        }
+            values = Math.Mul44x44(VtsUtil.U2V44(cam.worldToCameraMatrix), VtsUtil.U2V44(Mu));
     }
 
     private readonly Map.CameraOverrideParamsHandler CamOverrideParametersDel;
@@ -135,7 +129,6 @@ public class VtsCamera : MonoBehaviour
         {
             if (t.mesh == null)
                 continue;
-            Matrix4x4 mv = VtsUtil.V2U44(t.data.mv);
             MaterialPropertyBlock mat = new MaterialPropertyBlock();
             bool monochromatic = false;
             if (t.texColor != null)
@@ -154,7 +147,7 @@ public class VtsCamera : MonoBehaviour
             mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
             // flags: mask, monochromatic, flat shading, uv source
             mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
-            buffer.DrawMesh((t.mesh as VtsMesh).Get(), mv, material, 0, -1, mat);
+            buffer.DrawMesh((t.mesh as VtsMesh).Get(), VtsUtil.V2U44(t.data.mv), material, 0, -1, mat);
         }
     }
 

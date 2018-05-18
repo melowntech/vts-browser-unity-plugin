@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@ public class FreeFlightController : MonoBehaviour
 {
     public float cameraMouseSensitivity = 8;
     public float currentSpeed = 50;
+    public bool horizontalOnly = true;
 
     private float yaw = 0.0f;
     private float pitch = 0.0f;
@@ -63,12 +64,21 @@ public class FreeFlightController : MonoBehaviour
 
         float speed = currentSpeed * Time.deltaTime;
         transform.position += transform.right * speed * Input.GetAxis("Horizontal");
-        transform.position += transform.forward * speed * Input.GetAxis("Vertical");
+        Vector3 f = transform.forward;
+        if (horizontalOnly)
+        {
+            f[1] = 0;
+            f = f.normalized;
+        }
+        transform.position += f * speed * Input.GetAxis("Vertical");
 
+        Vector3 u = transform.up;
+        if (horizontalOnly)
+            u = new Vector3(0, 1, 0);
         if (Input.GetKey(KeyCode.E))
-            transform.position += transform.up * speed;
+            transform.position += u * speed;
         if (Input.GetKey(KeyCode.Q))
-            transform.position -= transform.up * speed;
+            transform.position -= u * speed;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
