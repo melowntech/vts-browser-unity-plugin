@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,14 +34,16 @@ public class VtsMap : MonoBehaviour
     {
         VtsLog.Dummy();
         Debug.Assert(map == null);
-        map = new Map("");
+        map = new Map(CreateConfig);
         map.EventLoadTexture += VtsResources.LoadTexture;
         map.EventLoadMesh += VtsResources.LoadMesh;
         dataStop = false;
         dataThread = new Thread(new ThreadStart(DataEntry));
         dataThread.Start();
         map.RenderInitialize();
-        map.SetMapConfigPath(configUrl, authUrl);
+        map.SetMapConfigPath(ConfigUrl, AuthUrl);
+        if (RunConfig.Length > 0)
+            map.SetOptions(RunConfig);
     }
 
     void Update()
@@ -71,12 +73,40 @@ public class VtsMap : MonoBehaviour
         map.DataDeinitialize();
     }
 
+    public double[] UnityToVtsNavigation(double[] point)
+    {
+        Util.CheckArray(point, 3);
+        { // convert from unity world to (local) vts physical
+            double[] point4 = new double[4] { point[0], point[1], point[2], 1 };
+            point4 = Math.Mul44x4(VtsUtil.U2V44(transform.worldToLocalMatrix), point4);
+            point[0] = point4[0]; point[1] = point4[1]; point[2] = point4[2];
+        }
+        VtsUtil.UnityToVtsPoint(ref point);
+        point = map.Convert(point, Srs.Physical, Srs.Navigation);
+        return point;
+    }
+
+    public double[] VtsNavigationToUnity(double[] point)
+    {
+        Util.CheckArray(point, 3);
+        point = map.Convert(point, Srs.Navigation, Srs.Physical);
+        VtsUtil.UnityToVtsPoint(ref point);
+        { // convert from (local) vts physical to unity world
+            double[] point4 = new double[4] { point[0], point[1], point[2], 1 };
+            point4 = Math.Mul44x4(VtsUtil.U2V44(transform.localToWorldMatrix), point4);
+            point[0] = point4[0]; point[1] = point4[1]; point[2] = point4[2];
+        }
+        return point;
+    }
+
     private Thread dataThread;
     private bool dataStop;
     private uint frameIndex;
 
-    public string configUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
-    public string authUrl = "";
+    [SerializeField] string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
+    [SerializeField] string AuthUrl = "";
+    [SerializeField] string CreateConfig;
+    [SerializeField] string RunConfig;
 
     public Map map;
 }

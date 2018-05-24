@@ -70,16 +70,16 @@ public class VtsCamera : MonoBehaviour
         infographics = new CommandBuffer();
         infographics.name = "Vts Infographics";
 
-        cam.AddCommandBuffer(CameraEvent.AfterForwardOpaque, opaque);
-        cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, transparent);
-        cam.AddCommandBuffer(CameraEvent.AfterImageEffects, geodata);
-        cam.AddCommandBuffer(CameraEvent.AfterEverything, infographics);
+        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, opaque);
+        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, transparent);
+        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, geodata);
+        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
     }
 
     private readonly Map.CameraOverrideHandler CamOverrideViewDel;
     private void CamOverrideView(ref double[] values)
     {
-        Matrix4x4 Mu = mapTrans.localToWorldMatrix * VtsUtil.UnityToVtsAxes;
+        Matrix4x4 Mu = mapTrans.localToWorldMatrix * VtsUtil.UnityToVtsMatrix;
         // view matrix
         if (controlTransformation == VtsDataControl.Vts)
             cam.worldToCameraMatrix = VtsUtil.V2U44(Math.Mul44x44(values, Math.Inverse44(VtsUtil.U2V44(Mu))));

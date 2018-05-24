@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 using UnityEngine;
 using vts;
 
+[RequireComponent(typeof(VtsMap))]
 public class VtsNavigation : MonoBehaviour
 {
     void Update ()

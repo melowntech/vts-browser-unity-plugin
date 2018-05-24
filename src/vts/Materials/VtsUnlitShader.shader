@@ -1,4 +1,4 @@
-﻿Shader "Vts/UnlitShader"
+Shader "Vts/UnlitShader"
 {
 	SubShader
 	{
@@ -7,6 +7,8 @@
 
 		Pass
 		{
+			Blend SrcAlpha OneMinusSrcAlpha
+
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag

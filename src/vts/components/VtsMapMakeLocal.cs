@@ -27,6 +27,7 @@
 using UnityEngine;
 using vts;
 
+[RequireComponent(typeof(VtsMap))]
 public class VtsMapMakeLocal : MonoBehaviour
 {
     void Update ()
@@ -36,11 +37,7 @@ public class VtsMapMakeLocal : MonoBehaviour
         {
             double[] p = new double[3] { longitude, latitude, altitude };
             p = map.Convert(p, Srs.Navigation, Srs.Physical);
-            {
-                double tmp = p[1];
-                p[1] = p[2];
-                p[2] = tmp;
-            }
+            VtsUtil.UnityToVtsPoint(ref p);
             Vector3 v = VtsUtil.V2U3(p);
             float m = v.magnitude;
             transform.position = new Vector3(0, -m, 0);

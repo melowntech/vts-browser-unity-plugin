@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,10 +113,17 @@ public static class VtsUtil
         return r;
     }
 
-    public static readonly Matrix4x4 UnityToVtsAxes = new Matrix4x4(
+    public static readonly Matrix4x4 UnityToVtsMatrix = new Matrix4x4(
         new Vector4(1,0,0,0),
         new Vector4(0,0,1,0),
         new Vector4(0,1,0,0),
         new Vector4(0,0,0,1)
         );
+
+    public static void UnityToVtsPoint(ref double[] p)
+    {
+        double tmp = p[1];
+        p[1] = p[2];
+        p[2] = tmp;
+    }
 }

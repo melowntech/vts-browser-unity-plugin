@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,6 +87,8 @@ public class VtsTexture
         {
             ut = new Texture2D((int)vt.width, (int)vt.height, ExtractFormat(vt), false);
             ut.LoadRawTextureData(vt.data);
+            ut.filterMode = FilterMode.Bilinear;
+            ut.anisoLevel = 100; // just do it!
             ut.Apply(false, true);
             vt = null;
         }
@@ -146,15 +148,9 @@ public class VtsMesh
         return r;
     }
 
-    public VtsMesh(vts.Mesh m)
+    private void LoadTrianglesIndices(vts.Mesh m)
     {
-        // assume that attribute 0 is vertex positions
-        vertices = ExtractBuffer3(m, 0);
-        // assume that attribute 1 is internal texture coordinates (used with textures that are packed with the mesh)
-        uv0 = ExtractBuffer2(m, 1);
-        // assume that attribute 2 is external texture coordinates (used with textures that come from bound layers)
-        uv1 = ExtractBuffer2(m, 2);
-        // indices
+        topology = MeshTopology.Triangles;
         // triangle winding is reversed due to different handedness of unity coordinate system
         if (m.indices != null)
         {
@@ -164,17 +160,54 @@ public class VtsMesh
                 m.indices[i + 2] = m.indices[i + 1];
                 m.indices[i + 1] = tmp;
             }
-            triangles = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+            indices = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
         }
         else
         {
-            triangles = new int[m.verticesCount];
+            indices = new int[m.verticesCount];
             for (int i = 0; i < m.verticesCount; i += 3)
             {
-                triangles[i + 0] = i + 0;
-                triangles[i + 1] = i + 2;
-                triangles[i + 2] = i + 1;
+                indices[i + 0] = i + 0;
+                indices[i + 1] = i + 2;
+                indices[i + 2] = i + 1;
             }
+        }
+    }
+
+    private void LoadLinesIndices(vts.Mesh m)
+    {
+        topology = MeshTopology.Lines;
+        if (m.indices != null)
+        {
+            indices = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+        }
+        else
+        {
+            indices = new int[m.verticesCount];
+            for (int i = 0; i < m.verticesCount; i++)
+                indices[i] = i;
+        }
+    }
+
+    public VtsMesh(vts.Mesh m)
+    {
+        // assume that attribute 0 is vertex positions
+        vertices = ExtractBuffer3(m, 0);
+        // assume that attribute 1 is internal texture coordinates (used with textures that are packed with the mesh)
+        uv0 = ExtractBuffer2(m, 1);
+        // assume that attribute 2 is external texture coordinates (used with textures that come from bound layers)
+        uv1 = ExtractBuffer2(m, 2);
+        // indices
+        switch (m.faceMode)
+        {
+            case FaceMode.Triangles:
+                LoadTrianglesIndices(m);
+                break;
+            case FaceMode.Lines:
+                LoadLinesIndices(m);
+                break;
+            default:
+                throw new VtsException(-19, "Unsupported mesh face mode");
         }
     }
 
@@ -186,13 +219,13 @@ public class VtsMesh
             um.vertices = vertices;
             um.uv = uv0;
             um.uv2 = uv1;
-            um.triangles = triangles;
+            um.SetIndices(indices, topology, 0);
             um.RecalculateBounds();
             //um.RecalculateNormals();
             um.UploadMeshData(true);
             vertices = null;
             uv0 = uv1 = null;
-            triangles = null;
+            indices = null;
         }
         return um;
     }
@@ -200,6 +233,7 @@ public class VtsMesh
     private Vector3[] vertices;
     private Vector2[] uv0;
     private Vector2[] uv1;
-    private int[] triangles;
+    private int[] indices;
+    private MeshTopology topology;
     private UnityEngine.Mesh um;
 }
