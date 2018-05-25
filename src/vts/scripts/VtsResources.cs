@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using UnityEngine;
 using vts;
 
@@ -40,7 +41,7 @@ public static class VtsResources
     }
 }
 
-public class VtsTexture
+public class VtsTexture : IDisposable
 {
     private static TextureFormat ExtractFormat(vts.Texture t)
     {
@@ -85,6 +86,7 @@ public class VtsTexture
     {
         if (ut == null)
         {
+            Debug.Assert(vt != null);
             ut = new Texture2D((int)vt.width, (int)vt.height, ExtractFormat(vt), false);
             ut.LoadRawTextureData(vt.data);
             ut.filterMode = FilterMode.Bilinear;
@@ -95,16 +97,25 @@ public class VtsTexture
         return ut;
     }
 
+    public void Dispose()
+    {
+        if (ut)
+        {
+            Texture2D.DestroyImmediate(ut, true);
+            ut = null;
+        }
+    }
+
     private vts.Texture vt;
     private Texture2D ut;
     public readonly bool monochromatic;
 }
 
-public class VtsMesh
+public class VtsMesh : IDisposable
 {
     private static float ExtractFloat(vts.Mesh m, int byteOffset)
     {
-        return System.BitConverter.ToSingle(m.vertices, byteOffset);
+        return BitConverter.ToSingle(m.vertices, byteOffset);
     }
 
     private static Vector3[] ExtractBuffer3(vts.Mesh m, int attributeIndex)
@@ -215,6 +226,7 @@ public class VtsMesh
     {
         if (um == null)
         {
+            Debug.Assert(vertices != null);
             um = new UnityEngine.Mesh();
             um.vertices = vertices;
             um.uv = uv0;
@@ -228,6 +240,15 @@ public class VtsMesh
             indices = null;
         }
         return um;
+    }
+
+    public void Dispose()
+    {
+        if (um)
+        {
+            UnityEngine.Mesh.DestroyImmediate(um, true);
+            um = null;
+        }
     }
 
     private Vector3[] vertices;

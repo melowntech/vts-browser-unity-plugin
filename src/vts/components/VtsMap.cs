@@ -57,8 +57,9 @@ public class VtsMap : MonoBehaviour
     {
         Debug.Assert(map != null);
         dataStop = true;
-        map.RenderDeinitialize();
         dataThread.Join();
+        map.RenderDeinitialize();
+        map.Dispose();
         map = null;
     }
 
