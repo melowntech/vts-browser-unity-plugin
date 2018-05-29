@@ -113,9 +113,19 @@ public class VtsTexture : IDisposable
 
 public class VtsMesh : IDisposable
 {
-    private static float ExtractFloat(vts.Mesh m, int byteOffset)
+    private static float ExtractFloat(vts.Mesh m, int byteOffset, GpuType type, bool normalized)
     {
-        return BitConverter.ToSingle(m.vertices, byteOffset);
+        switch (type)
+        {
+            case GpuType.Float:
+                Debug.Assert(!normalized);
+                return BitConverter.ToSingle(m.vertices, byteOffset);
+            case GpuType.UnsignedShort:
+                Debug.Assert(normalized);
+                return BitConverter.ToUInt16(m.vertices, byteOffset) / 65535.0f;
+            default:
+                throw new VtsException(-17, "Unsupported gpu type");
+        }
     }
 
     private static Vector3[] ExtractBuffer3(vts.Mesh m, int attributeIndex)
@@ -124,16 +134,16 @@ public class VtsMesh : IDisposable
         if (!a.enable)
             return null;
         Debug.Assert(a.components == 3);
-        Debug.Assert(a.type == GpuType.Float);
+        uint typeSize = Util.GpuTypeSize(a.type);
         Vector3[] r = new Vector3[m.verticesCount];
-        int stride = (int)(a.stride == 0 ? 12 : a.stride);
+        int stride = (int)(a.stride == 0 ? typeSize * a.components : a.stride);
         int start = (int)a.offset;
         for (int i = 0; i < m.verticesCount; i++)
         {
             r[i] = new Vector3(
-                ExtractFloat(m, start + i * stride + 0),
-                ExtractFloat(m, start + i * stride + 4),
-                ExtractFloat(m, start + i * stride + 8)
+                ExtractFloat(m, start + i * stride + 0 * (int)typeSize, a.type, a.normalized),
+                ExtractFloat(m, start + i * stride + 1 * (int)typeSize, a.type, a.normalized),
+                ExtractFloat(m, start + i * stride + 2 * (int)typeSize, a.type, a.normalized)
                 );
         }
         return r;
@@ -145,15 +155,15 @@ public class VtsMesh : IDisposable
         if (!a.enable)
             return null;
         Debug.Assert(a.components == 2);
-        Debug.Assert(a.type == GpuType.Float);
+        uint typeSize = Util.GpuTypeSize(a.type);
         Vector2[] r = new Vector2[m.verticesCount];
-        int stride = (int)(a.stride == 0 ? 8 : a.stride);
+        int stride = (int)(a.stride == 0 ? typeSize * a.components : a.stride);
         int start = (int)a.offset;
         for (int i = 0; i < m.verticesCount; i++)
         {
             r[i] = new Vector2(
-                ExtractFloat(m, start + i * stride + 0),
-                ExtractFloat(m, start + i * stride + 4)
+                ExtractFloat(m, start + i * stride + 0 * (int)typeSize, a.type, a.normalized),
+                ExtractFloat(m, start + i * stride + 1 * (int)typeSize, a.type, a.normalized)
                 );
         }
         return r;
