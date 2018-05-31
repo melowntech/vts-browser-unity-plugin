@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2017 Melown Technologies SE
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,9 @@ public static class VtsLog
     static VtsLog()
     {
         BrowserInterop.vtsLogSetMaskCode((uint)LogLevel.default_);
-        Util.CheckError();
+        Util.CheckInterop();
         BrowserInterop.vtsLogSetFile("vts-unity.log");
-        Util.CheckError();
+        Util.CheckInterop();
         Util.Log(LogLevel.info4, "Initialized VTS logging in Unity");
     }
 }

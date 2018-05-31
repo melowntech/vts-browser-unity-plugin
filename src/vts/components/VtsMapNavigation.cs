@@ -28,7 +28,7 @@ using UnityEngine;
 using vts;
 
 [RequireComponent(typeof(VtsMap))]
-public class VtsNavigation : MonoBehaviour
+public class VtsMapNavigation : MonoBehaviour
 {
     void Update ()
     {

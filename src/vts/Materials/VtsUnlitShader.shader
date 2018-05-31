@@ -1,5 +1,10 @@
 Shader "Vts/UnlitShader"
 {
+	Properties
+	{
+		//[Toggle(VTS_ATMOSPHERE)] _VTS_ATMOSPHERE("Vts Atmosphere", Float) = 1.0
+		vtsTexAtmDensity("Vts Atmosphere Density Texture", 2D) = "" {}
+	}
 	SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
@@ -12,8 +17,9 @@ Shader "Vts/UnlitShader"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			
+			#pragma target 3.0
 			#include "UnityCG.cginc"
+			#include "atmosphere/VtsAtmShader.cginc"
 
 			struct vIn
 			{
@@ -25,8 +31,9 @@ Shader "Vts/UnlitShader"
 			struct v2f
 			{
 				float4 vertex : SV_POSITION;
-				float2 uvTex : TEXCOORD0;
-				float2 uvClip : TEXCOORD1;
+				float3 viewPos : TEXCOORD0;
+				float2 uvTex : TEXCOORD1;
+				float2 uvClip : TEXCOORD2;
 			};
 
 			struct fOut
@@ -42,16 +49,17 @@ Shader "Vts/UnlitShader"
 			float4 _Color;
 			float4 _Flags; // mask, monochromatic, flat shading, uv source
 
-			v2f vert (vIn i)
+			v2f vert(vIn i)
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(i.vertex);
+				o.viewPos = UnityObjectToViewPos(i.vertex);
 				o.uvTex = mul((float3x3)_UvMat, float3(_Flags.w > 0 ? i.uvExternal : i.uvInternal, 1.0)).xy;
 				o.uvClip = i.uvExternal;
 				return o;
 			}
 
-			fOut frag (v2f i)
+			fOut frag(v2f i)
 			{
 				fOut o;
 
@@ -76,6 +84,10 @@ Shader "Vts/UnlitShader"
 
 				// uniform tint
 				o.color *= _Color;
+
+				// atmosphere
+				float atmDensity = vtsAtmDensity(i.viewPos);
+				o.color = vtsAtmColor(atmDensity, o.color);
 
 				return o;
 			}
