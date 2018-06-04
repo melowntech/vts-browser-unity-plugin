@@ -2,7 +2,8 @@ fileFormatVersion: 2
 guid: a029c260dda11ff4884086f7cac32168
 ShaderImporter:
   externalObjects: {}
-  defaultTextures: []
+  defaultTextures:
+  - vtsTexAtmDensity: {fileID: 2800000, guid: c33bc9edb9e4f18458f4654597f58f41, type: 3}
   nonModifiableTextures: []
   userData: 
   assetBundleName: 

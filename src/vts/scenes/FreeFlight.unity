@@ -150,7 +150,7 @@ MonoBehaviour:
   controlFov: 0
   mapMaterial: {fileID: 2100000, guid: a7bf1b969e642a64583e152ca2477837, type: 2}
   backgroundMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
-  backgroundMesh: {fileID: 4300000, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
+  backgroundMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
   vtsAtmosphere: 1
 --- !u!114 &87850305
 MonoBehaviour:

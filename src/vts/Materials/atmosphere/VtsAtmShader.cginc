@@ -1,8 +1,5 @@
 
-//#pragma VTS_ATMOSPHERE
-#pragma multi_compile _______ VTS_ATMOSPHERE
-
-//#if VTS_ATMOSPHERE
+#if VTS_ATMOSPHERE
 
 sampler2D vtsTexAtmDensity;
 float4 vtsTexAtmDensity_TexelSize;
@@ -131,13 +128,13 @@ float vtsAtmDensity(float3 fragVect)
 
 float4 vtsAtmColor(float density, float4 color)
 {
-	//return float4(0,0,1,1);
 	density = clamp(density, 0.0, 1.0);
 	float3 a = lerp(vtsUniAtmColorLow.rgb, vtsUniAtmColorHigh.rgb, pow(1.0 - density, 0.3));
-	return float4(lerp(color.rgb, a, density), color.a);
+	float4 result = float4(lerp(color.rgb, a, density), color.a);
+	//return float4(lerp(result.rgb, float3(0.0, 0.0, 1.0), 0.5), result.a);
+	return result;
 }
 
-/*
 #else
 
 float vtsAtmDensity(float3 fragVect)
@@ -147,10 +144,10 @@ float vtsAtmDensity(float3 fragVect)
 
 float4 vtsAtmColor(float density, float4 color)
 {
-	return float4(1, 0, 0, 1);
-	return color;
+	float4 result = color;
+	//return float4(lerp(result.rgb, float3(1.0, 0.0, 0.0), 0.5), result.a);
+	return result;
 }
 
 #endif
-*/
 

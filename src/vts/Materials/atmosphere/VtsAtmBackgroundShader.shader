@@ -8,6 +8,7 @@ Shader "Vts/AtmBackgroundShader"
 	{
 		Cull Off
 		ZWrite Off
+		ZTest Always
 
 		Pass
 		{
@@ -15,8 +16,9 @@ Shader "Vts/AtmBackgroundShader"
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma target 3.0
-			#define VTS_ATMOSPHERE 1
 			#include "UnityCG.cginc"
+
+			#define VTS_ATMOSPHERE 1
 			#include "VtsAtmShader.cginc"
 
 			struct vIn
@@ -53,8 +55,6 @@ Shader "Vts/AtmBackgroundShader"
 				fOut o;
 				float atmosphere = vtsAtmDensityDir(i.fragDir, 1001.0);
 				o.color = vtsAtmColor(atmosphere, float4(0.0, 0.0, 0.0, 1.0));
-				//o.color = float4(i.fragDir, 1.0);
-				//o.color = float4(0.0, 1.0, 0.0, 1.0);
 				return o;
 			}
 			ENDCG

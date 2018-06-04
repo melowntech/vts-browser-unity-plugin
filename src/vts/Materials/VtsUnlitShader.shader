@@ -2,7 +2,6 @@ Shader "Vts/UnlitShader"
 {
 	Properties
 	{
-		//[Toggle(VTS_ATMOSPHERE)] _VTS_ATMOSPHERE("Vts Atmosphere", Float) = 1.0
 		vtsTexAtmDensity("Vts Atmosphere Density Texture", 2D) = "" {}
 	}
 	SubShader
@@ -19,6 +18,8 @@ Shader "Vts/UnlitShader"
 			#pragma fragment frag
 			#pragma target 3.0
 			#include "UnityCG.cginc"
+
+			#pragma multi_compile __ VTS_ATMOSPHERE
 			#include "atmosphere/VtsAtmShader.cginc"
 
 			struct vIn

@@ -69,6 +69,8 @@ public class VtsCamera : MonoBehaviour
 
     protected virtual void SetupCommandBuffers()
     {
+        background = new CommandBuffer();
+        background.name = "Background";
         opaque = new CommandBuffer();
         opaque.name = "Vts Opaque";
         transparent = new CommandBuffer();
@@ -77,14 +79,12 @@ public class VtsCamera : MonoBehaviour
         geodata.name = "Vts Geodata";
         infographics = new CommandBuffer();
         infographics.name = "Vts Infographics";
-        background = new CommandBuffer();
-        background.name = "Skybox";
 
+        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, background);
         cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, opaque);
         cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, transparent);
         cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, geodata);
         cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
-        cam.AddCommandBuffer(CameraEvent.AfterImageEffectsOpaque, background);
     }
 
     private readonly Map.CameraOverrideHandler CamOverrideViewDel;
@@ -95,7 +95,7 @@ public class VtsCamera : MonoBehaviour
         if (controlTransformation == VtsDataControl.Vts)
         {
             // todo it would be nice to actually decompose the matrix into the camera transformation
-            // it would make it usable in other components or objects
+            // it would make the GameObject usable in other scripts
             cam.worldToCameraMatrix = VtsUtil.V2U44(Math.Mul44x44(values, Math.Inverse44(VtsUtil.U2V44(Mu))));
         }
         else
@@ -157,6 +157,10 @@ public class VtsCamera : MonoBehaviour
     protected virtual void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawTask> tasks)
     {
         buffer.Clear();
+        if (vtsAtmosphere)
+            buffer.EnableShaderKeyword("VTS_ATMOSPHERE");
+        else
+            buffer.DisableShaderKeyword("VTS_ATMOSPHERE");
         buffer.SetProjectionMatrix(InvertDepthMatrix * GL.GetGPUProjectionMatrix(cam.projectionMatrix, false));
         foreach (DrawTask t in tasks)
         {

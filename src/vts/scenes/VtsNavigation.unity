@@ -209,7 +209,7 @@ MonoBehaviour:
   controlFov: 1
   mapMaterial: {fileID: 2100000, guid: a7bf1b969e642a64583e152ca2477837, type: 2}
   backgroundMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
-  backgroundMesh: {fileID: 4300000, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
+  backgroundMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
   vtsAtmosphere: 1
 --- !u!81 &1245295811
 AudioListener:
@@ -234,7 +234,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.5188679, g: 0.21087676, b: 0.20803666, a: 0}
+  m_BackGroundColor: {r: 0.26637593, g: 0.33051082, b: 0.7735849, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
