@@ -37,7 +37,6 @@ public class VtsMap : MonoBehaviour
         map = new Map(CreateConfig);
         map.EventLoadTexture += VtsResources.LoadTexture;
         map.EventLoadMesh += VtsResources.LoadMesh;
-        dataStop = false;
         dataThread = new Thread(new ThreadStart(DataEntry));
         dataThread.Start();
         map.RenderInitialize();
@@ -56,22 +55,15 @@ public class VtsMap : MonoBehaviour
     void OnDisable()
     {
         Debug.Assert(map != null);
-        dataStop = true;
-        dataThread.Join();
         map.RenderDeinitialize();
+        dataThread.Join();
         map.Dispose();
         map = null;
     }
 
     void DataEntry()
     {
-        map.DataInitialize();
-        while (!dataStop)
-        {
-            map.DataTick();
-            Thread.Sleep(10);
-        }
-        map.DataDeinitialize();
+        map.DataAllRun();
     }
 
     public double[] UnityToVtsNavigation(double[] point)
@@ -101,7 +93,6 @@ public class VtsMap : MonoBehaviour
     }
 
     private Thread dataThread;
-    private bool dataStop;
     private uint frameIndex;
 
     [SerializeField] string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
