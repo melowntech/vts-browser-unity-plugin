@@ -5,7 +5,7 @@ ShaderVariantCollection:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: VtsShaderCollection
+  m_Name: vtsShaderCollection
   m_Shaders:
   - first: {fileID: 4800000, guid: d430831b0858798498e81e9facf56d2b, type: 3}
     second:

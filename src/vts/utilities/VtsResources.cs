@@ -172,16 +172,9 @@ public class VtsMesh : IDisposable
     private void LoadTrianglesIndices(vts.Mesh m)
     {
         topology = MeshTopology.Triangles;
-        // triangle winding is reversed due to different handedness of unity coordinate system
         if (m.indices != null)
         {
-            for (int i = 0; i < m.indicesCount; i += 3)
-            {
-                ushort tmp = m.indices[i + 1];
-                m.indices[i + 2] = m.indices[i + 1];
-                m.indices[i + 1] = tmp;
-            }
-            indices = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+            indices = Array.ConvertAll(m.indices, Convert.ToInt32);
         }
         else
         {
@@ -189,8 +182,8 @@ public class VtsMesh : IDisposable
             for (int i = 0; i < m.verticesCount; i += 3)
             {
                 indices[i + 0] = i + 0;
-                indices[i + 1] = i + 2;
-                indices[i + 2] = i + 1;
+                indices[i + 1] = i + 1;
+                indices[i + 2] = i + 2;
             }
         }
     }
@@ -200,7 +193,7 @@ public class VtsMesh : IDisposable
         topology = MeshTopology.Lines;
         if (m.indices != null)
         {
-            indices = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+            indices = Array.ConvertAll(m.indices, Convert.ToInt32);
         }
         else
         {
@@ -243,8 +236,8 @@ public class VtsMesh : IDisposable
             um.uv2 = uv1;
             um.SetIndices(indices, topology, 0);
             um.RecalculateBounds();
-            //um.RecalculateNormals();
-            um.UploadMeshData(true);
+            um.RecalculateNormals();
+            um.UploadMeshData(false);
             vertices = null;
             uv0 = uv1 = null;
             indices = null;

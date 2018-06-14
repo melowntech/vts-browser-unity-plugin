@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 460589bb9435bb04cb693f3d6136a0ed
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mapObject: {instanceID: 0}
+  - partPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca,
+      type: 2}
+  - atmosphereMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2,
+      type: 2}
+  - atmosphereMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

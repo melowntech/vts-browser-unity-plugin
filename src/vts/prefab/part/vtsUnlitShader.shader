@@ -20,7 +20,7 @@ Shader "Vts/UnlitShader"
 			#include "UnityCG.cginc"
 
 			#pragma multi_compile __ VTS_ATMOSPHERE
-			#include "atmosphere/VtsAtmShader.cginc"
+			#include "../../atmosphere/vtsAtmShader.cginc"
 
 			struct vIn
 			{

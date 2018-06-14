@@ -45,13 +45,6 @@ public class VtsMap : MonoBehaviour
             map.SetOptions(RunConfig);
     }
 
-    void Update()
-    {
-        Util.Log(LogLevel.info2, "Unity update frame index: " + frameIndex++);
-        Debug.Assert(map != null);
-        map.RenderTickPrepare(Time.deltaTime);
-    }
-
     void OnDisable()
     {
         Debug.Assert(map != null);
@@ -61,11 +54,19 @@ public class VtsMap : MonoBehaviour
         map = null;
     }
 
+    void Update()
+    {
+        Util.Log(LogLevel.info1, "Unity update frame index: " + frameIndex++);
+        Debug.Assert(map != null);
+        map.RenderTickPrepare(Time.deltaTime);
+    }
+
     void DataEntry()
     {
         map.DataAllRun();
     }
 
+    /*
     public double[] UnityToVtsNavigation(double[] point)
     {
         Util.CheckArray(point, 3);
@@ -91,14 +92,15 @@ public class VtsMap : MonoBehaviour
         }
         return point;
     }
+    */
 
     private Thread dataThread;
     private uint frameIndex;
 
-    [SerializeField] string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
-    [SerializeField] string AuthUrl = "";
-    [SerializeField] string CreateConfig;
-    [SerializeField] string RunConfig;
+    [SerializeField] private string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
+    [SerializeField] private string AuthUrl = "";
+    [SerializeField] private string CreateConfig;
+    [SerializeField] private string RunConfig;
 
     public Map map;
 }

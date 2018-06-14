@@ -207,10 +207,11 @@ MonoBehaviour:
   controlTransformation: 1
   controlNearFar: 1
   controlFov: 1
-  mapMaterial: {fileID: 2100000, guid: a7bf1b969e642a64583e152ca2477837, type: 2}
-  backgroundMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
-  backgroundMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
-  vtsAtmosphere: 1
+  partPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca, type: 2}
+  partLayer: 31
+  atmosphereEnabled: 1
+  atmosphereMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
+  atmosphereMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
 --- !u!81 &1245295811
 AudioListener:
   m_ObjectHideFlags: 0
@@ -311,7 +312,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}

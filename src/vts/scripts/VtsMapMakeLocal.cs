@@ -30,6 +30,13 @@ using vts;
 [RequireComponent(typeof(VtsMap))]
 public class VtsMapMakeLocal : MonoBehaviour
 {
+    private static void UnityToVtsPoint(ref double[] p)
+    {
+        double tmp = p[1];
+        p[1] = p[2];
+        p[2] = tmp;
+    }
+
     void Update ()
     {
         Map map = GetComponent<VtsMap>().map;
@@ -37,7 +44,7 @@ public class VtsMapMakeLocal : MonoBehaviour
         {
             double[] p = new double[3] { longitude, latitude, altitude };
             p = map.Convert(p, Srs.Navigation, Srs.Physical);
-            VtsUtil.UnityToVtsPoint(ref p);
+            UnityToVtsPoint(ref p);
             Vector3 v = VtsUtil.V2U3(p);
             float m = v.magnitude;
             transform.position = new Vector3(0, -m, 0);

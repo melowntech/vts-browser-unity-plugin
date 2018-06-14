@@ -148,10 +148,11 @@ MonoBehaviour:
   controlTransformation: 0
   controlNearFar: 1
   controlFov: 0
-  mapMaterial: {fileID: 2100000, guid: a7bf1b969e642a64583e152ca2477837, type: 2}
-  backgroundMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
-  backgroundMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
-  vtsAtmosphere: 1
+  partPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca, type: 2}
+  partLayer: 31
+  atmosphereEnabled: 1
+  atmosphereMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
+  atmosphereMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
 --- !u!114 &87850305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,7 +189,7 @@ Camera:
   m_GameObject: {fileID: 87850303}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2

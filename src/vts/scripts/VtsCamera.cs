@@ -41,14 +41,15 @@ public class VtsCamera : MonoBehaviour
     {
         CamOverrideViewDel = CamOverrideView;
         CamOverrideParametersDel = CamOverrideParameters;
-        draws = new Draws();
     }
 
-    protected virtual void Start()
+    private void Start()
     {
-        cam = GetComponent<Camera>();
-        trans = GetComponent<Transform>();
+        camTrans = GetComponent<Transform>();
         mapTrans = mapObject.GetComponent<Transform>();
+
+        cam = GetComponent<Camera>();
+        cam.cullingMask |= 1 << partLayer;
 
         shaderPropertyMainTex = Shader.PropertyToID("_MainTex");
         shaderPropertyMaskTex = Shader.PropertyToID("_MaskTex");
@@ -64,42 +65,25 @@ public class VtsCamera : MonoBehaviour
         shaderPropertyAtmCameraPosition = Shader.PropertyToID("vtsUniAtmCameraPosition");
         shaderPropertyAtmCorners = Shader.PropertyToID("uniCorners");
 
-        SetupCommandBuffers();
-    }
-
-    protected virtual void SetupCommandBuffers()
-    {
-        background = new CommandBuffer();
-        background.name = "Background";
-        opaque = new CommandBuffer();
-        opaque.name = "Vts Opaque";
-        transparent = new CommandBuffer();
-        transparent.name = "Vts Transparent";
-        geodata = new CommandBuffer();
-        geodata.name = "Vts Geodata";
-        infographics = new CommandBuffer();
-        infographics.name = "Vts Infographics";
-
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, background);
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, opaque);
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, transparent);
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, geodata);
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
+        atmosphereMaterial = Instantiate(atmosphereMaterial);
+        backgroundCmds = new CommandBuffer();
+        backgroundCmds.name = "Vts Atmosphere";
+        cam.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, backgroundCmds);
     }
 
     private readonly Map.CameraOverrideHandler CamOverrideViewDel;
     private void CamOverrideView(ref double[] values)
     {
-        Matrix4x4 Mu = mapTrans.localToWorldMatrix * VtsUtil.UnityToVtsMatrix;
+        double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(SwapYZ));
         // view matrix
         if (controlTransformation == VtsDataControl.Vts)
         {
-            // todo it would be nice to actually decompose the matrix into the camera transformation
-            // it would make the GameObject usable in other scripts
-            cam.worldToCameraMatrix = VtsUtil.V2U44(Math.Mul44x44(values, Math.Inverse44(VtsUtil.U2V44(Mu))));
+            VtsUtil.Matrix2Transform(camTrans, VtsUtil.V2U44(Math.Mul44x44(Math.Inverse44(Math.Mul44x44(values, Mu)), VtsUtil.U2V44(InvertZ))));
         }
         else
-            values = Math.Mul44x44(VtsUtil.U2V44(cam.worldToCameraMatrix), VtsUtil.U2V44(Mu));
+        {
+            values = Math.Mul44x44(VtsUtil.U2V44(cam.worldToCameraMatrix), Mu);
+        }
     }
 
     private readonly Map.CameraOverrideParamsHandler CamOverrideParametersDel;
@@ -123,7 +107,7 @@ public class VtsCamera : MonoBehaviour
         }
     }
 
-    protected virtual void Update()
+    private void Update()
     {
         Map map = mapObject.GetComponent<VtsMap>().map;
         map.SetWindowSize((uint)cam.pixelWidth, (uint)cam.pixelHeight);
@@ -133,13 +117,17 @@ public class VtsCamera : MonoBehaviour
         map.EventCameraView -= CamOverrideViewDel;
         map.EventCameraFovAspectNearFar -= CamOverrideParametersDel;
         draws.Load(map);
-        RegenerateCommandBuffers();
+        UpdateParts();
+        UpdateBackground();
+        if (atmosphereEnabled)
+            Shader.EnableKeyword("VTS_ATMOSPHERE");
+        else
+            Shader.DisableKeyword("VTS_ATMOSPHERE");
     }
 
-    protected virtual MaterialPropertyBlock CreatePropertyBlock()
+    private void UpdateMaterial(Material mat)
     {
-        MaterialPropertyBlock mat = new MaterialPropertyBlock();
-        if (vtsAtmosphere)
+        if (atmosphereEnabled)
         {
             var cel = draws.celestial;
             var atm = cel.atmosphere;
@@ -149,24 +137,45 @@ public class VtsCamera : MonoBehaviour
             mat.SetVector(shaderPropertyAtmColorLow, VtsUtil.V2U4(atm.colorLow));
             mat.SetVector(shaderPropertyAtmColorHigh, VtsUtil.V2U4(atm.colorHigh));
         }
-        return mat;
+        else
+        {
+            mat.SetVector(shaderPropertyAtmParams, new Vector4(0,0,0,0));
+        }
     }
 
-    static readonly Matrix4x4 InvertDepthMatrix = Matrix4x4.Scale(new Vector3(1, 1, -1));
-
-    protected virtual void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawTask> tasks)
+    private void UpdateParts()
     {
-        buffer.Clear();
-        if (vtsAtmosphere)
-            buffer.EnableShaderKeyword("VTS_ATMOSPHERE");
-        else
-            buffer.DisableShaderKeyword("VTS_ATMOSPHERE");
-        buffer.SetProjectionMatrix(InvertDepthMatrix * GL.GetGPUProjectionMatrix(cam.projectionMatrix, false));
+        int index = 0;
+        UpdateParts(ref index, draws.opaque);
+        UpdateParts(ref index, draws.transparent);
+        UpdateParts(ref index, draws.geodata);
+        UpdateParts(ref index, draws.infographics);
+        for (int i = index; i < parts.Count; i++)
+            parts[i].SetActive(false);
+    }
+
+    private void UpdateParts(ref int index, List<DrawTask> tasks)
+    {
+        double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(SwapYZ)), Math.Inverse44(draws.camera.view));
+        if (parts.Count < index + tasks.Count)
+        {
+            int a = index + tasks.Count - parts.Count;
+            for (int i = 0; i < a; i++)
+            {
+                GameObject o = Instantiate(partPrefab);
+                o.layer = partLayer;
+                parts.Add(o);
+            }
+        }
         foreach (DrawTask t in tasks)
         {
-            if (t.mesh == null)
-                continue;
-            MaterialPropertyBlock mat = CreatePropertyBlock();
+            GameObject o = parts[index++];
+            o.SetActive(true);
+            UnityEngine.Mesh msh = (t.mesh as VtsMesh).Get();
+            o.GetComponent<MeshFilter>().mesh = msh;
+            //o.GetComponent<MeshCollider>().sharedMesh = msh;
+            Material mat = o.GetComponent<MeshRenderer>().material;
+            UpdateMaterial(mat);
             bool monochromatic = false;
             if (t.texColor != null)
             {
@@ -184,16 +193,16 @@ public class VtsCamera : MonoBehaviour
             mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
             // flags: mask, monochromatic, flat shading, uv source
             mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
-            buffer.DrawMesh((t.mesh as VtsMesh).Get(), VtsUtil.V2U44(t.data.mv), mapMaterial, 0, -1, mat);
+            VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
         }
     }
 
-    protected virtual void RegenerateBackground()
+    private void UpdateBackground()
     {
-        background.Clear();
-        if (vtsAtmosphere)
+        backgroundCmds.Clear();
+        if (atmosphereEnabled)
         {
-            MaterialPropertyBlock mat = CreatePropertyBlock();
+            UpdateMaterial(atmosphereMaterial);
             {
                 double mr = draws.celestial.majorRadius;
                 double[] camPos = draws.camera.eye;
@@ -218,19 +227,10 @@ public class VtsCamera : MonoBehaviour
                     corner = Math.Normalize3(corner);
                     c[i] = new Vector4((float)corner[0], (float)corner[1], (float)corner[2], 0.0f);
                 }
-                mat.SetVectorArray(shaderPropertyAtmCorners, c);
+                atmosphereMaterial.SetVectorArray(shaderPropertyAtmCorners, c);
             }
-            background.DrawMesh(backgroundMesh, Matrix4x4.identity, backgroundMaterial, 0, -1, mat);
+            backgroundCmds.DrawMesh(atmosphereMesh, Matrix4x4.identity, atmosphereMaterial, 0, -1);
         }
-    }
-
-    protected virtual void RegenerateCommandBuffers()
-    {
-        RegenerateCommandBuffer(opaque, draws.opaque);
-        RegenerateCommandBuffer(transparent, draws.transparent);
-        RegenerateCommandBuffer(geodata, draws.geodata);
-        RegenerateCommandBuffer(infographics, draws.infographics);
-        RegenerateBackground();
     }
 
     public GameObject mapObject;
@@ -239,35 +239,42 @@ public class VtsCamera : MonoBehaviour
     public VtsDataControl controlNearFar;
     public VtsDataControl controlFov;
 
-    public Material mapMaterial;
-    public Material backgroundMaterial;
-    public UnityEngine.Mesh backgroundMesh;
+    public GameObject partPrefab;
+    public int partLayer = 31;
 
-    public bool vtsAtmosphere;
+    public bool atmosphereEnabled;
+    public Material atmosphereMaterial;
+    public UnityEngine.Mesh atmosphereMesh;
 
-    protected int shaderPropertyMainTex;
-    protected int shaderPropertyMaskTex;
-    protected int shaderPropertyUvMat;
-    protected int shaderPropertyUvClip;
-    protected int shaderPropertyColor;
-    protected int shaderPropertyFlags;
+    private int shaderPropertyMainTex;
+    private int shaderPropertyMaskTex;
+    private int shaderPropertyUvMat;
+    private int shaderPropertyUvClip;
+    private int shaderPropertyColor;
+    private int shaderPropertyFlags;
 
-    protected int shaderPropertyAtmViewInv;
-    protected int shaderPropertyAtmColorLow;
-    protected int shaderPropertyAtmColorHigh;
-    protected int shaderPropertyAtmParams;
-    protected int shaderPropertyAtmCameraPosition;
-    protected int shaderPropertyAtmCorners;
+    private int shaderPropertyAtmViewInv;
+    private int shaderPropertyAtmColorLow;
+    private int shaderPropertyAtmColorHigh;
+    private int shaderPropertyAtmParams;
+    private int shaderPropertyAtmCameraPosition;
+    private int shaderPropertyAtmCorners;
 
-    protected readonly Draws draws;
-    protected Camera cam;
-    protected Transform trans;
-    protected Transform mapTrans;
+    private readonly Draws draws = new Draws();
+    private readonly List<GameObject> parts = new List<GameObject>();
+    private Camera cam;
+    private Transform camTrans;
+    private Transform mapTrans;
 
-    protected CommandBuffer opaque;
-    protected CommandBuffer transparent;
-    protected CommandBuffer geodata;
-    protected CommandBuffer infographics;
-    protected CommandBuffer background;
+    private CommandBuffer backgroundCmds;
+
+    private static readonly Matrix4x4 SwapYZ = new Matrix4x4(
+        new Vector4(1, 0, 0, 0),
+        new Vector4(0, 0, 1, 0),
+        new Vector4(0, 1, 0, 0),
+        new Vector4(0, 0, 0, 1)
+        );
+
+    private static readonly Matrix4x4 InvertZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 }
 
