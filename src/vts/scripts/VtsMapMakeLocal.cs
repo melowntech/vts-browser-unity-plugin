@@ -49,7 +49,7 @@ public class VtsMapMakeLocal : MonoBehaviour
             float m = v.magnitude;
             transform.position = new Vector3(0, -m, 0);
             transform.rotation = Quaternion.FromToRotation(-v, transform.position);
-            if (oneShot)
+            if (singleUse)
                 Destroy(this);
         }
     }
@@ -57,5 +57,5 @@ public class VtsMapMakeLocal : MonoBehaviour
     public double latitude;
     public double longitude;
     public double altitude;
-    public bool oneShot = true;
+    public bool singleUse = true;
 }

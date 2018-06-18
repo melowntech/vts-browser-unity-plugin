@@ -145,35 +145,63 @@ public class VtsCamera : MonoBehaviour
 
     private void UpdateParts()
     {
-        int index = 0;
-        UpdateParts(ref index, draws.opaque);
-        UpdateParts(ref index, draws.transparent);
-        UpdateParts(ref index, draws.geodata);
-        UpdateParts(ref index, draws.infographics);
-        for (int i = index; i < parts.Count; i++)
-            parts[i].SetActive(false);
+        UpdateParts(draws.opaque);
+        //UpdateParts(draws.transparent);
+        //UpdateParts(draws.geodata);
+        //UpdateParts(draws.infographics);
     }
 
-    private void UpdateParts(ref int index, List<DrawTask> tasks)
+    private void UpdateParts(List<DrawTask> allTasks)
     {
         double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(SwapYZ)), Math.Inverse44(draws.camera.view));
-        if (parts.Count < index + tasks.Count)
+
+        Dictionary<VtsMesh, List<DrawTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawTask>>();
+        foreach (DrawTask t in allTasks)
         {
-            int a = index + tasks.Count - parts.Count;
-            for (int i = 0; i < a; i++)
-            {
-                GameObject o = Instantiate(partPrefab);
-                o.layer = partLayer;
-                parts.Add(o);
-            }
+            VtsMesh k = t.mesh as VtsMesh;
+            if (!tasksByMesh.ContainsKey(k))
+                tasksByMesh.Add(k, new List<DrawTask>());
+            tasksByMesh[k].Add(t);
         }
+
+        HashSet<VtsMesh> partsToRemove = new HashSet<VtsMesh>(partsCache.Keys);
+
+        foreach (KeyValuePair<VtsMesh, List<DrawTask>> tbm in tasksByMesh)
+        {
+            if (!partsCache.ContainsKey(tbm.Key))
+                partsCache.Add(tbm.Key, new List<GameObject>(tbm.Value.Count));
+            UpdateParts(tbm.Value, partsCache[tbm.Key], conv);
+            partsToRemove.Remove(tbm.Key);
+        }
+
+        foreach (VtsMesh m in partsToRemove)
+        {
+            foreach (GameObject o in partsCache[m])
+                Destroy(o);
+            partsCache.Remove(m);
+        }
+    }
+
+    private void UpdateParts(List<DrawTask> tasks, List<GameObject> parts, double[] conv)
+    {
+        if (parts.Count == tasks.Count)
+            return;
+        if (parts.Count > 0)
+        {
+            foreach (GameObject p in parts)
+                Destroy(p);
+            parts.Clear();
+        }
+        bool first = true;
         foreach (DrawTask t in tasks)
         {
-            GameObject o = parts[index++];
-            o.SetActive(true);
-            UnityEngine.Mesh msh = (t.mesh as VtsMesh).Get();
+            GameObject o = Instantiate(partPrefab);
+            parts.Add(o);
+            o.layer = partLayer;
+            UnityEngine.Mesh msh = (tasks[0].mesh as VtsMesh).Get();
             o.GetComponent<MeshFilter>().mesh = msh;
-            //o.GetComponent<MeshCollider>().sharedMesh = msh;
+            if (first && generateColliders)
+                o.GetComponent<MeshCollider>().sharedMesh = msh;
             Material mat = o.GetComponent<MeshRenderer>().material;
             UpdateMaterial(mat);
             bool monochromatic = false;
@@ -194,6 +222,7 @@ public class VtsCamera : MonoBehaviour
             // flags: mask, monochromatic, flat shading, uv source
             mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
             VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
+            first = false;
         }
     }
 
@@ -242,9 +271,11 @@ public class VtsCamera : MonoBehaviour
     public GameObject partPrefab;
     public int partLayer = 31;
 
-    public bool atmosphereEnabled;
+    public bool atmosphereEnabled = false;
     public Material atmosphereMaterial;
     public UnityEngine.Mesh atmosphereMesh;
+
+    public bool generateColliders = false;
 
     private int shaderPropertyMainTex;
     private int shaderPropertyMaskTex;
@@ -261,7 +292,8 @@ public class VtsCamera : MonoBehaviour
     private int shaderPropertyAtmCorners;
 
     private readonly Draws draws = new Draws();
-    private readonly List<GameObject> parts = new List<GameObject>();
+    private readonly Dictionary<VtsMesh, List<GameObject>> partsCache = new Dictionary<VtsMesh, List<GameObject>>();
+
     private Camera cam;
     private Transform camTrans;
     private Transform mapTrans;
