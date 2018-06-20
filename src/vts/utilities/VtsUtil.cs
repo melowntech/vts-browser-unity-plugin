@@ -115,18 +115,6 @@ public static class VtsUtil
 
     public static void Matrix2Transform(Transform tr, Matrix4x4 m)
     {
-        /*
-        tr.position = m.GetColumn(3);
-        tr.rotation = Quaternion.LookRotation(
-            m.GetColumn(2),
-            m.GetColumn(1)
-        );
-        tr.localScale = new Vector3(
-            m.GetColumn(0).magnitude,
-            m.GetColumn(1).magnitude,
-            m.GetColumn(2).magnitude
-        );
-        */
         tr.position = m.GetColumn(3);
         float sxs = m.determinant < 0 ? -1 : 1;
         tr.localScale = new Vector3(
@@ -139,4 +127,13 @@ public static class VtsUtil
             m.GetColumn(1) / tr.localScale.y
         );
     }
+    
+    public static readonly Matrix4x4 SwapYZ = new Matrix4x4(
+        new Vector4(1, 0, 0, 0),
+        new Vector4(0, 0, 1, 0),
+        new Vector4(0, 1, 0, 0),
+        new Vector4(0, 0, 0, 1)
+        );
+
+    public static readonly Matrix4x4 InvertZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 }

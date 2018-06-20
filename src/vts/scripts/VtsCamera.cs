@@ -49,7 +49,7 @@ public class VtsCamera : MonoBehaviour
         mapTrans = mapObject.GetComponent<Transform>();
 
         cam = GetComponent<Camera>();
-        cam.cullingMask |= 1 << partLayer;
+        cam.cullingMask |= 1 << renderLayer;
 
         shaderPropertyMainTex = Shader.PropertyToID("_MainTex");
         shaderPropertyMaskTex = Shader.PropertyToID("_MaskTex");
@@ -71,14 +71,14 @@ public class VtsCamera : MonoBehaviour
         cam.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, backgroundCmds);
     }
 
-    private readonly Map.CameraOverrideHandler CamOverrideViewDel;
+    private readonly Map.DoubleArrayHandler CamOverrideViewDel;
     private void CamOverrideView(ref double[] values)
     {
-        double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(SwapYZ));
+        double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
         // view matrix
         if (controlTransformation == VtsDataControl.Vts)
         {
-            VtsUtil.Matrix2Transform(camTrans, VtsUtil.V2U44(Math.Mul44x44(Math.Inverse44(Math.Mul44x44(values, Mu)), VtsUtil.U2V44(InvertZ))));
+            VtsUtil.Matrix2Transform(camTrans, VtsUtil.V2U44(Math.Mul44x44(Math.Inverse44(Math.Mul44x44(values, Mu)), VtsUtil.U2V44(VtsUtil.InvertZ))));
         }
         else
         {
@@ -86,7 +86,7 @@ public class VtsCamera : MonoBehaviour
         }
     }
 
-    private readonly Map.CameraOverrideParamsHandler CamOverrideParametersDel;
+    private readonly Map.CameraParamsHandler CamOverrideParametersDel;
     private void CamOverrideParameters(ref double fov, ref double aspect, ref double near, ref double far)
     {
         // fov
@@ -153,7 +153,7 @@ public class VtsCamera : MonoBehaviour
 
     private void UpdateParts(List<DrawTask> allTasks)
     {
-        double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(SwapYZ)), Math.Inverse44(draws.camera.view));
+        double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
 
         Dictionary<VtsMesh, List<DrawTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawTask>>();
         foreach (DrawTask t in allTasks)
@@ -192,16 +192,13 @@ public class VtsCamera : MonoBehaviour
                 Destroy(p);
             parts.Clear();
         }
-        bool first = true;
         foreach (DrawTask t in tasks)
         {
-            GameObject o = Instantiate(partPrefab);
+            GameObject o = Instantiate(renderPrefab);
             parts.Add(o);
-            o.layer = partLayer;
+            o.layer = renderLayer;
             UnityEngine.Mesh msh = (tasks[0].mesh as VtsMesh).Get();
             o.GetComponent<MeshFilter>().mesh = msh;
-            if (first && generateColliders)
-                o.GetComponent<MeshCollider>().sharedMesh = msh;
             Material mat = o.GetComponent<MeshRenderer>().material;
             UpdateMaterial(mat);
             bool monochromatic = false;
@@ -222,7 +219,6 @@ public class VtsCamera : MonoBehaviour
             // flags: mask, monochromatic, flat shading, uv source
             mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
             VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
-            first = false;
         }
     }
 
@@ -268,14 +264,12 @@ public class VtsCamera : MonoBehaviour
     public VtsDataControl controlNearFar;
     public VtsDataControl controlFov;
 
-    public GameObject partPrefab;
-    public int partLayer = 31;
+    public GameObject renderPrefab;
+    public int renderLayer = 31;
 
     public bool atmosphereEnabled = false;
     public Material atmosphereMaterial;
     public UnityEngine.Mesh atmosphereMesh;
-
-    public bool generateColliders = false;
 
     private int shaderPropertyMainTex;
     private int shaderPropertyMaskTex;
@@ -299,14 +293,5 @@ public class VtsCamera : MonoBehaviour
     private Transform mapTrans;
 
     private CommandBuffer backgroundCmds;
-
-    private static readonly Matrix4x4 SwapYZ = new Matrix4x4(
-        new Vector4(1, 0, 0, 0),
-        new Vector4(0, 0, 1, 0),
-        new Vector4(0, 1, 0, 0),
-        new Vector4(0, 0, 0, 1)
-        );
-
-    private static readonly Matrix4x4 InvertZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 }
 
