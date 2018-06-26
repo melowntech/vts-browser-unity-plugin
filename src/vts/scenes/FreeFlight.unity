@@ -148,8 +148,9 @@ MonoBehaviour:
   controlTransformation: 0
   controlNearFar: 1
   controlFov: 0
-  partPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca, type: 2}
-  partLayer: 31
+  renderPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca,
+    type: 2}
+  renderLayer: 31
   atmosphereEnabled: 1
   atmosphereMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
   atmosphereMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
@@ -290,7 +291,7 @@ MonoBehaviour:
   latitude: 50.07533045
   longitude: 14.43625463
   altitude: 350
-  oneShot: 1
+  singleUse: 1
 --- !u!1001 &1931042116
 Prefab:
   m_ObjectHideFlags: 0

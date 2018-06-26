@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 using vts;
 
 public class VtsColliderProbe : MonoBehaviour
@@ -47,7 +46,7 @@ public class VtsColliderProbe : MonoBehaviour
     private readonly Map.DoubleArrayHandler CollOverrideCenterDel;
     private void CollOverrideCenter(ref double[] values)
     {
-
+        // todo
     }
 
     private readonly Map.DoubleHandler CollOverrideDistanceDel;

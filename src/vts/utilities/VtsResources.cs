@@ -76,6 +76,35 @@ public class VtsTexture : IDisposable
         throw new VtsException(-19, "Unsupported texture format");
     }
 
+    private static UnityEngine.FilterMode ExtractFilterMode(vts.FilterMode mode)
+    {
+        switch (mode)
+        {
+            case vts.FilterMode.Nearest:
+                return UnityEngine.FilterMode.Point;
+            case vts.FilterMode.Linear:
+                return UnityEngine.FilterMode.Bilinear;
+            default:
+                return UnityEngine.FilterMode.Trilinear;
+        }
+    }
+
+    private static TextureWrapMode ExtractWrapMode(vts.WrapMode mode)
+    {
+        switch (mode)
+        {
+            case vts.WrapMode.Repeat:
+                return TextureWrapMode.Repeat;
+            case vts.WrapMode.MirroredRepeat:
+                return TextureWrapMode.Mirror;
+            case vts.WrapMode.MirrorClampToEdge:
+                return TextureWrapMode.MirrorOnce;
+            case vts.WrapMode.ClampToEdge:
+                return TextureWrapMode.Clamp;
+        }
+        throw new VtsException(-19, "Unsupported texture wrap mode");
+    }
+
     public VtsTexture(vts.Texture t)
     {
         vt = t;
@@ -89,7 +118,8 @@ public class VtsTexture : IDisposable
             Debug.Assert(vt != null);
             ut = new Texture2D((int)vt.width, (int)vt.height, ExtractFormat(vt), false);
             ut.LoadRawTextureData(vt.data);
-            ut.filterMode = FilterMode.Bilinear;
+            ut.filterMode = ExtractFilterMode(vt.filterMode);
+            ut.wrapMode = ExtractWrapMode(vt.wrapMode);
             ut.anisoLevel = 100; // just do it!
             ut.Apply(false, true);
             vt = null;

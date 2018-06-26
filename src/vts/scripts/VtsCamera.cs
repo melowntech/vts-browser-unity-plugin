@@ -59,9 +59,10 @@ public class VtsCamera : MonoBehaviour
         shaderPropertyFlags = Shader.PropertyToID("_Flags");
 
         shaderPropertyAtmViewInv = Shader.PropertyToID("vtsUniAtmViewInv");
-        shaderPropertyAtmColorLow = Shader.PropertyToID("vtsUniAtmColorLow");
-        shaderPropertyAtmColorHigh = Shader.PropertyToID("vtsUniAtmColorHigh");
-        shaderPropertyAtmParams = Shader.PropertyToID("vtsUniAtmParams");
+        shaderPropertyAtmColorHorizon = Shader.PropertyToID("vtsUniAtmColorHorizon");
+        shaderPropertyAtmColorZenith = Shader.PropertyToID("vtsUniAtmColorZenith");
+        shaderPropertyAtmSizes = Shader.PropertyToID("vtsUniAtmSizes");
+        shaderPropertyAtmCoefficients = Shader.PropertyToID("vtsUniAtmCoefs");
         shaderPropertyAtmCameraPosition = Shader.PropertyToID("vtsUniAtmCameraPosition");
         shaderPropertyAtmCorners = Shader.PropertyToID("uniCorners");
 
@@ -119,27 +120,35 @@ public class VtsCamera : MonoBehaviour
         draws.Load(map);
         UpdateParts();
         UpdateBackground();
-        if (atmosphereEnabled)
-            Shader.EnableKeyword("VTS_ATMOSPHERE");
-        else
-            Shader.DisableKeyword("VTS_ATMOSPHERE");
     }
 
     private void UpdateMaterial(Material mat)
     {
-        if (atmosphereEnabled)
+        VtsTexture tex = draws.celestial.atmosphere.densityTexture as VtsTexture;
+        if (atmosphereEnabled && tex != null)
         {
             var cel = draws.celestial;
             var atm = cel.atmosphere;
-            mat.SetVector(shaderPropertyAtmParams, new Vector4((float)(atm.thickness / cel.majorRadius), (float)atm.horizontalExponent, (float)(cel.minorRadius / cel.majorRadius), (float)cel.majorRadius));
+            mat.SetVector(shaderPropertyAtmSizes, new Vector4(
+                (float)(atm.boundaryThickness / cel.majorRadius),
+                (float)(cel.majorRadius / cel.minorRadius),
+                (float)(1.0 / cel.majorRadius),
+                0));
+            mat.SetVector(shaderPropertyAtmCoefficients, new Vector4(
+                (float)atm.horizontalExponent,
+                (float)atm.colorGradientExponent,
+                0,
+                0));
             mat.SetVector(shaderPropertyAtmCameraPosition, VtsUtil.V2U3(draws.camera.eye) / (float)cel.majorRadius);
             mat.SetMatrix(shaderPropertyAtmViewInv, VtsUtil.V2U44(Math.Inverse44(draws.camera.view)));
-            mat.SetVector(shaderPropertyAtmColorLow, VtsUtil.V2U4(atm.colorLow));
-            mat.SetVector(shaderPropertyAtmColorHigh, VtsUtil.V2U4(atm.colorHigh));
+            mat.SetVector(shaderPropertyAtmColorHorizon, VtsUtil.V2U4(atm.colorHorizon));
+            mat.SetVector(shaderPropertyAtmColorZenith, VtsUtil.V2U4(atm.colorZenith));
+            mat.SetTexture("vtsTexAtmDensity", tex.Get());
+            mat.EnableKeyword("VTS_ATMOSPHERE");
         }
         else
         {
-            mat.SetVector(shaderPropertyAtmParams, new Vector4(0,0,0,0));
+            mat.DisableKeyword("VTS_ATMOSPHERE");
         }
     }
 
@@ -279,9 +288,10 @@ public class VtsCamera : MonoBehaviour
     private int shaderPropertyFlags;
 
     private int shaderPropertyAtmViewInv;
-    private int shaderPropertyAtmColorLow;
-    private int shaderPropertyAtmColorHigh;
-    private int shaderPropertyAtmParams;
+    private int shaderPropertyAtmColorHorizon;
+    private int shaderPropertyAtmColorZenith;
+    private int shaderPropertyAtmSizes;
+    private int shaderPropertyAtmCoefficients;
     private int shaderPropertyAtmCameraPosition;
     private int shaderPropertyAtmCorners;
 

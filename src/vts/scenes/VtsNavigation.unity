@@ -207,8 +207,9 @@ MonoBehaviour:
   controlTransformation: 1
   controlNearFar: 1
   controlFov: 1
-  partPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca, type: 2}
-  partLayer: 31
+  renderPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca,
+    type: 2}
+  renderLayer: 31
   atmosphereEnabled: 1
   atmosphereMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
   atmosphereMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
