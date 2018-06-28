@@ -23,8 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
-using System.Collections.Generic;
+ 
 using UnityEngine;
 using UnityEngine.Rendering;
 using vts;
@@ -35,21 +34,19 @@ public enum VtsDataControl
     Vts,
 }
 
-public class VtsCamera : MonoBehaviour
+public abstract class VtsCameraBase : MonoBehaviour
 {
-    public VtsCamera()
+    public VtsCameraBase()
     {
         CamOverrideViewDel = CamOverrideView;
         CamOverrideParametersDel = CamOverrideParameters;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
+        cam = GetComponent<Camera>();
         camTrans = GetComponent<Transform>();
         mapTrans = mapObject.GetComponent<Transform>();
-
-        cam = GetComponent<Camera>();
-        cam.cullingMask |= 1 << renderLayer;
 
         shaderPropertyMainTex = Shader.PropertyToID("_MainTex");
         shaderPropertyMaskTex = Shader.PropertyToID("_MaskTex");
@@ -66,9 +63,9 @@ public class VtsCamera : MonoBehaviour
         shaderPropertyAtmCameraPosition = Shader.PropertyToID("vtsUniAtmCameraPosition");
         shaderPropertyAtmCorners = Shader.PropertyToID("uniCorners");
 
-        atmosphereMaterial = Instantiate(atmosphereMaterial);
+        atmosphereBackgroundMaterial = Instantiate(atmosphereBackgroundMaterial);
         backgroundCmds = new CommandBuffer();
-        backgroundCmds.name = "Vts Atmosphere";
+        backgroundCmds.name = "Vts Atmosphere Background";
         cam.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, backgroundCmds);
     }
 
@@ -118,11 +115,13 @@ public class VtsCamera : MonoBehaviour
         map.EventCameraView -= CamOverrideViewDel;
         map.EventCameraFovAspectNearFar -= CamOverrideParametersDel;
         draws.Load(map);
-        UpdateParts();
+        CameraUpdate();
         UpdateBackground();
     }
 
-    private void UpdateMaterial(Material mat)
+    protected abstract void CameraUpdate();
+
+    protected void UpdateMaterial(Material mat)
     {
         VtsTexture tex = draws.celestial.atmosphere.densityTexture as VtsTexture;
         if (atmosphereEnabled && tex != null)
@@ -152,91 +151,12 @@ public class VtsCamera : MonoBehaviour
         }
     }
 
-    private void UpdateParts()
-    {
-        UpdateParts(draws.opaque);
-        //UpdateParts(draws.transparent);
-        //UpdateParts(draws.geodata);
-        //UpdateParts(draws.infographics);
-    }
-
-    private void UpdateParts(List<DrawTask> allTasks)
-    {
-        double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
-
-        Dictionary<VtsMesh, List<DrawTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawTask>>();
-        foreach (DrawTask t in allTasks)
-        {
-            VtsMesh k = t.mesh as VtsMesh;
-            if (!tasksByMesh.ContainsKey(k))
-                tasksByMesh.Add(k, new List<DrawTask>());
-            tasksByMesh[k].Add(t);
-        }
-
-        HashSet<VtsMesh> partsToRemove = new HashSet<VtsMesh>(partsCache.Keys);
-
-        foreach (KeyValuePair<VtsMesh, List<DrawTask>> tbm in tasksByMesh)
-        {
-            if (!partsCache.ContainsKey(tbm.Key))
-                partsCache.Add(tbm.Key, new List<GameObject>(tbm.Value.Count));
-            UpdateParts(tbm.Value, partsCache[tbm.Key], conv);
-            partsToRemove.Remove(tbm.Key);
-        }
-
-        foreach (VtsMesh m in partsToRemove)
-        {
-            foreach (GameObject o in partsCache[m])
-                Destroy(o);
-            partsCache.Remove(m);
-        }
-    }
-
-    private void UpdateParts(List<DrawTask> tasks, List<GameObject> parts, double[] conv)
-    {
-        if (parts.Count == tasks.Count)
-            return;
-        if (parts.Count > 0)
-        {
-            foreach (GameObject p in parts)
-                Destroy(p);
-            parts.Clear();
-        }
-        foreach (DrawTask t in tasks)
-        {
-            GameObject o = Instantiate(renderPrefab);
-            parts.Add(o);
-            o.layer = renderLayer;
-            UnityEngine.Mesh msh = (tasks[0].mesh as VtsMesh).Get();
-            o.GetComponent<MeshFilter>().mesh = msh;
-            Material mat = o.GetComponent<MeshRenderer>().material;
-            UpdateMaterial(mat);
-            bool monochromatic = false;
-            if (t.texColor != null)
-            {
-                var tt = t.texColor as VtsTexture;
-                mat.SetTexture(shaderPropertyMainTex, tt.Get());
-                monochromatic = tt.monochromatic;
-            }
-            if (t.texMask != null)
-            {
-                var tt = t.texMask as VtsTexture;
-                mat.SetTexture(shaderPropertyMaskTex, tt.Get());
-            }
-            mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
-            mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
-            mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
-            // flags: mask, monochromatic, flat shading, uv source
-            mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
-            VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
-        }
-    }
-
     private void UpdateBackground()
     {
         backgroundCmds.Clear();
         if (atmosphereEnabled)
         {
-            UpdateMaterial(atmosphereMaterial);
+            UpdateMaterial(atmosphereBackgroundMaterial);
             {
                 double mr = draws.celestial.majorRadius;
                 double[] camPos = draws.camera.eye;
@@ -261,9 +181,9 @@ public class VtsCamera : MonoBehaviour
                     corner = Math.Normalize3(corner);
                     c[i] = new Vector4((float)corner[0], (float)corner[1], (float)corner[2], 0.0f);
                 }
-                atmosphereMaterial.SetVectorArray(shaderPropertyAtmCorners, c);
+                atmosphereBackgroundMaterial.SetVectorArray(shaderPropertyAtmCorners, c);
             }
-            backgroundCmds.DrawMesh(atmosphereMesh, Matrix4x4.identity, atmosphereMaterial, 0, -1);
+            backgroundCmds.DrawMesh(atmosphereBackgroundMesh, Matrix4x4.identity, atmosphereBackgroundMaterial, 0, -1);
         }
     }
 
@@ -273,34 +193,30 @@ public class VtsCamera : MonoBehaviour
     public VtsDataControl controlNearFar;
     public VtsDataControl controlFov;
 
-    public GameObject renderPrefab;
-    public int renderLayer = 31;
-
     public bool atmosphereEnabled = false;
-    public Material atmosphereMaterial;
-    public UnityEngine.Mesh atmosphereMesh;
+    public Material atmosphereBackgroundMaterial;
+    public UnityEngine.Mesh atmosphereBackgroundMesh;
 
-    private int shaderPropertyMainTex;
-    private int shaderPropertyMaskTex;
-    private int shaderPropertyUvMat;
-    private int shaderPropertyUvClip;
-    private int shaderPropertyColor;
-    private int shaderPropertyFlags;
+    protected int shaderPropertyMainTex;
+    protected int shaderPropertyMaskTex;
+    protected int shaderPropertyUvMat;
+    protected int shaderPropertyUvClip;
+    protected int shaderPropertyColor;
+    protected int shaderPropertyFlags;
 
-    private int shaderPropertyAtmViewInv;
-    private int shaderPropertyAtmColorHorizon;
-    private int shaderPropertyAtmColorZenith;
-    private int shaderPropertyAtmSizes;
-    private int shaderPropertyAtmCoefficients;
-    private int shaderPropertyAtmCameraPosition;
-    private int shaderPropertyAtmCorners;
+    protected int shaderPropertyAtmViewInv;
+    protected int shaderPropertyAtmColorHorizon;
+    protected int shaderPropertyAtmColorZenith;
+    protected int shaderPropertyAtmSizes;
+    protected int shaderPropertyAtmCoefficients;
+    protected int shaderPropertyAtmCameraPosition;
+    protected int shaderPropertyAtmCorners;
 
-    private readonly Draws draws = new Draws();
-    private readonly Dictionary<VtsMesh, List<GameObject>> partsCache = new Dictionary<VtsMesh, List<GameObject>>();
+    protected readonly Draws draws = new Draws();
 
-    private Camera cam;
-    private Transform camTrans;
-    private Transform mapTrans;
+    protected Camera cam;
+    protected Transform camTrans;
+    protected Transform mapTrans;
 
     private CommandBuffer backgroundCmds;
 }

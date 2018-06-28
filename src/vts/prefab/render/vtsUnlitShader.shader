@@ -12,6 +12,7 @@ Shader "Vts/UnlitShader"
 		Pass
 		{
 			Blend SrcAlpha OneMinusSrcAlpha
+			Cull Off
 
 			CGPROGRAM
 			#pragma vertex vert

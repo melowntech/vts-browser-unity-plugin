@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: c110c4c929ab5e946ac72d92442e43e0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - mapObject: {instanceID: 0}
+  - atmosphereBackgroundMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2,
+      type: 2}
+  - atmosphereBackgroundMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f,
+      type: 3}
+  - renderMaterial: {fileID: 2100000, guid: a7bf1b969e642a64583e152ca2477837, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

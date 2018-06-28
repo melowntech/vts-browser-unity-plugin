@@ -144,7 +144,7 @@ MonoBehaviour:
   ConfigUrl: https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json
   AuthUrl: 
   CreateConfig: 
-  RunConfig: 
+  RunConfig: '{ "targetResourcesMemoryKB":1000000, "traverseModeSurfaces":2 }'
 --- !u!4 &548558749
 Transform:
   m_ObjectHideFlags: 0
@@ -154,8 +154,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1519803912}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -184,7 +183,7 @@ GameObject:
   - component: {fileID: 1245295813}
   - component: {fileID: 1245295812}
   - component: {fileID: 1245295811}
-  - component: {fileID: 1245295810}
+  - component: {fileID: 1245295809}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -192,7 +191,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1245295810
+--- !u!114 &1245295809
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -200,19 +199,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1245295808}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 460589bb9435bb04cb693f3d6136a0ed, type: 3}
+  m_Script: {fileID: 11500000, guid: c110c4c929ab5e946ac72d92442e43e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mapObject: {fileID: 548558747}
   controlTransformation: 1
   controlNearFar: 1
   controlFov: 1
-  renderPrefab: {fileID: 1447127621452838, guid: 3b66c7ce3defcda4f834b5877ba9a0ca,
-    type: 2}
-  renderLayer: 31
   atmosphereEnabled: 1
-  atmosphereMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2, type: 2}
-  atmosphereMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f, type: 3}
+  atmosphereBackgroundMaterial: {fileID: 2100000, guid: 1633ce28eccbced49ba90e9edba804f2,
+    type: 2}
+  atmosphereBackgroundMesh: {fileID: 4300002, guid: 7f45c634f1c1b3d4db3ac930954fcf8f,
+    type: 3}
+  renderMaterial: {fileID: 2100000, guid: a7bf1b969e642a64583e152ca2477837, type: 2}
 --- !u!81 &1245295811
 AudioListener:
   m_ObjectHideFlags: 0
@@ -276,50 +275,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1519803911
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 548558749}
-    m_Modifications:
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 4d0c6647390ae354386fcfc80040635e, type: 2}
-  m_IsPrefabParent: 0
---- !u!4 &1519803912 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4117899682124350, guid: 4d0c6647390ae354386fcfc80040635e,
-    type: 2}
-  m_PrefabInternal: {fileID: 1519803911}

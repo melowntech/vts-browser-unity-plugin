@@ -39,14 +39,24 @@ public class VtsColliderProbe : MonoBehaviour
 
     private void Start()
     {
-        camTrans = GetComponent<Transform>();
+        probTrans = GetComponent<Transform>();
         mapTrans = mapObject.GetComponent<Transform>();
     }
 
     private readonly Map.DoubleArrayHandler CollOverrideCenterDel;
     private void CollOverrideCenter(ref double[] values)
     {
-        // todo
+        values = VtsUtil.U2V3(probTrans.position);
+        { // convert from unity world to (local) vts physical
+            double[] point4 = new double[4] { values[0], values[1], values[2], 1 };
+            point4 = Math.Mul44x4(VtsUtil.U2V44(mapTrans.worldToLocalMatrix), point4);
+            values[0] = point4[0]; values[1] = point4[1]; values[2] = point4[2];
+        }
+        { // swap YZ
+            double tmp = values[1];
+            values[1] = values[2];
+            values[2] = tmp;
+        }
     }
 
     private readonly Map.DoubleHandler CollOverrideDistanceDel;
@@ -113,12 +123,12 @@ public class VtsColliderProbe : MonoBehaviour
     public GameObject colliderPrefab;
 
     public double collidersDistance = 200;
-    public uint collidersLod = 19;
+    public uint collidersLod = 18;
 
     private readonly Draws draws = new Draws();
     private readonly Dictionary<VtsMesh, GameObject> partsCache = new Dictionary<VtsMesh, GameObject>();
 
-    private Transform camTrans;
+    private Transform probTrans;
     private Transform mapTrans;
 }
 

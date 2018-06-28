@@ -13,7 +13,7 @@ float3 vtsUniAtmCameraPosition; // world position of camera (divided by major ax
 
 float vtsAtmDecodeFloat(float4 rgba)
 {
-	return dot(rgba, float4(1.0, 1.0 / 256.0, 1.0 / (256.0*256.0), 1.0 / (256.0*256.0*256.0)));
+	return dot(rgba, float4(1.0, 1.0 / 256.0, 1.0 / (256.0*256.0), 0.0));
 }
 
 float4 vtsAtmTexelFetch(int2 iuv, int2 off)
@@ -25,9 +25,8 @@ float vtsAtmSampleDensity(float2 uv)
 {
 	// since some color channels of the density texture are not continuous
 	//   it is important to first decode the float from rgba and only after
-	//   that to filter the texture
+	//   that to filter the values
 	int2 res = vtsTexAtmDensity_TexelSize.zw;
-	uv.y = 1.0 - uv.y;
 	float2 uvp = uv * float2(res - 1);
 	int2 iuv = int2(uvp); // upper-left texel fetch coordinates
 	float4 s;
