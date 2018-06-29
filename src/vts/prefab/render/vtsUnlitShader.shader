@@ -12,6 +12,7 @@ Shader "Vts/UnlitShader"
 		Pass
 		{
 			Blend SrcAlpha OneMinusSrcAlpha
+			Cull Off
 
 			CGPROGRAM
 			#pragma vertex vert
@@ -20,7 +21,7 @@ Shader "Vts/UnlitShader"
 			#include "UnityCG.cginc"
 
 			#pragma multi_compile __ VTS_ATMOSPHERE
-			#include "atmosphere/VtsAtmShader.cginc"
+			#include "../../atmosphere/vtsAtmShader.cginc"
 
 			struct vIn
 			{

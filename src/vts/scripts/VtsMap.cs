@@ -45,13 +45,6 @@ public class VtsMap : MonoBehaviour
             map.SetOptions(RunConfig);
     }
 
-    void Update()
-    {
-        Util.Log(LogLevel.info2, "Unity update frame index: " + frameIndex++);
-        Debug.Assert(map != null);
-        map.RenderTickPrepare(Time.deltaTime);
-    }
-
     void OnDisable()
     {
         Debug.Assert(map != null);
@@ -59,6 +52,13 @@ public class VtsMap : MonoBehaviour
         dataThread.Join();
         map.Dispose();
         map = null;
+    }
+
+    void Update()
+    {
+        Util.Log(LogLevel.debug, "Unity update frame index: " + frameIndex++);
+        Debug.Assert(map != null);
+        map.RenderTickPrepare(Time.deltaTime);
     }
 
     void DataEntry()
@@ -74,11 +74,16 @@ public class VtsMap : MonoBehaviour
             point4 = Math.Mul44x4(VtsUtil.U2V44(transform.worldToLocalMatrix), point4);
             point[0] = point4[0]; point[1] = point4[1]; point[2] = point4[2];
         }
-        VtsUtil.UnityToVtsPoint(ref point);
+        { // swap YZ
+            double tmp = point[1];
+            point[1] = point[2];
+            point[2] = tmp;
+        }
         point = map.Convert(point, Srs.Physical, Srs.Navigation);
         return point;
     }
 
+    /*
     public double[] VtsNavigationToUnity(double[] point)
     {
         Util.CheckArray(point, 3);
@@ -91,14 +96,15 @@ public class VtsMap : MonoBehaviour
         }
         return point;
     }
+    */
 
     private Thread dataThread;
     private uint frameIndex;
 
-    [SerializeField] string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
-    [SerializeField] string AuthUrl = "";
-    [SerializeField] string CreateConfig;
-    [SerializeField] string RunConfig;
+    [SerializeField] private string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
+    [SerializeField] private string AuthUrl = "";
+    [SerializeField] private string CreateConfig;
+    [SerializeField] private string RunConfig = "{ \"targetResourcesMemoryKB\":1000000, \"traverseModeSurfaces\":2 }";
 
     public Map map;
 }

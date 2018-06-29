@@ -76,6 +76,35 @@ public class VtsTexture : IDisposable
         throw new VtsException(-19, "Unsupported texture format");
     }
 
+    private static UnityEngine.FilterMode ExtractFilterMode(vts.FilterMode mode)
+    {
+        switch (mode)
+        {
+            case vts.FilterMode.Nearest:
+                return UnityEngine.FilterMode.Point;
+            case vts.FilterMode.Linear:
+                return UnityEngine.FilterMode.Bilinear;
+            default:
+                return UnityEngine.FilterMode.Trilinear;
+        }
+    }
+
+    private static TextureWrapMode ExtractWrapMode(vts.WrapMode mode)
+    {
+        switch (mode)
+        {
+            case vts.WrapMode.Repeat:
+                return TextureWrapMode.Repeat;
+            case vts.WrapMode.MirroredRepeat:
+                return TextureWrapMode.Mirror;
+            case vts.WrapMode.MirrorClampToEdge:
+                return TextureWrapMode.MirrorOnce;
+            case vts.WrapMode.ClampToEdge:
+                return TextureWrapMode.Clamp;
+        }
+        throw new VtsException(-19, "Unsupported texture wrap mode");
+    }
+
     public VtsTexture(vts.Texture t)
     {
         vt = t;
@@ -89,7 +118,8 @@ public class VtsTexture : IDisposable
             Debug.Assert(vt != null);
             ut = new Texture2D((int)vt.width, (int)vt.height, ExtractFormat(vt), false);
             ut.LoadRawTextureData(vt.data);
-            ut.filterMode = FilterMode.Bilinear;
+            ut.filterMode = ExtractFilterMode(vt.filterMode);
+            ut.wrapMode = ExtractWrapMode(vt.wrapMode);
             ut.anisoLevel = 100; // just do it!
             ut.Apply(false, true);
             vt = null;
@@ -172,16 +202,9 @@ public class VtsMesh : IDisposable
     private void LoadTrianglesIndices(vts.Mesh m)
     {
         topology = MeshTopology.Triangles;
-        // triangle winding is reversed due to different handedness of unity coordinate system
         if (m.indices != null)
         {
-            for (int i = 0; i < m.indicesCount; i += 3)
-            {
-                ushort tmp = m.indices[i + 1];
-                m.indices[i + 2] = m.indices[i + 1];
-                m.indices[i + 1] = tmp;
-            }
-            indices = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+            indices = Array.ConvertAll(m.indices, Convert.ToInt32);
         }
         else
         {
@@ -189,8 +212,8 @@ public class VtsMesh : IDisposable
             for (int i = 0; i < m.verticesCount; i += 3)
             {
                 indices[i + 0] = i + 0;
-                indices[i + 1] = i + 2;
-                indices[i + 2] = i + 1;
+                indices[i + 1] = i + 1;
+                indices[i + 2] = i + 2;
             }
         }
     }
@@ -200,7 +223,7 @@ public class VtsMesh : IDisposable
         topology = MeshTopology.Lines;
         if (m.indices != null)
         {
-            indices = System.Array.ConvertAll(m.indices, System.Convert.ToInt32);
+            indices = Array.ConvertAll(m.indices, Convert.ToInt32);
         }
         else
         {
@@ -243,8 +266,8 @@ public class VtsMesh : IDisposable
             um.uv2 = uv1;
             um.SetIndices(indices, topology, 0);
             um.RecalculateBounds();
-            //um.RecalculateNormals();
-            um.UploadMeshData(true);
+            um.RecalculateNormals();
+            um.UploadMeshData(false);
             vertices = null;
             uv0 = uv1 = null;
             indices = null;

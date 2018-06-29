@@ -1,11 +1,12 @@
 fileFormatVersion: 2
-guid: 460589bb9435bb04cb693f3d6136a0ed
+guid: b05765d548fe43443b51c3e1be13932f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
   - mapObject: {instanceID: 0}
-  - material: {fileID: 2100000, guid: a7bf1b969e642a64583e152ca2477837, type: 2}
+  - colliderPrefab: {fileID: 1447127621452838, guid: a9290c0103f88da4ab3ce2ed730b16d1,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
