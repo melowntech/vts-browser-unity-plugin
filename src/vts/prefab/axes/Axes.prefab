@@ -37,7 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4117899682124350}
   m_Layer: 0
-  m_Name: axes
+  m_Name: Axes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
