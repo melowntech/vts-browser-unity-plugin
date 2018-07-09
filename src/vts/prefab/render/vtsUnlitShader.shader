@@ -1,9 +1,5 @@
 Shader "Vts/UnlitShader"
 {
-	Properties
-	{
-		vtsTexAtmDensity("Vts Atmosphere Density Texture", 2D) = "" {}
-	}
 	SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
@@ -67,15 +63,6 @@ Shader "Vts/UnlitShader"
 
 				// texture color
 				o.color = tex2D(_MainTex, i.uvTex);
-				if (_Flags.y > 0)
-					o.color = o.color.rrra; // monochromatic texture
-
-				// uv clipping
-				if (   i.uvClip.x < _UvClip.x
-					|| i.uvClip.y < _UvClip.y
-					|| i.uvClip.x > _UvClip.z
-					|| i.uvClip.y > _UvClip.w)
-					discard;
 
 				// mask
 				if (_Flags.x > 0)
@@ -83,6 +70,18 @@ Shader "Vts/UnlitShader"
 					if (tex2D(_MaskTex, i.uvTex).r < 0.5)
 						discard;
 				}
+
+				// uv clipping
+				// uv clipping must go after all texture accesses to allow for computation of derivatives in uniform control flow
+				if (   i.uvClip.x < _UvClip.x
+					|| i.uvClip.y < _UvClip.y
+					|| i.uvClip.x > _UvClip.z
+					|| i.uvClip.y > _UvClip.w)
+					discard;
+
+				// monochromatic texture
+				if (_Flags.y > 0)
+					o.color = o.color.rrra;
 
 				// uniform tint
 				o.color *= _Color;
