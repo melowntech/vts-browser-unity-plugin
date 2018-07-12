@@ -37,7 +37,7 @@ public class VtsMapMakeLocal : MonoBehaviour
         p[2] = tmp;
     }
 
-    void Update ()
+    void Update()
     {
         Map map = GetComponent<VtsMap>().map;
         if (map.GetMapConfigAvailable())
@@ -45,7 +45,7 @@ public class VtsMapMakeLocal : MonoBehaviour
             double[] p = new double[3] { longitude, latitude, altitude };
             p = map.Convert(p, Srs.Navigation, Srs.Physical);
             UnityToVtsPoint(ref p);
-            Vector3 v = VtsUtil.V2U3(p);
+            Vector3 v = Vector3.Scale(VtsUtil.V2U3(p), transform.localScale);
             float m = v.magnitude;
             transform.position = new Vector3(0, -m, 0);
             transform.rotation = Quaternion.FromToRotation(-v, transform.position);
