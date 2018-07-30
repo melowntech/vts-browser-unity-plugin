@@ -90,7 +90,7 @@ public class VtsColliderProbe : MonoBehaviour
         double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
 
         Dictionary<VtsMesh, DrawTask> tasksByMesh = new Dictionary<VtsMesh, DrawTask>();
-        foreach (DrawTask t in draws.opaque)
+        foreach (DrawTask t in draws.colliders)
         {
             VtsMesh k = t.mesh as VtsMesh;
             if (!tasksByMesh.ContainsKey(k))
