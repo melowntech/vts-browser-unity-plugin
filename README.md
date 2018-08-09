@@ -15,6 +15,13 @@ Jet flight, made with Unity Standard Vehicles Assets.
 ![car](screenshots/car.png)
 Driving a car in a city, made with Unity Standard Vehicles Assets.
 
+## Features
+
+- The plugin handles data streaming and resource management
+- Rendering is done in Unity (with custom shaders)
+  - This allows full customization of the rendering process
+- Support for collisions
+
 ## Documentation
 
 The Unity Plugin documentation is at the
@@ -38,7 +45,7 @@ The simplest way is to create a few symbolic/directory links on the filesystem f
  - \<Unity Project\>/Assets/vts -\> \<This Repository\>/src/vts
  - \<Unity Project\>/Assets/Plugins/vts -\> \<This Repository\>/build/bin/relwithdebinfo
 
-Unity 5 is required.
+Unity 5 or newer is required.
 
 ## Bug Reports
 
