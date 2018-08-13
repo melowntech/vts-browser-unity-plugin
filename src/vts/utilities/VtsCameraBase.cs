@@ -67,6 +67,7 @@ public abstract class VtsCameraBase : MonoBehaviour
         backgroundCmds = new CommandBuffer();
         backgroundCmds.name = "Vts Atmosphere Background";
         cam.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, backgroundCmds);
+        cam.AddCommandBuffer(CameraEvent.BeforeLighting, backgroundCmds);
     }
 
     private readonly Map.DoubleArrayHandler CamOverrideViewDel;

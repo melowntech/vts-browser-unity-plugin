@@ -42,6 +42,9 @@ Shader "Vts/AtmBackgroundShader"
 
 			v2f vert(vIn i)
 			{
+				#if !UNITY_UV_STARTS_AT_TOP
+					i.uv.y = 1 - i.uv.y;
+				#endif
 				v2f o;
 				o.vertex = float4(i.vertex.xy, 0.0, 1.0);
 				o.fragDir = lerp(
