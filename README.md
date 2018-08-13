@@ -47,7 +47,7 @@ The simplest way is to create a few symbolic/directory links on the filesystem f
 ### On Windows
 
  - \<Unity Project\>/Assets/vts -\> \<This Repository\>/src/vts
- - \<Unity Project\>/Assets/Plugins/vts -\> \<This Repository\>/build/bin/relwithdebinfo
+ - \<Unity Project\>/Assets/Plugins/vts-browser.dll -\> \<This Repository\>/build/bin/relwithdebinfo/vts-browser.dll
 
 ### On Mac
 
