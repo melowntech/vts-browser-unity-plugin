@@ -1,4 +1,3 @@
-
 #if VTS_ATMOSPHERE
 
 sampler2D vtsTexAtmDensity;
