@@ -125,7 +125,7 @@ public abstract class VtsCameraBase : MonoBehaviour
     protected void UpdateMaterial(Material mat)
     {
         VtsTexture tex = draws.celestial.atmosphere.densityTexture as VtsTexture;
-        if (atmosphereEnabled && tex != null)
+        if (atmosphere && tex != null)
         {
             var cel = draws.celestial;
             var atm = cel.atmosphere;
@@ -155,7 +155,7 @@ public abstract class VtsCameraBase : MonoBehaviour
     private void UpdateBackground()
     {
         backgroundCmds.Clear();
-        if (atmosphereEnabled)
+        if (atmosphere)
         {
             UpdateMaterial(backgroundMaterial);
             {
@@ -194,7 +194,8 @@ public abstract class VtsCameraBase : MonoBehaviour
     public VtsDataControl controlNearFar;
     public VtsDataControl controlFov;
 
-    public bool atmosphereEnabled = false;
+    public bool atmosphere = false;
+
     public Material backgroundMaterial;
     public UnityEngine.Mesh backgroundMesh;
 

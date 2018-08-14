@@ -370,7 +370,7 @@ MonoBehaviour:
   controlTransformation: 1
   controlNearFar: 1
   controlFov: 1
-  atmosphereEnabled: 1
+  atmosphere: 1
   backgroundMaterial: {fileID: 2100000, guid: 3e83f2df2a270e94ca3c325a39ebd735, type: 2}
   backgroundMesh: {fileID: 4300000, guid: b0f11f207ae451f49bddfbaf9690e9cb, type: 3}
   renderMaterial: {fileID: 2100000, guid: d959ee906a1141742a0a0e846fe01868, type: 2}

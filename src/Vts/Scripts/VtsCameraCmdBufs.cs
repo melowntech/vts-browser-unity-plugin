@@ -53,7 +53,7 @@ public class VtsCameraCmdBufs : VtsCameraBase
     private void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawTask> tasks)
     {
         buffer.Clear();
-        if (atmosphereEnabled && draws.celestial.atmosphere.densityTexture as VtsTexture != null)
+        if (atmosphere && draws.celestial.atmosphere.densityTexture as VtsTexture != null)
             buffer.EnableShaderKeyword("VTS_ATMOSPHERE");
         else
             buffer.DisableShaderKeyword("VTS_ATMOSPHERE");
@@ -65,7 +65,7 @@ public class VtsCameraCmdBufs : VtsCameraBase
                 continue;
             MaterialPropertyBlock mat = new MaterialPropertyBlock();
             VtsTexture atmTex = draws.celestial.atmosphere.densityTexture as VtsTexture;
-            if (atmosphereEnabled && atmTex != null)
+            if (atmosphere && atmTex != null)
             {
                 var cel = draws.celestial;
                 var atm = cel.atmosphere;
