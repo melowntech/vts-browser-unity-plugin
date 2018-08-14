@@ -40,19 +40,19 @@ Just start in the root folder of this repository to ensure that the settings fro
 
 ## Accessing the Plugin In Unity
 
-Unity 5 or newer is required.
+Unity 2018 or newer is required.
 
 The simplest way is to create a few symbolic/directory links on the filesystem for each Unity project.
 
 ### On Windows
 
- - \<Unity Project\>/Assets/vts -\> \<This Repository\>/src/vts
- - \<Unity Project\>/Assets/Plugins/vts-browser.dll -\> \<This Repository\>/build/bin/relwithdebinfo/vts-browser.dll
+ - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.dll -\> \<This Repository\>/build/bin/relwithdebinfo/vts-browser.dll
 
 ### On Mac
 
- - \<Unity Project\>/Assets/vts -\> \<This Repository\>/src/vts
- - \<Unity Project\>/Assets/Plugins/vts-browser.bundle -\> \<This Repository\>/build/lib/relwithdebinfo/vts-browser.framework
+ - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/lib/relwithdebinfo/vts-browser.framework
    - Note that the framework is _renamed_ to bundle.
 
 ## Bug Reports
