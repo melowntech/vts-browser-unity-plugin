@@ -28,6 +28,9 @@ using System;
 using UnityEngine;
 using vts;
 
+// callbacks called by the vts library to upload assets to the application
+// these callbacks are called from non-main thread
+// therefore, to actually upload to gpu one must wait till used in the main thread
 public static class VtsResources
 {
     public static System.Object LoadTexture(vts.Texture t)
@@ -41,6 +44,7 @@ public static class VtsResources
     }
 }
 
+// class that represents single texture provided by the vts
 public class VtsTexture : IDisposable
 {
     private static TextureFormat ExtractFormat(vts.Texture t)
@@ -121,7 +125,7 @@ public class VtsTexture : IDisposable
             ut.filterMode = ExtractFilterMode(vt.filterMode);
             ut.wrapMode = ExtractWrapMode(vt.wrapMode);
             ut.anisoLevel = 100; // just do it!
-            ut.Apply(false, true);
+            ut.Apply(false, true); // actually upload the texture to gpu
             vt = null;
         }
         return ut;
@@ -267,7 +271,7 @@ public class VtsMesh : IDisposable
             um.SetIndices(indices, topology, 0);
             um.RecalculateBounds();
             um.RecalculateNormals();
-            um.UploadMeshData(false);
+            um.UploadMeshData(false); // upload to gpu
             vertices = null;
             uv0 = uv1 = null;
             indices = null;

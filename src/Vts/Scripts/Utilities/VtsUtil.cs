@@ -27,6 +27,7 @@
 using UnityEngine;
 using vts;
 
+// class providing conversion between vts and unity vector types
 public static class VtsUtil
 {
     public static Vector3 V2U3(double[] value)
@@ -127,7 +128,7 @@ public static class VtsUtil
             m.GetColumn(1) / tr.localScale.y
         );
     }
-    
+
     public static readonly Matrix4x4 SwapYZ = new Matrix4x4(
         new Vector4(1, 0, 0, 0),
         new Vector4(0, 0, 1, 0),

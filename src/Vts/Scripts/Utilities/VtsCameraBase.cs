@@ -30,10 +30,12 @@ using vts;
 
 public enum VtsDataControl
 {
-    Unity,
-    Vts,
+    Unity, // the property is assigned from the unity camera component to the vts camera
+    Vts, // the property is computed by vts plugin
 }
 
+// this class is common functionality for both vts cameras
+// it handles vts callbacks, shader properties, rendering background
 public abstract class VtsCameraBase : MonoBehaviour
 {
     public VtsCameraBase()
@@ -75,13 +77,14 @@ public abstract class VtsCameraBase : MonoBehaviour
     {
         double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
         // view matrix
-        if (controlTransformation == VtsDataControl.Vts)
+        switch (controlTransformation)
         {
-            VtsUtil.Matrix2Transform(camTrans, VtsUtil.V2U44(Math.Mul44x44(Math.Inverse44(Math.Mul44x44(values, Mu)), VtsUtil.U2V44(VtsUtil.InvertZ))));
-        }
-        else
-        {
-            values = Math.Mul44x44(VtsUtil.U2V44(cam.worldToCameraMatrix), Mu);
+            case VtsDataControl.Vts:
+                VtsUtil.Matrix2Transform(camTrans, VtsUtil.V2U44(Math.Mul44x44(Math.Inverse44(Math.Mul44x44(values, Mu)), VtsUtil.U2V44(VtsUtil.InvertZ))));
+                break;
+            case VtsDataControl.Unity:
+                values = Math.Mul44x44(VtsUtil.U2V44(cam.worldToCameraMatrix), Mu);
+                break;
         }
     }
 
@@ -89,20 +92,26 @@ public abstract class VtsCameraBase : MonoBehaviour
     private void CamOverrideParameters(ref double fov, ref double aspect, ref double near, ref double far)
     {
         // fov
-        if (controlFov == VtsDataControl.Vts)
-            cam.fieldOfView = (float)fov;
-        else
-            fov = cam.fieldOfView;
-        // near & far
-        if (controlNearFar == VtsDataControl.Vts)
+        switch (controlFov)
         {
-            cam.nearClipPlane = (float)near;
-            cam.farClipPlane = (float)far;
+            case VtsDataControl.Vts:
+                cam.fieldOfView = (float)fov;
+                break;
+            case VtsDataControl.Unity:
+                fov = cam.fieldOfView;
+                break;
         }
-        else
+        // near & far
+        switch (controlNearFar)
         {
-            near = cam.nearClipPlane;
-            far = cam.farClipPlane;
+            case VtsDataControl.Vts:
+                cam.nearClipPlane = (float)near;
+                cam.farClipPlane = (float)far;
+                break;
+            case VtsDataControl.Unity:
+                near = cam.nearClipPlane;
+                far = cam.farClipPlane;
+                break;
         }
     }
 

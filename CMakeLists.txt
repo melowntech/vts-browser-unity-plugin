@@ -3,5 +3,6 @@ project(vts-browser-unity-plugin)
 
 add_subdirectory(externals/browser)
 
-buildsys_fix_symlinks(${CMAKE_CURRENT_SOURCE_DIR}/src/vts/Scripts)
+buildsys_fix_symlinks(${CMAKE_CURRENT_SOURCE_DIR}/src/Vts/Scripts)
+buildsys_fix_symlinks(${CMAKE_CURRENT_SOURCE_DIR}/src/Vts/Documentation)
 

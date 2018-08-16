@@ -26,8 +26,10 @@
 
 using vts;
 
+// class to initialize vts logging
 public static class VtsLog
 {
+    // a dummy function to prevent optimizing compiler from removing this class from the assembly
     public static void Dummy()
     {}
 
