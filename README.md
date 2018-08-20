@@ -52,8 +52,12 @@ The simplest way is to create a few symbolic/directory links on the filesystem f
 ### On Mac
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/lib/relwithdebinfo/vts-browser.framework
-   - Note that the framework is _renamed_ to bundle.
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/lib/relwithdebinfo/vts-browser.bundle
+
+### For iOS
+
+ - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser-ios.bundle -\> \<This Repository\>/build-ios/lib/relwithdebinfo/vts-browser.bundle
 
 ## Bug Reports
 
