@@ -47,17 +47,17 @@ The simplest way is to create a few symbolic/directory links on the filesystem f
 ### On Windows
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.dll -\> \<This Repository\>/build/bin/relwithdebinfo/vts-browser.dll
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.dll -\> \<This Repository\>/build/result/relwithdebinfo/vts-browser.dll
 
 ### On Mac
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/lib/relwithdebinfo/vts-browser.bundle
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build/result/relwithdebinfo/vts-browser.framework
 
 ### For iOS
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser-ios.bundle -\> \<This Repository\>/build-ios/lib/relwithdebinfo/vts-browser.bundle
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build-ios/result/relwithdebinfo/vts-browser.framework
 
 ## Bug Reports
 
