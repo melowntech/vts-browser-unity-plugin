@@ -58,6 +58,10 @@ The simplest way is to create a few symbolic/directory links on the filesystem f
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
  - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build-ios/result/relwithdebinfo/vts-browser.framework
+ - Note that the framework has same name as on mac, so make sure that you use only one at a time, and that it is the correct one.
+ - After you make the build in Unity, open the XCode project:
+   - in the project, Build Settings, set _Runpath Search Paths_ to _@executable_path_ and _@executable_path/Frameworks_
+   - in Build Phases, Copy Files, add vts-browser.framework to Destination Frameworks
 
 ## Bug Reports
 
