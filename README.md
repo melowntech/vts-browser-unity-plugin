@@ -44,6 +44,8 @@ Unity 2018 or newer is required.
 
 The simplest way is to create a few symbolic/directory links on the filesystem for each Unity project.
 
+In all cases, make sure to configure the plugins in the Unity Inspector to only include them on the relevant platforms.
+
 ### On Windows
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
@@ -52,16 +54,20 @@ The simplest way is to create a few symbolic/directory links on the filesystem f
 ### On Mac
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build/result/relwithdebinfo/vts-browser.framework
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/result/relwithdebinfo/vts-browser.bundle
 
 ### For iOS
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
  - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build-ios/result/relwithdebinfo/vts-browser.framework
- - Note that the framework has same name as on mac, so make sure that you use only one at a time, and that it is the correct one.
  - After you make the build in Unity, open the XCode project:
-   - in the project, Build Settings, set _Runpath Search Paths_ to _@executable_path_ and _@executable_path/Frameworks_
+   - in the project, Build Settings, Linking, set _Runpath Search Paths_ to _@executable_path_ and _@executable_path/Frameworks_
    - in Build Phases, Copy Files, add vts-browser.framework to Destination Frameworks
+   - make sure that _Code Sign On Copy_ is on
+
+### For Linux
+
+ - Build the vts-browser library on linux and copy it to \<Unity Project\>/Assets/Vts/Plugins/libvts-browser.so
 
 ## Bug Reports
 
