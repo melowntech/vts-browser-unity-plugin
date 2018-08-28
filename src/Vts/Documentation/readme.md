@@ -28,8 +28,8 @@ Experiment with different settings :D
 
 Create new scene.
 Add an Empty game object and attach Vts Map and Vts Map Navigation scripts to it.
-Attach Vts Camera Cmd Bufs to the Main Camera and switch Control Transformations, Control Near Far and Control Fov all to Vts.
-Change Clear Flags to Solid Color and enable Atmosphere.
+Attach Vts Camera Cmd Bufs to the Main Camera and switch Control Transformations, Control Near Far and Control Fov all to Vts and enable Atmosphere.
+Change Clear Flags to Solid Color.
 Finally, drag the previously created Empty game object (the one with Vts Map) into the Map Object property of the camera.
 Hit the Play button. It is really this simple :D
 
@@ -63,27 +63,39 @@ Hit the Play button. It is really this simple :D
 
 ## Notes
 
+### VTS as Native Plugin
+
+The whole VTS Browser library is composed of several 3rd-party libraries and many c++ sources with compicated build rules.
+This makes it unsuitable to be directly build by Unity Editor from sources.
+Therefore, precompiled binaries are packaged.
+
+Four platforms are officially supported:
+- Windows
+- Mac OS
+- iOS (il2cpp) - see the online resources for further instructions
+- Linux
+
+The VTS Browser requires 64 bit architecture (on all platforms).
+
+If your target platform/architecture is not supported, you may try to build the VTS Browser library from source code.
+
+Please note, that we provide NO support for webgl player in this plugin.
+Use our javascript browser library if you want to use VTS on a website.
+
 ### Vts Cache
 
 The VTS browser library is caching all downloaded files.
 The cache is located at:
 - Windows: %HOME%/.cache/vts-browser
   - eg. C://Users/name/.cache/vts-browser
-
-### VTS as Native Plugin
-
-The whole VTS Browser library is written in c++ and thus unsuitable for Unity.
-Therefore, precompiled binaries are packaged.
-
-Currently, Windows binaries are available.
-Support for other platforms (Mac and iOS) is being worked on and is near completion.
-Linux port is completed, but the binary is not yet attached.
-
-If your target platform is not supported, you may build the VTS Browser library from source code.
-
-Please note, that we provide NO support for webgl player in this plugin.
-Use our javascript browser library if you want to use VTS on a website.
+- Mac: $HOME/.cache/vts-browser
+  - eg. /Users/name/.cache/vts-browser
+- iOS: none
+  - caching is handled by ios directly
+- Linux: $HOME/.cache/vts-browser
+  - eg. /home/name/.cache/vts-browser
 
 ### Known Issues
 
-- An exception 'Screen position out of view frustum' is thrown occasionally. It does not cause any perceptible issues.
+- An exception 'Screen position out of view frustum' is thrown occasionally.
+  It does not cause any perceptible issues.
