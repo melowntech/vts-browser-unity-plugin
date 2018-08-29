@@ -65,11 +65,11 @@ Hit the Play button. It is really this simple :D
 
 ### VTS as Native Plugin
 
-The whole VTS Browser library is composed of several 3rd-party libraries and many c++ sources with compicated build rules.
+The whole VTS Browser library is composed of several 3rd-party libraries and many c++ sources with complicated build rules.
 This makes it unsuitable to be directly build by Unity Editor from sources.
 Therefore, precompiled binaries are packaged.
 
-Four platforms are officially supported:
+Officially supported platforms:
 - Windows
 - Mac OS
 - iOS (il2cpp) - see the online resources for further instructions
