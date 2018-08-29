@@ -42,14 +42,14 @@ Shader "Vts/BackgroundShader"
 
 			v2f vert(vIn i)
 			{
-				#if !UNITY_UV_STARTS_AT_TOP
+				#if UNITY_UV_STARTS_AT_TOP && !SHADER_API_METAL
 					i.uv.y = 1 - i.uv.y;
 				#endif
 				v2f o;
 				o.vertex = float4(i.vertex.xy, 0.0, 1.0);
 				o.fragDir = lerp(
 					lerp(uniCorners[0], uniCorners[1], 1.0 - i.uv.x),
-					lerp(uniCorners[2], uniCorners[3], 1.0 - i.uv.x), 1.0 - i.uv.y).xyz;
+					lerp(uniCorners[2], uniCorners[3], 1.0 - i.uv.x), i.uv.y).xyz;
 				return o;
 			}
 
