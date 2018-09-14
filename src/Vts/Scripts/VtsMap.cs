@@ -83,12 +83,15 @@ public class VtsMap : MonoBehaviour
         return point;
     }
 
-    /*
     public double[] VtsNavigationToUnity(double[] point)
     {
         Util.CheckArray(point, 3);
         point = map.Convert(point, Srs.Navigation, Srs.Physical);
-        VtsUtil.UnityToVtsPoint(ref point);
+        { // swap YZ
+            double tmp = point[1];
+            point[1] = point[2];
+            point[2] = tmp;
+        }
         { // convert from (local) vts physical to unity world
             double[] point4 = new double[4] { point[0], point[1], point[2], 1 };
             point4 = Math.Mul44x4(VtsUtil.U2V44(transform.localToWorldMatrix), point4);
@@ -96,7 +99,6 @@ public class VtsMap : MonoBehaviour
         }
         return point;
     }
-    */
 
     private Thread dataThread;
     private uint frameIndex;
