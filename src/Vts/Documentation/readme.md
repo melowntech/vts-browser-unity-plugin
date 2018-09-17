@@ -36,9 +36,9 @@ Hit the Play button. It is really this simple :D
 ## Scripts Overview
 
 - Vts Map: attach this script to a Game Object that will represent the map (the planet).
-  This components maintains the internal state of the whole VTS Browser (downloaded meshes, textures and other metadata).
+  This component maintains the internal state of the whole VTS Browser (downloaded meshes, textures and other metadata).
   All other related components will then work through reference to this object.
-  Note that this script on its own does not make the map visible in any view.
+  Note that this script, on its own, does not make the map visible in any view.
 
 - Vts Camera Cmd Bufs: attach this script to Unity Camera.
   This script will add Graphics Command Buffers to the camera and use them to render the map.
@@ -51,6 +51,7 @@ Hit the Play button. It is really this simple :D
 
 - Vts Collider Probe: attach this script to object around which you would like the map to be physically interactive.
   This script, much like Vts Camera Objects, instantiates new Game Objects with mesh colliders.
+  Note that the meshes instantiated by the Vts Collider Probe are not visible.
 
 - Vts Map Navigation: attach to the Game Object with Vts Map.
   This script grabs mouse input and applies it to the internal camera in the Vts Map.
@@ -58,10 +59,23 @@ Hit the Play button. It is really this simple :D
 
 - Vts Map Make Local: attach to the Game Object with Vts Map.
   This script will transform the Game Object in such way that the configured latitude and longitude coordinates are at the origin of Unity world coordinates.
-  This is needed for the Vts Camera Objects and the Vts Collider Probe scripts to overcome floating point precision issues.
+  This is required for the Vts Camera Objects and the Vts Collider Probe scripts to overcome floating point precision issues, but will limit the playable area only to close neighborhood.
   See the online documentation for details.
 
 ## Notes
+
+### Map Configuration
+
+The mapconfig specifies, among other, coordinate systems and data sources.
+
+The default map configuration uses our Intergeo example.
+You may change the mapconfig url in the Vts Map component to any other, including your own instance of VTS backend.
+See our VTS documentation for more information about map configuration.
+
+### Coordinate Conversions
+
+When the mapconfig is loaded, the Vts Map component provides methods UnityToVtsNavigation and VtsNavigationToUnity for coordinate conversions.
+These methods also take into account the transformation of the Game Object itself, eg. the transformation made by Vts Map Make Local script.
 
 ### VTS as Native Plugin
 
@@ -79,7 +93,7 @@ The VTS Browser requires 64 bit architecture (on all platforms).
 
 If your target platform/architecture is not supported, you may try to build the VTS Browser library from source code.
 
-Please note, that we provide NO support for webgl player in this plugin.
+Please note, we provide NO support for webgl player in this plugin.
 Use our javascript browser library if you want to use VTS on a website.
 
 ### Vts Cache
