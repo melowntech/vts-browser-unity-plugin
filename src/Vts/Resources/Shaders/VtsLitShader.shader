@@ -1,8 +1,12 @@
-Shader "Vts/UnlitShader"
+Shader "Vts/LitShader"
 {
 	SubShader
 	{
-		Tags { "RenderType" = "Opaque" }
+		Tags
+		{
+			"RenderType" = "Opaque"
+			"LightMode" = "ForwardBase"
+		}
 		LOD 100
 
 		Pass
@@ -15,6 +19,10 @@ Shader "Vts/UnlitShader"
 			#pragma fragment frag
 			#pragma target 3.0
 			#include "UnityCG.cginc"
+			#include "Lighting.cginc"
+
+			#pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight
+			#include "AutoLight.cginc"
 
 			#pragma multi_compile __ VTS_ATMOSPHERE
 			#include "VtsAtmosphereShader.cginc"
@@ -29,10 +37,12 @@ Shader "Vts/UnlitShader"
 
 			struct v2f
 			{
-				float4 vertex : SV_POSITION;
+				float4 pos : SV_POSITION;
+				float3 normal : NORMAL;
 				float3 viewPos : TEXCOORD0;
 				float2 uvTex : TEXCOORD1;
 				float2 uvClip : TEXCOORD2;
+				SHADOW_COORDS(3)
 			};
 
 			struct fOut
@@ -51,10 +61,12 @@ Shader "Vts/UnlitShader"
 			v2f vert(vIn i)
 			{
 				v2f o;
-				o.vertex = UnityObjectToClipPos(i.vertex);
+				o.pos = UnityObjectToClipPos(i.vertex);
 				o.viewPos = UnityObjectToViewPos(i.vertex);
+				o.normal = UnityObjectToWorldNormal(i.normal);
 				o.uvTex = mul((float3x3)_UvMat, float3(_Flags.w > 0 ? i.uvExternal : i.uvInternal, 1.0)).xy;
 				o.uvClip = i.uvExternal;
+				TRANSFER_SHADOW(o)
 				return o;
 			}
 
@@ -87,6 +99,9 @@ Shader "Vts/UnlitShader"
 				// uniform tint
 				o.color *= _Color;
 
+				// shadow
+				o.color.rgb *= SHADOW_ATTENUATION(i);
+
 				// atmosphere
 				float atmDensity = vtsAtmDensity(i.viewPos);
 				o.color = vtsAtmColor(atmDensity, o.color);
@@ -96,57 +111,8 @@ Shader "Vts/UnlitShader"
 			ENDCG
 		}
 
-		Pass
-		{
-			Name "SHADOWCASTER"
-
-			Tags
-			{
-				"LightMode" = "ShadowCaster"
-			}
-
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			#pragma multi_compile_shadowcaster
-			#include "UnityCG.cginc"
-
-			struct vIn
-			{
-				float4 vertex : POSITION;
-				float3 normal : NORMAL;
-				float2 uvInternal : TEXCOORD0;
-				float2 uvExternal : TEXCOORD1;
-			};
-
-			struct v2f
-			{
-				float2 uvClip : TEXCOORD0;
-				V2F_SHADOW_CASTER;
-			};
-
-			float4 _UvClip;
-
-			v2f vert(vIn v)
-			{
-				v2f o;
-				o.uvClip = v.uvExternal;
-				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-				return o;
-			}
-
-			float4 frag(v2f i) : SV_Target
-			{
-				// uv clipping
-				if (i.uvClip.x < _UvClip.x
-					|| i.uvClip.y < _UvClip.y
-					|| i.uvClip.x > _UvClip.z
-					|| i.uvClip.y > _UvClip.w)
-					discard;
-
-				SHADOW_CASTER_FRAGMENT(i)
-			}
-			ENDCG
-		}
+		UsePass "Vts/UnlitShader/SHADOWCASTER"
 	}
 }
+
+
