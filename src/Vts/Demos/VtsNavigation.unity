@@ -214,7 +214,7 @@ MonoBehaviour:
   ConfigUrl: https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json
   AuthUrl: 
   CreateConfig: 
-  RunConfig: '{ "targetResourcesMemoryKB":1000000, "traverseModeSurfaces":2 }'
+  RunConfig: '{ "targetResourcesMemoryKB":500000, "traverseModeSurfaces":3 }'
 --- !u!4 &548558749
 Transform:
   m_ObjectHideFlags: 0

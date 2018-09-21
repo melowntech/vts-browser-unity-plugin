@@ -41,8 +41,8 @@ Shader "Vts/LitShader"
 				float3 normal : NORMAL;
 				float3 viewPos : TEXCOORD0;
 				float2 uvTex : TEXCOORD1;
-				float2 uvClip : TEXCOORD2;
-				SHADOW_COORDS(3)
+				float4 clip : SV_ClipDistance0;
+				SHADOW_COORDS(2)
 			};
 
 			struct fOut
@@ -65,7 +65,10 @@ Shader "Vts/LitShader"
 				o.viewPos = UnityObjectToViewPos(i.vertex);
 				o.normal = UnityObjectToWorldNormal(i.normal);
 				o.uvTex = mul((float3x3)_UvMat, float3(_Flags.w > 0 ? i.uvExternal : i.uvInternal, 1.0)).xy;
-				o.uvClip = i.uvExternal;
+				o.clip[0] = (i.uvExternal[0] - _UvClip[0]) * +1.0;
+				o.clip[1] = (i.uvExternal[1] - _UvClip[1]) * +1.0;
+				o.clip[2] = (i.uvExternal[0] - _UvClip[2]) * -1.0;
+				o.clip[3] = (i.uvExternal[1] - _UvClip[3]) * -1.0;
 				TRANSFER_SHADOW(o)
 				return o;
 			}
@@ -83,14 +86,6 @@ Shader "Vts/LitShader"
 					if (tex2D(_MaskTex, i.uvTex).r < 0.5)
 						discard;
 				}
-
-				// uv clipping
-				// uv clipping must go after all texture accesses to allow for computation of derivatives in uniform control flow
-				if (   i.uvClip.x < _UvClip.x
-					|| i.uvClip.y < _UvClip.y
-					|| i.uvClip.x > _UvClip.z
-					|| i.uvClip.y > _UvClip.w)
-					discard;
 
 				// monochromatic texture
 				if (_Flags.y > 0)

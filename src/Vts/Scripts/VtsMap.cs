@@ -106,7 +106,7 @@ public class VtsMap : MonoBehaviour
     [SerializeField] private string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
     [SerializeField] private string AuthUrl = "";
     [SerializeField] private string CreateConfig;
-    [SerializeField] private string RunConfig = "{ \"targetResourcesMemoryKB\":1000000, \"traverseModeSurfaces\":2 }";
+    [SerializeField] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000, \"traverseModeSurfaces\":3 }";
 
     public Map map;
 }

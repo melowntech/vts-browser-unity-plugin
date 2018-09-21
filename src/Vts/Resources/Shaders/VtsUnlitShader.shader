@@ -32,7 +32,7 @@ Shader "Vts/UnlitShader"
 				float4 vertex : SV_POSITION;
 				float3 viewPos : TEXCOORD0;
 				float2 uvTex : TEXCOORD1;
-				float2 uvClip : TEXCOORD2;
+				float4 clip : SV_ClipDistance0;
 			};
 
 			struct fOut
@@ -54,7 +54,10 @@ Shader "Vts/UnlitShader"
 				o.vertex = UnityObjectToClipPos(i.vertex);
 				o.viewPos = UnityObjectToViewPos(i.vertex);
 				o.uvTex = mul((float3x3)_UvMat, float3(_Flags.w > 0 ? i.uvExternal : i.uvInternal, 1.0)).xy;
-				o.uvClip = i.uvExternal;
+				o.clip[0] = (i.uvExternal[0] - _UvClip[0]) * +1.0;
+				o.clip[1] = (i.uvExternal[1] - _UvClip[1]) * +1.0;
+				o.clip[2] = (i.uvExternal[0] - _UvClip[2]) * -1.0;
+				o.clip[3] = (i.uvExternal[1] - _UvClip[3]) * -1.0;
 				return o;
 			}
 
@@ -71,14 +74,6 @@ Shader "Vts/UnlitShader"
 					if (tex2D(_MaskTex, i.uvTex).r < 0.5)
 						discard;
 				}
-
-				// uv clipping
-				// uv clipping must go after all texture accesses to allow for computation of derivatives in uniform control flow
-				if (   i.uvClip.x < _UvClip.x
-					|| i.uvClip.y < _UvClip.y
-					|| i.uvClip.x > _UvClip.z
-					|| i.uvClip.y > _UvClip.w)
-					discard;
 
 				// monochromatic texture
 				if (_Flags.y > 0)
@@ -121,7 +116,7 @@ Shader "Vts/UnlitShader"
 
 			struct v2f
 			{
-				float2 uvClip : TEXCOORD0;
+				float4 clip : SV_ClipDistance0;
 				V2F_SHADOW_CASTER;
 			};
 
@@ -130,20 +125,16 @@ Shader "Vts/UnlitShader"
 			v2f vert(vIn v)
 			{
 				v2f o;
-				o.uvClip = v.uvExternal;
+				o.clip[0] = (v.uvExternal[0] - _UvClip[0]) * +1.0;
+				o.clip[1] = (v.uvExternal[1] - _UvClip[1]) * +1.0;
+				o.clip[2] = (v.uvExternal[0] - _UvClip[2]) * -1.0;
+				o.clip[3] = (v.uvExternal[1] - _UvClip[3]) * -1.0;
 				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
 				return o;
 			}
 
 			float4 frag(v2f i) : SV_Target
 			{
-				// uv clipping
-				if (i.uvClip.x < _UvClip.x
-					|| i.uvClip.y < _UvClip.y
-					|| i.uvClip.x > _UvClip.z
-					|| i.uvClip.y > _UvClip.w)
-					discard;
-
 				SHADOW_CASTER_FRAGMENT(i)
 			}
 			ENDCG

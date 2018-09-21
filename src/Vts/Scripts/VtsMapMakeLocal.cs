@@ -44,7 +44,11 @@ public class VtsMapMakeLocal : MonoBehaviour
         {
             double[] p = new double[3] { longitude, latitude, altitude };
             p = map.Convert(p, Srs.Navigation, Srs.Physical);
-            UnityToVtsPoint(ref p);
+            { // swap YZ
+                double tmp = p[1];
+                p[1] = p[2];
+                p[2] = tmp;
+            }
             Vector3 v = Vector3.Scale(VtsUtil.V2U3(p), transform.localScale);
             float m = v.magnitude;
             transform.position = new Vector3(0, -m, 0);
@@ -54,8 +58,8 @@ public class VtsMapMakeLocal : MonoBehaviour
         }
     }
 
-    public double latitude;
     public double longitude;
+    public double latitude;
     public double altitude;
     public bool singleUse = true;
 }
