@@ -39,6 +39,7 @@ public class VtsMapNavigation : MonoBehaviour
             pan[0] = Input.GetAxis("Mouse X") * mousePanSpeed;
             pan[1] = -Input.GetAxis("Mouse Y") * mousePanSpeed;
             map.Pan(pan);
+            map.SetOptions("{\"navigationType\":1}"); // quick navigation mode
         }
         if (Input.GetMouseButton(1))
         {
@@ -46,6 +47,7 @@ public class VtsMapNavigation : MonoBehaviour
             rot[0] = Input.GetAxis("Mouse X") * mouseRotateSpeed;
             rot[1] = -Input.GetAxis("Mouse Y") * mouseRotateSpeed;
             map.Rotate(rot);
+            map.SetOptions("{\"navigationType\":1}"); // quick navigation mode
         }
         {
             double zoom = Input.GetAxis("Mouse ScrollWheel") * mouseZoomSpeed;

@@ -39,7 +39,7 @@ public class VtsRigidBodyActivate : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (step++ < 120)
+        if (step++ < 30)
             return;
         if (map.GetComponent<VtsMap>().map.GetMapRenderComplete())
         {
