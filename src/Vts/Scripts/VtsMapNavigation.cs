@@ -32,6 +32,8 @@ public class VtsMapNavigation : MonoBehaviour
 {
     void Update ()
     {
+        if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            return;
         Map map = GetComponent<VtsMap>().map;
         if (Input.GetMouseButton(0))
         {
