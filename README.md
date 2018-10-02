@@ -6,21 +6,25 @@
 
 ## Example Screenshots
 
-![planet](screenshots/planet.png)
-View of the whole Earth.
-
-![aircraft](screenshots/aircraft.png)
-Jet flight, made with Unity Standard Vehicles Assets.
-
-![car](screenshots/car.png)
-Driving a car in a city, made with Unity Standard Vehicles Assets.
+<img src="screenshots/hillerod-parking.png" width="444" title="Car">
+<img src="screenshots/alps-aircraft.png" width="444" title="Aircraft">
+<img src="screenshots/earth.png" width="444" title="Earth">
+<img src="screenshots/hillerod-castle.png" width="444" title="Car">
+<img src="screenshots/imst.png" width="444" title="Imst">
+<img src="screenshots/mercury.png" width="444" title="Mercury">
+<img src="screenshots/karlstejn-searching.png" width="444" title="Searching">
 
 ## Features
 
 - The plugin handles data streaming and resource management
 - Rendering is done in Unity (with custom shaders)
-  - This allows full customization of the rendering process
-- Support for collisions
+  - This allows you to customize the rendering process
+  - Provided shaders:
+    - Unlit
+    - Unlit with shadows
+    - Optionally with custom atmosphere that works with whole-planet views and transitions to street-level views
+- Supports multiple cameras
+- Support for physical collision
 
 ## Documentation
 
@@ -38,7 +42,7 @@ Documentation for the whole VTS is at
 Build instructions are the same as for the [VTS Browser Build Wrapper](https://github.com/Melown/vts-browser-cpp-build-wrapper/blob/master/README.md).
 Just start in the root folder of this repository to ensure that the settings from CMakeLists.txt here are applied too.
 
-## Accessing the Plugin In Unity
+## Using the plugin In Unity
 
 Unity 2018 or newer is required.
 
@@ -63,7 +67,7 @@ In all cases, make sure to configure the plugins in the Unity Inspector to only 
  - After you make the build in Unity, open the XCode project:
    - in the project, Build Settings, Linking, set _Runpath Search Paths_ to _@executable_path_ and _@executable_path/Frameworks_
    - in Build Phases, Copy Files, add vts-browser.framework to Destination Frameworks
-   - make sure that _Code Sign On Copy_ is on
+     - make sure that _Code Sign On Copy_ is on
 
 ### For Linux
 

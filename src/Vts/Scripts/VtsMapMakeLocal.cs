@@ -30,13 +30,6 @@ using vts;
 [RequireComponent(typeof(VtsMap))]
 public class VtsMapMakeLocal : MonoBehaviour
 {
-    private static void UnityToVtsPoint(ref double[] p)
-    {
-        double tmp = p[1];
-        p[1] = p[2];
-        p[2] = tmp;
-    }
-
     void Update()
     {
         Map map = GetComponent<VtsMap>().map;

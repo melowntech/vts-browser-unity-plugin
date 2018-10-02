@@ -30,7 +30,7 @@ using vts;
 
 public class VtsMap : MonoBehaviour
 {
-    void OnEnable()
+    void Awake()
     {
         VtsLog.Dummy();
         Debug.Assert(map == null);
@@ -45,7 +45,7 @@ public class VtsMap : MonoBehaviour
             map.SetOptions(RunConfig);
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         Debug.Assert(map != null);
         map.RenderDeinitialize();
