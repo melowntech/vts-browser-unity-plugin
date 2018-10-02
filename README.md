@@ -6,13 +6,7 @@
 
 ## Example Screenshots
 
-<img src="screenshots/hillerod-parking.png" width="444" title="Car">
-<img src="screenshots/alps-aircraft.png" width="444" title="Aircraft">
-<img src="screenshots/earth.png" width="444" title="Earth">
-<img src="screenshots/hillerod-castle.png" width="444" title="Car">
-<img src="screenshots/imst.png" width="444" title="Imst">
-<img src="screenshots/mercury.png" width="444" title="Mercury">
-<img src="screenshots/karlstejn-searching.png" width="444" title="Searching">
+<img src="screenshots/hillerod-parking.png" width="430" title="Car"><img src="screenshots/earth.png" width="430" title="Earth"><img src="screenshots/alps-aircraft.png" width="860" title="Aircraft"><img src="screenshots/mercury.png" width="430" title="Mercury"><img src="screenshots/hillerod-castle.png" width="430" title="Car"><img src="screenshots/imst.png" width="430" title="Imst"><img src="screenshots/karlstejn-searching.png" width="430" title="Searching">
 
 ## Features
 
