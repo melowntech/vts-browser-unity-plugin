@@ -18,8 +18,9 @@ Shader "Vts/BackgroundShader"
 			#pragma target 3.0
 			#include "UnityCG.cginc"
 
+			#include "VtsCommon.cginc"
 			#define VTS_ATMOSPHERE 1
-			#include "VtsAtmosphereShader.cginc"
+			#include "VtsAtmosphere.cginc"
 
 			struct vIn
 			{

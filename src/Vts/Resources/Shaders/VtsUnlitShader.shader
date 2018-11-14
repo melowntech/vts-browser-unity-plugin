@@ -16,23 +16,22 @@ Shader "Vts/UnlitShader"
 			#pragma target 3.0
 			#include "UnityCG.cginc"
 
+			#include "VtsCommon.cginc"
 			#pragma multi_compile __ VTS_ATMOSPHERE
-			#include "VtsAtmosphereShader.cginc"
+			#include "VtsAtmosphere.cginc"
 
 			struct vIn
 			{
 				float4 vertex : POSITION;
 				float3 normal : NORMAL;
-				float2 uvInternal : TEXCOORD0;
-				float2 uvExternal : TEXCOORD1;
+				VTS_VIN_UV
 			};
 
 			struct v2f
 			{
-				float4 vertex : SV_POSITION;
-				float3 viewPos : TEXCOORD0;
-				float2 uvTex : TEXCOORD1;
-				float4 clip : SV_ClipDistance0;
+				float4 pos : SV_POSITION;
+				VTS_V2F_COMMON
+				VTS_V2F_CLIP
 			};
 
 			struct fOut
@@ -40,47 +39,26 @@ Shader "Vts/UnlitShader"
 				float4 color : SV_Target;
 			};
 
-			sampler2D _MainTex;
-			sampler2D _MaskTex;
+			VTS_UNI_SAMP
+			VTS_UNI_COMMON
+			VTS_UNI_CLIP
 
-			float4x4 _UvMat;
-			float4 _UvClip;
-			float4 _Color;
-			float4 _Flags; // mask, monochromatic, flat shading, uv source
-
-			v2f vert(vIn i)
+			v2f vert(vIn v)
 			{
 				v2f o;
-				o.vertex = UnityObjectToClipPos(i.vertex);
-				o.viewPos = UnityObjectToViewPos(i.vertex);
-				o.uvTex = mul((float3x3)_UvMat, float3(_Flags.w > 0 ? i.uvExternal : i.uvInternal, 1.0)).xy;
-				o.clip[0] = (i.uvExternal[0] - _UvClip[0]) * +1.0;
-				o.clip[1] = (i.uvExternal[1] - _UvClip[1]) * +1.0;
-				o.clip[2] = (i.uvExternal[0] - _UvClip[2]) * -1.0;
-				o.clip[3] = (i.uvExternal[1] - _UvClip[3]) * -1.0;
+				o.pos = UnityObjectToClipPos(v.vertex);
+				o.viewPos = UnityObjectToViewPos(v.vertex);
+				VTS_VERT_UV(v,o)
+				VTS_VERT_CLIP(v,o)
 				return o;
 			}
 
 			fOut frag(v2f i)
 			{
+				VTS_FRAG_CLIP(i)
+
 				fOut o;
-
-				// texture color
-				o.color = tex2D(_MainTex, i.uvTex);
-
-				// mask
-				if (_Flags.x > 0)
-				{
-					if (tex2D(_MaskTex, i.uvTex).r < 0.5)
-						discard;
-				}
-
-				// monochromatic texture
-				if (_Flags.y > 0)
-					o.color = o.color.rrra;
-
-				// uniform tint
-				o.color *= _Color;
+				VTS_FRAG_COMMON(i,o)
 
 				// atmosphere
 				float atmDensity = vtsAtmDensity(i.viewPos);
@@ -106,35 +84,34 @@ Shader "Vts/UnlitShader"
 			#pragma multi_compile_shadowcaster
 			#include "UnityCG.cginc"
 
+			#include "VtsCommon.cginc"
+
 			struct vIn
 			{
 				float4 vertex : POSITION;
 				float3 normal : NORMAL;
-				float2 uvInternal : TEXCOORD0;
-				float2 uvExternal : TEXCOORD1;
+				VTS_VIN_UV
 			};
 
 			struct v2f
 			{
-				float4 clip : SV_ClipDistance0;
+				VTS_V2F_CLIP
 				V2F_SHADOW_CASTER;
 			};
 
-			float4 _UvClip;
+			VTS_UNI_CLIP
 
 			v2f vert(vIn v)
 			{
 				v2f o;
-				o.clip[0] = (v.uvExternal[0] - _UvClip[0]) * +1.0;
-				o.clip[1] = (v.uvExternal[1] - _UvClip[1]) * +1.0;
-				o.clip[2] = (v.uvExternal[0] - _UvClip[2]) * -1.0;
-				o.clip[3] = (v.uvExternal[1] - _UvClip[3]) * -1.0;
+				VTS_VERT_CLIP(v,o)
 				TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
 				return o;
 			}
 
 			float4 frag(v2f i) : SV_Target
 			{
+				VTS_FRAG_CLIP(i)
 				SHADOW_CASTER_FRAGMENT(i)
 			}
 			ENDCG
