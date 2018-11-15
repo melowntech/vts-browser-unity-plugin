@@ -30,22 +30,31 @@ using vts;
 [RequireComponent(typeof(VtsMap))]
 public class VtsMapMakeLocal : MonoBehaviour
 {
+    public static bool MakeLocal(MonoBehaviour behavior, double[] longLatAlt)
+    {
+        Util.CheckArray(longLatAlt, 3);
+        Map map = behavior.GetComponent<VtsMap>().map;
+        if (!map.GetMapConfigAvailable())
+            return false;
+        double[] p = map.Convert(longLatAlt, Srs.Navigation, Srs.Physical);
+        { // swap YZ
+            double tmp = p[1];
+            p[1] = p[2];
+            p[2] = tmp;
+        }
+        Vector3 v = Vector3.Scale(VtsUtil.V2U3(p), behavior.transform.localScale);
+        float m = v.magnitude;
+        behavior.transform.position = new Vector3(0, -m, 0); // altitude
+        behavior.transform.rotation =
+            Quaternion.Euler(0, (float)longLatAlt[0] + 90.0f, 0) // align to north
+            * Quaternion.FromToRotation(-v, behavior.transform.position); // latlon
+        return true;
+    }
+
     void Update()
     {
-        Map map = GetComponent<VtsMap>().map;
-        if (map.GetMapConfigAvailable())
+        if (MakeLocal(this, new double[3] { longitude, latitude, altitude }))
         {
-            double[] p = new double[3] { longitude, latitude, altitude };
-            p = map.Convert(p, Srs.Navigation, Srs.Physical);
-            { // swap YZ
-                double tmp = p[1];
-                p[1] = p[2];
-                p[2] = tmp;
-            }
-            Vector3 v = Vector3.Scale(VtsUtil.V2U3(p), transform.localScale);
-            float m = v.magnitude;
-            transform.position = new Vector3(0, -m, 0);
-            transform.rotation = Quaternion.FromToRotation(-v, transform.position);
             if (singleUse)
                 Destroy(this);
         }
