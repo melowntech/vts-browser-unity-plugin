@@ -63,6 +63,9 @@ public class VtsMap : MonoBehaviour
         Util.Log(LogLevel.debug, "Unity update frame index: " + frameIndex++);
         Debug.Assert(map != null);
         map.RenderTick(Time.deltaTime);
+
+        // statistics
+        Statistics = map.GetStatistics();
     }
 
     private void DataEntry()
@@ -109,8 +112,9 @@ public class VtsMap : MonoBehaviour
 
     [SerializeField] private string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
     [SerializeField] private string AuthUrl = "";
-    [SerializeField] private string CreateConfig;
-    [SerializeField] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000, \"traverseModeSurfaces\":3 }";
+    [SerializeField, TextArea] private string CreateConfig;
+    [SerializeField, TextArea] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000 }";
+    [SerializeField, TextArea(0,20)] private string Statistics = "This will show statistics at play";
 
     private Map map;
 

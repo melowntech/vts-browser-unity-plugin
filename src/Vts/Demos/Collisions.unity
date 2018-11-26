@@ -144,7 +144,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapObject: {fileID: 858116321}
-  suggestedNearFar: 0
+  controlTransformation: 0
+  controlNearFar: 0
+  Config: '{ "traverseModeSurfaces":3, "maxTexelToPixelScale":1.2 }'
   atmosphere: 1
   backgroundMaterial: {fileID: 2100000, guid: 3e83f2df2a270e94ca3c325a39ebd735, type: 2}
   backgroundMesh: {fileID: 4300000, guid: b0f11f207ae451f49bddfbaf9690e9cb, type: 3}
@@ -328,7 +330,7 @@ MonoBehaviour:
   ConfigUrl: https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json
   AuthUrl: 
   CreateConfig: 
-  RunConfig: '{ "targetResourcesMemoryKB":500000, "traverseModeSurfaces":3 }'
+  RunConfig: '{ "targetResourcesMemoryKB":500000 }'
 --- !u!4 &858116323
 Transform:
   m_ObjectHideFlags: 0

@@ -39,23 +39,27 @@ public class VtsColliderProbe : MonoBehaviour
         mapTrans = mapObject.GetComponent<Transform>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        // update current colliders
         draws.Load(vmap, vcam);
         UpdateParts();
-    }
 
-    private void LateUpdate()
-    {
+        // prepare for next frame
         vcam.SetViewportSize(1, 1);
         double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
         double[] view = Math.Mul44x44(VtsUtil.U2V44(probTrans.localToWorldMatrix), Mu);
         vcam.SetView(view);
+
+        // enforce fixed traversal mode
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("{ \"fixedTraversalDistance\":").Append(collidersDistance).Append(", \"fixedTraversalLod\":").Append(collidersLod).Append(", \"traverseModeSurfaces\":4 }");
+            builder.Append("{ \"fixedTraversalDistance\":").Append(collidersDistance).Append(", \"fixedTraversalLod\":").Append(collidersLod).Append(", \"traverseModeSurfaces\":4, \"traverseModeGeodata\":0 }");
             vcam.SetOptions(builder.ToString());
         }
+
+        // statistics
+        Statistics = vcam.GetStatistics();
     }
 
     private void UpdateParts()
@@ -97,6 +101,8 @@ public class VtsColliderProbe : MonoBehaviour
 
     public double collidersDistance = 200;
     public uint collidersLod = 18;
+
+    [SerializeField, TextArea(0, 20)] private string Statistics = "This will show statistics at play";
 
     private readonly Draws draws = new Draws();
     private readonly Dictionary<VtsMesh, GameObject> partsCache = new Dictionary<VtsMesh, GameObject>();

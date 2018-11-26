@@ -33,6 +33,8 @@ public class VtsNavigation : MonoBehaviour
     {
         ucam = GetComponent<UnityEngine.Camera>();
         cam = GetComponent<VtsCameraBase>();
+        cam.controlTransformation = VtsDataControl.Vts;
+        cam.controlNearFar = VtsDataControl.Vts;
     }
 
     private void Update()

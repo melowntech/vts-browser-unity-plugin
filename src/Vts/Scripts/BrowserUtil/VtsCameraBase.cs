@@ -67,6 +67,9 @@ public abstract class VtsCameraBase : MonoBehaviour
         backgroundCmds.name = "Vts Atmosphere Background";
         ucam.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, backgroundCmds);
         ucam.AddCommandBuffer(CameraEvent.BeforeLighting, backgroundCmds);
+
+        if (Config.Length > 0)
+            vcam.SetOptions(Config);
     }
 
     private void Update()
@@ -97,6 +100,9 @@ public abstract class VtsCameraBase : MonoBehaviour
             ucam.farClipPlane = (float)f;
         }
         vcam.SetProj(ucam.fieldOfView, ucam.nearClipPlane, ucam.farClipPlane);
+
+        // statistics
+        Statistics = vcam.GetStatistics();
     }
 
     protected abstract void CameraDraw();
@@ -171,7 +177,9 @@ public abstract class VtsCameraBase : MonoBehaviour
 
     public VtsDataControl controlTransformation;
     public VtsDataControl controlNearFar;
-    //public VtsDataControl controlFov;
+
+    [SerializeField, TextArea] private string Config = "{ \"traverseModeSurfaces\":3, \"maxTexelToPixelScale\":1.2 }";
+    [SerializeField, TextArea(0, 20)] private string Statistics = "This will show statistics at play";
 
     public bool atmosphere = false;
 

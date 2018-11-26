@@ -27,9 +27,9 @@ Experiment with different settings :D
 ## Getting Started
 
 Create new scene.
-Add an Empty game object and attach Vts Map and Vts Map Navigation scripts to it.
-Attach Vts Camera Cmd Bufs to the Main Camera and switch Control Transformations, Control Near Far and Control Fov all to Vts and enable Atmosphere.
-Change Clear Flags to Solid Color.
+Add an Empty game object and attach Vts Map script to it.
+Attach Vts Camera Cmd Bufs and Vts Navigation to the Main Camera.
+Enable Atmosphere on the camera and change Clear Flags to Solid Color.
 Finally, drag the previously created Empty game object (the one with Vts Map) into the Map Object property of the camera.
 Hit the Play button. It is really this simple :D
 
@@ -53,9 +53,9 @@ Hit the Play button. It is really this simple :D
   This script, much like Vts Camera Objects, instantiates new Game Objects with mesh colliders.
   Note that the meshes instantiated by the Vts Collider Probe are not visible.
 
-- Vts Map Navigation: attach to the Game Object with Vts Map.
-  This script grabs mouse input and applies it to the internal camera in the Vts Map.
-  The internal camera can be used by changing property Control Transformation to VTS on any Vts Camera script.
+- Vts Navigation: attach to a Game Object with any Vts Camera.
+  This script grabs mouse input and applies it to the camera. It supports pan, rotation and zoom.
+  It will change Control Transformation to Vts on the Vts Camera script in order to work properly.
 
 - Vts Map Make Local: attach to the Game Object with Vts Map.
   This script will transform the Game Object in such way that the configured latitude and longitude coordinates are at the origin of Unity world coordinates.
