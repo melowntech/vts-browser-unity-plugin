@@ -116,6 +116,8 @@ public static class VtsUtil
 
     public static void Matrix2Transform(Transform tr, Matrix4x4 m)
     {
+        if (m[3, 3] != m[3, 3])
+            return;
         tr.position = m.GetColumn(3);
         float sxs = m.determinant < 0 ? -1 : 1;
         tr.localScale = new Vector3(

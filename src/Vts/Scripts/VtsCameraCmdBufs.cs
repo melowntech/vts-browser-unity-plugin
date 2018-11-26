@@ -44,10 +44,10 @@ public class VtsCameraCmdBufs : VtsCameraBase
         infographics = new CommandBuffer();
         infographics.name = "Vts Infographics";
 
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, opaque);
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, transparent);
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, geodata);
-        cam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
+        ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, opaque);
+        ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, transparent);
+        ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, geodata);
+        ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
     }
 
     private void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawTask> tasks)
@@ -58,7 +58,7 @@ public class VtsCameraCmdBufs : VtsCameraBase
         else
             buffer.DisableShaderKeyword("VTS_ATMOSPHERE");
         buffer.SetViewMatrix(Matrix4x4.identity);
-        buffer.SetProjectionMatrix(cam.projectionMatrix);
+        buffer.SetProjectionMatrix(ucam.projectionMatrix);
         foreach (DrawTask t in tasks)
         {
             if (t.mesh == null)
@@ -103,7 +103,7 @@ public class VtsCameraCmdBufs : VtsCameraBase
         }
     }
 
-    protected override void CameraUpdate()
+    protected override void CameraDraw()
     {
         RegenerateCommandBuffer(opaque, draws.opaque);
         RegenerateCommandBuffer(transparent, draws.transparent);

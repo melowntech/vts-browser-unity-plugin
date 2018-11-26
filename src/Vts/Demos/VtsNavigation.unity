@@ -192,7 +192,6 @@ GameObject:
   m_Component:
   - component: {fileID: 548558749}
   - component: {fileID: 548558748}
-  - component: {fileID: 548558750}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -228,20 +227,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &548558750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 548558747}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2417faadb4a70914e870d66aa22cdff4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mousePanSpeed: 30
-  mouseRotateSpeed: 30
-  mouseZoomSpeed: 10
 --- !u!1 &1217050035
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,6 +333,7 @@ GameObject:
   - component: {fileID: 1245295812}
   - component: {fileID: 1245295811}
   - component: {fileID: 1245295809}
+  - component: {fileID: 1245295810}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -369,11 +355,24 @@ MonoBehaviour:
   mapObject: {fileID: 548558747}
   controlTransformation: 1
   controlNearFar: 1
-  controlFov: 1
   atmosphere: 1
   backgroundMaterial: {fileID: 2100000, guid: 3e83f2df2a270e94ca3c325a39ebd735, type: 2}
   backgroundMesh: {fileID: 4300000, guid: b0f11f207ae451f49bddfbaf9690e9cb, type: 3}
   renderMaterial: {fileID: 2100000, guid: d959ee906a1141742a0a0e846fe01868, type: 2}
+--- !u!114 &1245295810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1245295808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2417faadb4a70914e870d66aa22cdff4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mousePanSpeed: 30
+  mouseRotateSpeed: 30
+  mouseZoomSpeed: 10
 --- !u!81 &1245295811
 AudioListener:
   m_ObjectHideFlags: 0

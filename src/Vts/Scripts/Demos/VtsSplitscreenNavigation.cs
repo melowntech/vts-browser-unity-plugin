@@ -25,39 +25,21 @@
  */
 
 using UnityEngine;
-using vts;
 
-[RequireComponent(typeof(VtsMap))]
-public class VtsMapNavigation : MonoBehaviour
+public class VtsSplitscreenNavigation : MonoBehaviour
 {
-    void Update ()
+    private void Start()
     {
-        if (UnityEngine.EventSystems.EventSystem.current != null && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-            return;
-        Map map = GetComponent<VtsMap>().map;
-        if (Input.GetMouseButton(0))
-        {
-            double[] pan = new double[3];
-            pan[0] = Input.GetAxis("Mouse X") * mousePanSpeed;
-            pan[1] = -Input.GetAxis("Mouse Y") * mousePanSpeed;
-            map.Pan(pan);
-            map.SetOptions("{\"navigationType\":1}"); // quick navigation mode
-        }
-        if (Input.GetMouseButton(1))
-        {
-            double[] rot = new double[3];
-            rot[0] = Input.GetAxis("Mouse X") * mouseRotateSpeed;
-            rot[1] = -Input.GetAxis("Mouse Y") * mouseRotateSpeed;
-            map.Rotate(rot);
-            map.SetOptions("{\"navigationType\":1}"); // quick navigation mode
-        }
-        {
-            double zoom = Input.GetAxis("Mouse ScrollWheel") * mouseZoomSpeed;
-            map.Zoom(zoom);
-        }
+        cam = GetComponent<Camera>();
+        nav = GetComponent<VtsNavigation>();
     }
 
-    public double mousePanSpeed = 30;
-    public double mouseRotateSpeed = 30;
-    public double mouseZoomSpeed = 10;
+    private void Update()
+    {
+        nav.enabled = cam.pixelRect.Contains(Input.mousePosition);
+    }
+
+    private Camera cam;
+    private VtsNavigation nav;
 }
+

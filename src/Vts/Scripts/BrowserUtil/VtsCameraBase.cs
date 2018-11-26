@@ -35,18 +35,15 @@ public enum VtsDataControl
 }
 
 // this class is common functionality for both vts cameras
-// it handles vts callbacks, shader properties, rendering background
+// it handles view and proj matrices, shader properties, rendering background
 public abstract class VtsCameraBase : MonoBehaviour
 {
-    public VtsCameraBase()
-    {
-        CamOverrideViewDel = CamOverrideView;
-        CamOverrideParametersDel = CamOverrideParameters;
-    }
-
     protected virtual void Start()
     {
-        cam = GetComponent<Camera>();
+        vmap = mapObject.GetComponent<VtsMap>().GetVtsMap();
+        Debug.Assert(vmap != null);
+        vcam = new vts.Camera(vmap);
+        ucam = GetComponent<UnityEngine.Camera>();
         camTrans = GetComponent<Transform>();
         mapTrans = mapObject.GetComponent<Transform>();
 
@@ -68,68 +65,41 @@ public abstract class VtsCameraBase : MonoBehaviour
         backgroundMaterial = Instantiate(backgroundMaterial);
         backgroundCmds = new CommandBuffer();
         backgroundCmds.name = "Vts Atmosphere Background";
-        cam.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, backgroundCmds);
-        cam.AddCommandBuffer(CameraEvent.BeforeLighting, backgroundCmds);
-    }
-
-    private readonly Map.DoubleArrayHandler CamOverrideViewDel;
-    private void CamOverrideView(ref double[] values)
-    {
-        double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
-        // view matrix
-        switch (controlTransformation)
-        {
-            case VtsDataControl.Vts:
-                VtsUtil.Matrix2Transform(camTrans, VtsUtil.V2U44(Math.Mul44x44(Math.Inverse44(Math.Mul44x44(values, Mu)), VtsUtil.U2V44(VtsUtil.InvertZ))));
-                break;
-            case VtsDataControl.Unity:
-                values = Math.Mul44x44(VtsUtil.U2V44(cam.worldToCameraMatrix), Mu);
-                break;
-        }
-    }
-
-    private readonly Map.CameraParamsHandler CamOverrideParametersDel;
-    private void CamOverrideParameters(ref double fov, ref double aspect, ref double near, ref double far)
-    {
-        // fov
-        switch (controlFov)
-        {
-            case VtsDataControl.Vts:
-                cam.fieldOfView = (float)fov;
-                break;
-            case VtsDataControl.Unity:
-                fov = cam.fieldOfView;
-                break;
-        }
-        // near & far
-        switch (controlNearFar)
-        {
-            case VtsDataControl.Vts:
-                cam.nearClipPlane = (float)near;
-                cam.farClipPlane = (float)far;
-                break;
-            case VtsDataControl.Unity:
-                near = cam.nearClipPlane;
-                far = cam.farClipPlane;
-                break;
-        }
+        ucam.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, backgroundCmds);
+        ucam.AddCommandBuffer(CameraEvent.BeforeLighting, backgroundCmds);
     }
 
     private void Update()
     {
-        Map map = mapObject.GetComponent<VtsMap>().map;
-        map.SetWindowSize((uint)cam.pixelWidth, (uint)cam.pixelHeight);
-        map.EventCameraView += CamOverrideViewDel;
-        map.EventCameraFovAspectNearFar += CamOverrideParametersDel;
-        map.RenderTickRender();
-        map.EventCameraView -= CamOverrideViewDel;
-        map.EventCameraFovAspectNearFar -= CamOverrideParametersDel;
-        draws.Load(map);
-        CameraUpdate();
+        // draw current frame
+        draws.Load(vmap, vcam);
+        CameraDraw();
         UpdateBackground();
+
+        // prepare for next frame
+        vcam.SetViewportSize((uint)ucam.pixelWidth, (uint)ucam.pixelHeight);
+        double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
+        if (controlTransformation == VtsDataControl.Vts)
+        {
+            double[] view = vcam.GetView();
+            VtsUtil.Matrix2Transform(camTrans, VtsUtil.V2U44(Math.Mul44x44(Math.Inverse44(Math.Mul44x44(view, Mu)), VtsUtil.U2V44(VtsUtil.InvertZ))));
+        }
+        else
+        {
+            double[] view = Math.Mul44x44(VtsUtil.U2V44(ucam.worldToCameraMatrix), Mu);
+            vcam.SetView(view);
+        }
+        if (controlNearFar == VtsDataControl.Vts)
+        {
+            double n, f;
+            vcam.SuggestedNearFar(out n, out f);
+            ucam.nearClipPlane = (float)n;
+            ucam.farClipPlane = (float)f;
+        }
+        vcam.SetProj(ucam.fieldOfView, ucam.nearClipPlane, ucam.farClipPlane);
     }
 
-    protected abstract void CameraUpdate();
+    protected abstract void CameraDraw();
 
     protected void UpdateMaterial(Material mat)
     {
@@ -201,7 +171,7 @@ public abstract class VtsCameraBase : MonoBehaviour
 
     public VtsDataControl controlTransformation;
     public VtsDataControl controlNearFar;
-    public VtsDataControl controlFov;
+    //public VtsDataControl controlFov;
 
     public bool atmosphere = false;
 
@@ -225,10 +195,17 @@ public abstract class VtsCameraBase : MonoBehaviour
 
     protected readonly Draws draws = new Draws();
 
-    protected Camera cam;
+    protected Map vmap;
+    protected vts.Camera vcam;
+    protected UnityEngine.Camera ucam;
     protected Transform camTrans;
     protected Transform mapTrans;
 
     private CommandBuffer backgroundCmds;
+
+    public vts.Camera GetVtsCamera()
+    {
+        return vcam;
+    }
 }
 

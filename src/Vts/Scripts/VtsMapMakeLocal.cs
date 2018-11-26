@@ -33,8 +33,8 @@ public class VtsMapMakeLocal : MonoBehaviour
     public static bool MakeLocal(MonoBehaviour behavior, double[] longLatAlt)
     {
         Util.CheckArray(longLatAlt, 3);
-        Map map = behavior.GetComponent<VtsMap>().map;
-        if (!map.GetMapConfigAvailable())
+        Map map = behavior.GetComponent<VtsMap>().GetVtsMap();
+        if (!map.GetMapconfigAvailable())
             return false;
         double[] p = map.Convert(longLatAlt, Srs.Navigation, Srs.Physical);
         { // swap YZ
@@ -51,7 +51,7 @@ public class VtsMapMakeLocal : MonoBehaviour
         return true;
     }
 
-    void Update()
+    private void Update()
     {
         if (MakeLocal(this, new double[3] { longitude, latitude, altitude }))
         {

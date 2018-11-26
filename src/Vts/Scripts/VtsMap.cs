@@ -30,7 +30,7 @@ using vts;
 
 public class VtsMap : MonoBehaviour
 {
-    void Awake()
+    private void Awake()
     {
         VtsLog.Dummy();
         Debug.Assert(map == null);
@@ -40,12 +40,16 @@ public class VtsMap : MonoBehaviour
         dataThread = new Thread(new ThreadStart(DataEntry));
         dataThread.Start();
         map.RenderInitialize();
-        map.SetMapConfigPath(ConfigUrl, AuthUrl);
+    }
+
+    private void Start()
+    {
+        map.SetMapconfigPath(ConfigUrl, AuthUrl);
         if (RunConfig.Length > 0)
             map.SetOptions(RunConfig);
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         Debug.Assert(map != null);
         map.RenderDeinitialize();
@@ -54,14 +58,14 @@ public class VtsMap : MonoBehaviour
         map = null;
     }
 
-    void Update()
+    private void LateUpdate()
     {
         Util.Log(LogLevel.debug, "Unity update frame index: " + frameIndex++);
         Debug.Assert(map != null);
-        map.RenderTickPrepare(Time.deltaTime);
+        map.RenderTick(Time.deltaTime);
     }
 
-    void DataEntry()
+    private void DataEntry()
     {
         map.DataAllRun();
     }
@@ -108,5 +112,10 @@ public class VtsMap : MonoBehaviour
     [SerializeField] private string CreateConfig;
     [SerializeField] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000, \"traverseModeSurfaces\":3 }";
 
-    public Map map;
+    private Map map;
+
+    public Map GetVtsMap()
+    {
+        return map;
+    }
 }

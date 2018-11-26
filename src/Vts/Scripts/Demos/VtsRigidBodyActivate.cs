@@ -41,7 +41,7 @@ public class VtsRigidBodyActivate : MonoBehaviour
     {
         if (step++ < 30)
             return;
-        if (map.GetComponent<VtsMap>().map.GetMapRenderComplete())
+        if (map.GetComponent<VtsMap>().GetVtsMap().GetMapRenderComplete())
         {
             GetComponent<Rigidbody>().isKinematic = false;
             Destroy(this); // destroy this component

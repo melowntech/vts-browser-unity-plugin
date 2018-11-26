@@ -33,11 +33,11 @@ public class VtsCameraObjects : VtsCameraBase
     protected override void Start()
     {
         base.Start();
-        var cam = GetComponent<Camera>();
+        var cam = GetComponent<UnityEngine.Camera>();
         cam.cullingMask |= 1 << renderLayer;
     }
 
-    protected override void CameraUpdate()
+    protected override void CameraDraw()
     {
         double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
 

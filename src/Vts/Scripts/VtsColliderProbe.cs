@@ -25,64 +25,37 @@
  */
 
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using vts;
 
 public class VtsColliderProbe : MonoBehaviour
 {
-    public VtsColliderProbe()
-    {
-        CollOverrideCenterDel = CollOverrideCenter;
-        CollOverrideDistanceDel = CollOverrideDistance;
-        CollOverrideLodDel = CollOverrideLod;
-    }
-
     private void Start()
     {
+        vmap = mapObject.GetComponent<VtsMap>().GetVtsMap();
+        vcam = new vts.Camera(vmap);
         probTrans = GetComponent<Transform>();
         mapTrans = mapObject.GetComponent<Transform>();
     }
 
-    private readonly Map.DoubleArrayHandler CollOverrideCenterDel;
-    private void CollOverrideCenter(ref double[] values)
-    {
-        values = VtsUtil.U2V3(probTrans.position);
-        { // convert from unity world to (local) vts physical
-            double[] point4 = new double[4] { values[0], values[1], values[2], 1 };
-            point4 = Math.Mul44x4(VtsUtil.U2V44(mapTrans.worldToLocalMatrix), point4);
-            values[0] = point4[0]; values[1] = point4[1]; values[2] = point4[2];
-        }
-        { // swap YZ
-            double tmp = values[1];
-            values[1] = values[2];
-            values[2] = tmp;
-        }
-    }
-
-    private readonly Map.DoubleHandler CollOverrideDistanceDel;
-    private void CollOverrideDistance(ref double value)
-    {
-        value = collidersDistance;
-    }
-
-    private readonly Map.Uint32Handler CollOverrideLodDel;
-    private void CollOverrideLod(ref uint value)
-    {
-        value = collidersLod;
-    }
-
     private void Update()
     {
-        Map map = mapObject.GetComponent<VtsMap>().map;
-        map.EventCollidersCenter += CollOverrideCenterDel;
-        map.EventCollidersDistance += CollOverrideDistanceDel;
-        map.EventCollidersLod += CollOverrideLodDel;
-        map.RenderTickColliders();
-        map.EventCollidersCenter -= CollOverrideCenterDel;
-        map.EventCollidersDistance -= CollOverrideDistanceDel;
-        map.EventCollidersLod -= CollOverrideLodDel;
-        draws.Load(map);
+        draws.Load(vmap, vcam);
         UpdateParts();
+    }
+
+    private void LateUpdate()
+    {
+        vcam.SetViewportSize(1, 1);
+        double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
+        double[] view = Math.Mul44x44(VtsUtil.U2V44(probTrans.localToWorldMatrix), Mu);
+        vcam.SetView(view);
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("{ \"fixedTraversalDistance\":").Append(collidersDistance).Append(", \"fixedTraversalLod\":").Append(collidersLod).Append(", \"traverseModeSurfaces\":4 }");
+            vcam.SetOptions(builder.ToString());
+        }
     }
 
     private void UpdateParts()
@@ -128,6 +101,8 @@ public class VtsColliderProbe : MonoBehaviour
     private readonly Draws draws = new Draws();
     private readonly Dictionary<VtsMesh, GameObject> partsCache = new Dictionary<VtsMesh, GameObject>();
 
+    private Map vmap;
+    private vts.Camera vcam;
     private Transform probTrans;
     private Transform mapTrans;
 }

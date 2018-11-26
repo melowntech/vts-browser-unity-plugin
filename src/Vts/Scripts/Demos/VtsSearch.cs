@@ -50,7 +50,8 @@ public class VtsSearch : MonoBehaviour
     public InputField input;
     public Dropdown dropDown;
 
-    private VtsMap map;
+    private Map map;
+    private vts.Navigation nav;
     private SearchTask task;
     private List<Item> results = new List<Item>();
 
@@ -58,7 +59,7 @@ public class VtsSearch : MonoBehaviour
     {
         dropDown.interactable = false;
         string s = input.text;
-        task = map.map.Search(s); // initiate search task
+        task = map.Search(s); // initiate search task
     }
 
     public void Selected(int index)
@@ -66,25 +67,30 @@ public class VtsSearch : MonoBehaviour
         Item it = results[index];
         double[] p = new double[3];
         p[1] = 270;
-        map.map.SetPositionRotation(p); // nadir view
+        nav.SetRotation(p); // nadir view
         p[0] = it.position.x;
         p[1] = it.position.y;
         p[2] = it.position.z;
-        map.map.SetPositionPoint(p); // location of the result
-        map.map.SetPositionViewExtent(it.radius > 3000 ? it.radius * 2 : 6000); // some reasonable view extent (zoom)
-        map.map.SetOptions("{\"navigationType\":2}"); // switch to fly-over navigation mode
+        nav.SetPoint(p); // location of the result
+        nav.SetViewExtent(it.radius > 3000 ? it.radius * 2 : 6000); // some reasonable view extent (zoom)
+        nav.SetOptions("{\"navigationType\":2}"); // switch to fly-over navigation mode
     }
 
-    void Start ()
+    void Start()
     {
-        map = GetComponent<VtsMap>();
+        map = GetComponent<VtsMap>().GetVtsMap();
         input.interactable = false;
         dropDown.interactable = false;
     }
 
-    void Update ()
+    void Update()
     {
-        if (map.map.GetMapConfigAvailable() && map.map.GetSearchable())
+        if (nav == null)
+        {
+            nav = FindObjectOfType<UnityEngine.Camera>().GetComponent<VtsNavigation>().GetVtsNavigation();
+            return;
+        }
+        if (map.GetMapconfigAvailable() && map.GetSearchable())
         {
             input.interactable = true;
             // the check method will update the results list if the data are already available
