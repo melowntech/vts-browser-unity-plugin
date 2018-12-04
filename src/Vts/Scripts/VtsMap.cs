@@ -114,7 +114,10 @@ public class VtsMap : MonoBehaviour
     [SerializeField] private string AuthUrl = "";
     [SerializeField, TextArea] private string CreateConfig;
     [SerializeField, TextArea] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000 }";
+
+#pragma warning disable
     [SerializeField, TextArea(0,20)] private string Statistics = "This will show statistics at play";
+#pragma warning restore
 
     private Map map;
 

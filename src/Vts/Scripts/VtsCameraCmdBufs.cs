@@ -50,7 +50,7 @@ public class VtsCameraCmdBufs : VtsCameraBase
         ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
     }
 
-    private void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawTask> tasks)
+    private void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawTask> tasks, Material renderMaterial)
     {
         buffer.Clear();
         if (atmosphere && draws.celestial.atmosphere.densityTexture as VtsTexture != null)
@@ -105,13 +105,12 @@ public class VtsCameraCmdBufs : VtsCameraBase
 
     protected override void CameraDraw()
     {
-        RegenerateCommandBuffer(opaque, draws.opaque);
-        RegenerateCommandBuffer(transparent, draws.transparent);
-        RegenerateCommandBuffer(geodata, draws.geodata);
-        RegenerateCommandBuffer(infographics, draws.infographics);
+        RegenerateCommandBuffer(opaque, draws.opaque, opaqueMaterial);
+        RegenerateCommandBuffer(transparent, draws.transparent, transparentMaterial);
     }
 
-    public Material renderMaterial;
+    public Material opaqueMaterial;
+    public Material transparentMaterial;
 
     private CommandBuffer opaque;
     private CommandBuffer transparent;

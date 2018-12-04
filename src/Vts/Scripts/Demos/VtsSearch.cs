@@ -30,6 +30,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using vts;
 
+// these structs emit warnings that some fields are not being used, however they are used in the serialization
+#pragma warning disable
+
 [Serializable]
 internal struct Position
 {
@@ -44,6 +47,8 @@ internal class Item
     public double radius;
     // there is actually more information in the json, but not needed in this example
 }
+
+#pragma warning restore
 
 public class VtsSearch : MonoBehaviour
 {

@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33545766958928156}
   - component: {fileID: 23420714750678954}
   m_Layer: 0
-  m_Name: VtsLitRenderPrefab
+  m_Name: VtsUnlitTransparent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,15 +48,15 @@ MeshRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1447127621452838}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 1191b95305cbb4d45803dd0fe3169f05, type: 2}
+  - {fileID: 2100000, guid: 185ea5bd609af1146917eaef98ec5ab9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

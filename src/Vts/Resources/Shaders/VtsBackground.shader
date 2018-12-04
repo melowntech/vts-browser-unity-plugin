@@ -1,25 +1,31 @@
-Shader "Vts/BackgroundShader"
+Shader "Vts/Background"
 {
 	Properties
 	{
 		vtsTexAtmDensity("Vts Atmosphere Density Texture", 2D) = "" {}
 	}
+
 	SubShader
 	{
-		Cull Off
-		ZWrite Off
-		ZTest Always
+		Tags
+		{
+			"Queue" = "Background"
+			"RenderType" = "Background"
+		}
 
 		Pass
 		{
+			Cull Off
+			ZWrite Off
+			ZTest Always
+
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma target 3.0
-			#include "UnityCG.cginc"
-
-			#include "VtsCommon.cginc"
 			#define VTS_ATMOSPHERE 1
+			#include "UnityCG.cginc"
+			#include "VtsCommon.cginc"
 			#include "VtsAtmosphere.cginc"
 
 			struct vIn

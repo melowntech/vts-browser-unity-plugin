@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: VtsUnlitMaterial
-  m_Shader: {fileID: 4800000, guid: 0c83c2dd119a3ba458306b24002bbde0, type: 3}
+  m_Name: VtsUnlitTransparent
+  m_Shader: {fileID: 4800000, guid: 8e9088d7f548d64459ba1806f311fe36, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0

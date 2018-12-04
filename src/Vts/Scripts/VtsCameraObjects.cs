@@ -39,8 +39,13 @@ public class VtsCameraObjects : VtsCameraBase
 
     protected override void CameraDraw()
     {
-        double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
+        conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
+        UpdateOpaqueDraws();
+        UpdateTransparentDraws();
+    }
 
+    private void UpdateOpaqueDraws()
+    {
         Dictionary<VtsMesh, List<DrawTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawTask>>();
         foreach (DrawTask t in draws.opaque)
         {
@@ -50,25 +55,25 @@ public class VtsCameraObjects : VtsCameraBase
             tasksByMesh[k].Add(t);
         }
 
-        HashSet<VtsMesh> partsToRemove = new HashSet<VtsMesh>(partsCache.Keys);
+        HashSet<VtsMesh> partsToRemove = new HashSet<VtsMesh>(opaquePartsCache.Keys);
 
         foreach (KeyValuePair<VtsMesh, List<DrawTask>> tbm in tasksByMesh)
         {
-            if (!partsCache.ContainsKey(tbm.Key))
-                partsCache.Add(tbm.Key, new List<GameObject>(tbm.Value.Count));
-            UpdateParts(tbm.Value, partsCache[tbm.Key], conv);
+            if (!opaquePartsCache.ContainsKey(tbm.Key))
+                opaquePartsCache.Add(tbm.Key, new List<GameObject>(tbm.Value.Count));
+            UpdateOpaqueParts(tbm.Value, opaquePartsCache[tbm.Key]);
             partsToRemove.Remove(tbm.Key);
         }
 
         foreach (VtsMesh m in partsToRemove)
         {
-            foreach (GameObject o in partsCache[m])
+            foreach (GameObject o in opaquePartsCache[m])
                 Destroy(o);
-            partsCache.Remove(m);
+            opaquePartsCache.Remove(m);
         }
     }
 
-    private void UpdateParts(List<DrawTask> tasks, List<GameObject> parts, double[] conv)
+    private void UpdateOpaqueParts(List<DrawTask> tasks, List<GameObject> parts)
     {
         if (parts.Count == tasks.Count)
             return;
@@ -80,37 +85,72 @@ public class VtsCameraObjects : VtsCameraBase
         }
         foreach (DrawTask t in tasks)
         {
-            GameObject o = Instantiate(renderPrefab);
+            GameObject o = Instantiate(opaquePrefab);
             parts.Add(o);
-            o.layer = renderLayer;
-            UnityEngine.Mesh msh = (tasks[0].mesh as VtsMesh).Get();
-            o.GetComponent<MeshFilter>().mesh = msh;
-            Material mat = o.GetComponent<MeshRenderer>().material;
-            UpdateMaterial(mat);
-            bool monochromatic = false;
-            if (t.texColor != null)
-            {
-                var tt = t.texColor as VtsTexture;
-                mat.SetTexture(shaderPropertyMainTex, tt.Get());
-                monochromatic = tt.monochromatic;
-            }
-            if (t.texMask != null)
-            {
-                var tt = t.texMask as VtsTexture;
-                mat.SetTexture(shaderPropertyMaskTex, tt.Get());
-            }
-            mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
-            mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
-            mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
-            // flags: mask, monochromatic, flat shading, uv source
-            mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
-            VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
+            UpdatePart(o, t);
         }
     }
 
-    public GameObject renderPrefab;
+    private void UpdateTransparentDraws()
+    {
+        // resize the transparentPartsCache
+        int changeCount = draws.transparent.Count - transparentPartsCache.Count;
+        while (changeCount > 0)
+        {
+            // inflate
+            transparentPartsCache.Add(Instantiate(transparentPrefab));
+            changeCount--;
+        }
+        if (changeCount < 0)
+        {
+            // deflate
+            foreach (GameObject p in transparentPartsCache.GetRange(draws.transparent.Count, -changeCount))
+                Destroy(p);
+            transparentPartsCache.RemoveRange(draws.transparent.Count, -changeCount);
+        }
+        Debug.Assert(draws.transparent.Count == transparentPartsCache.Count);
+
+        // update the parts
+        int index = 0;
+        foreach (DrawTask t in draws.transparent)
+        {
+            GameObject o = transparentPartsCache[index++];
+            UpdatePart(o, t);
+        }
+    }
+
+    private void UpdatePart(GameObject o, DrawTask t)
+    {
+        o.layer = renderLayer;
+        o.GetComponent<MeshFilter>().mesh = (t.mesh as VtsMesh).Get();
+        Material mat = o.GetComponent<MeshRenderer>().material;
+        UpdateMaterial(mat);
+        bool monochromatic = false;
+        if (t.texColor != null)
+        {
+            var tt = t.texColor as VtsTexture;
+            mat.SetTexture(shaderPropertyMainTex, tt.Get());
+            monochromatic = tt.monochromatic;
+        }
+        if (t.texMask != null)
+        {
+            var tt = t.texMask as VtsTexture;
+            mat.SetTexture(shaderPropertyMaskTex, tt.Get());
+        }
+        mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
+        mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
+        mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
+        // flags: mask, monochromatic, flat shading, uv source
+        mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
+        VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
+    }
+
+    public GameObject opaquePrefab;
+    public GameObject transparentPrefab;
     public int renderLayer = 31;
 
-    private readonly Dictionary<VtsMesh, List<GameObject>> partsCache = new Dictionary<VtsMesh, List<GameObject>>();
+    private readonly Dictionary<VtsMesh, List<GameObject>> opaquePartsCache = new Dictionary<VtsMesh, List<GameObject>>();
+    private readonly List<GameObject> transparentPartsCache = new List<GameObject>();
+    private double[] conv;
 }
 

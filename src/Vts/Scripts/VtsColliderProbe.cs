@@ -48,7 +48,7 @@ public class VtsColliderProbe : MonoBehaviour
         // prepare for next frame
         vcam.SetViewportSize(1, 1);
         double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
-        double[] view = Math.Mul44x44(VtsUtil.U2V44(probTrans.localToWorldMatrix), Mu);
+        double[] view = Math.Mul44x44(VtsUtil.U2V44(probTrans.localToWorldMatrix.inverse), Mu);
         vcam.SetView(view);
 
         // enforce fixed traversal mode
@@ -102,7 +102,9 @@ public class VtsColliderProbe : MonoBehaviour
     public double collidersDistance = 200;
     public uint collidersLod = 18;
 
+#pragma warning disable
     [SerializeField, TextArea(0, 20)] private string Statistics = "This will show statistics at play";
+#pragma warning restore
 
     private readonly Draws draws = new Draws();
     private readonly Dictionary<VtsMesh, GameObject> partsCache = new Dictionary<VtsMesh, GameObject>();
