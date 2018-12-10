@@ -39,7 +39,7 @@ v2f vert(vIn v)
 fOut frag(v2f i)
 {
 	fOut o;
-	VTS_FRAG_COMMON(i, o)
+	VTS_FRAG_COMMON(i, o.color)
 
 	VTS_FRAG_CLIP(i)
 

@@ -43,16 +43,16 @@
 	o.clip[2] = (i.texcoord1[0] - _UvClip[2]) * -1.0; \
 	o.clip[3] = (i.texcoord1[1] - _UvClip[3]) * -1.0;
 
-#define VTS_FRAG_COMMON(i,o) \
-	o.color = tex2D(_MainTex, i._uvTex); \
+#define VTS_FRAG_COMMON(i,color) \
+	color = tex2D(_MainTex, i._uvTex); \
 	if (_Flags.x > 0) \
 	{ \
 		if (tex2D(_MaskTex, i._uvTex).r < 0.5) \
 			clip(-1.0); \
 	} \
 	if (_Flags.y > 0) \
-		o.color = o.color.rrra; \
-	o.color *= _Color;
+		color = color.rrra; \
+	color *= _Color;
 
 #ifdef VTSH_MANUAL_CLIP
 #	define VTS_FRAG_CLIP(i) \

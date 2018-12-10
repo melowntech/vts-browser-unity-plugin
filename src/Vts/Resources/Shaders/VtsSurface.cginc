@@ -22,16 +22,8 @@ void vert(inout appdata_full v, out Input o)
 
 void surf(Input i, inout SurfaceOutput o)
 {
-	// VTS_FRAG_COMMON
-	float4 color = tex2D(_MainTex, i._uvTex);
-	if (_Flags.x > 0)
-	{
-		if (tex2D(_MaskTex, i._uvTex).r < 0.5)
-			clip(-1.0);
-	}
-	if (_Flags.y > 0)
-		color = color.rrra;
-	color *= _Color;
+	float4 color;
+	VTS_FRAG_COMMON(i, color);
 
 	VTS_FRAG_CLIP(i)
 
