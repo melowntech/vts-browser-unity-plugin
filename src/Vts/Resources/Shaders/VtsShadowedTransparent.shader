@@ -4,14 +4,16 @@ Shader "Vts/LitTransparent"
 	{
 		Tags
 		{
-			//"Queue" = "AlphaTest+50"
 			"Queue" = "Transparent"
 			"RenderType" = "Transparent"
-			"LightMode" = "ForwardBase"
+			"ForceNoShadowCasting" = "True"
+			"IgnoreProjector" = "True"
 		}
 
 		Pass
 		{
+			Tags { "LightMode" = "ForwardBase" }
+
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
 			Cull Off
@@ -23,11 +25,9 @@ Shader "Vts/LitTransparent"
 			#pragma target 3.0
 			#pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight
 			#pragma multi_compile __ VTS_ATMOSPHERE
-			#include "VtsLit.cginc"
+			#include "VtsShadowed.cginc"
 			ENDCG
 		}
-
-		UsePass "Vts/UnlitOpaque/SHADOWCASTER"
 	}
 }
 

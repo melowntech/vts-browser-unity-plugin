@@ -6,10 +6,14 @@ Shader "Vts/UnlitTransparent"
 		{
 			"Queue" = "Transparent"
 			"RenderType" = "Transparent"
+			"ForceNoShadowCasting" = "True"
+			"IgnoreProjector" = "True"
 		}
 
 		Pass
 		{
+			Tags { "LightMode" = "ForwardBase" }
+
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
 			Cull Off
@@ -23,7 +27,5 @@ Shader "Vts/UnlitTransparent"
 			#include "VtsUnlit.cginc"
 			ENDCG
 		}
-
-		UsePass "Vts/UnlitOpaque/SHADOWCASTER"
 	}
 }

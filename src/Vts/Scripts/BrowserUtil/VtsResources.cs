@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using vts;
 
@@ -41,6 +43,52 @@ public static class VtsResources
     public static System.Object LoadMesh(vts.Mesh m)
     {
         return new VtsMesh(m);
+    }
+
+    public static void Init()
+    {
+        lock (resourcesToDestroy)
+        {
+            if (resourcesUnloader == null)
+            {
+                resourcesUnloader = new GameObject();
+                resourcesUnloader.AddComponent<VtsResourcesUnloader>();
+                resourcesUnloader.name = "Vts Resources Unloader";
+                resourcesUnloader.hideFlags = HideFlags.HideAndDontSave;
+                UnityEngine.Object.DontDestroyOnLoad(resourcesUnloader);
+            }
+        }
+    }
+
+    internal static GameObject resourcesUnloader;
+    internal static List<UnityEngine.Object> resourcesToDestroy = new List<UnityEngine.Object>();
+}
+
+// it is forbidden to call unity's Destroy on non-main threads
+// therefore, in resource's dispose method, we enqueue the resource to be destroyed on main thread
+// this class declares a component for dequeuing and destroying the resources on the main thread
+// the gameobject with this component is created automatically and hidden, indestructible
+internal class VtsResourcesUnloader : MonoBehaviour
+{
+    private void Start()
+    {
+        StartCoroutine("UnloadResources");
+    }
+
+    private IEnumerator UnloadResources()
+    {
+        while (true)
+        {
+            lock (VtsResources.resourcesToDestroy)
+            {
+                foreach (var o in VtsResources.resourcesToDestroy)
+                {
+                    UnityEngine.Object.Destroy(o);
+                }
+                VtsResources.resourcesToDestroy.Clear();
+            }
+            yield return new WaitForSeconds(.5f);
+        }
     }
 }
 
@@ -135,7 +183,10 @@ public class VtsTexture : IDisposable
     {
         if (ut)
         {
-            Texture2D.DestroyImmediate(ut, true);
+            lock (VtsResources.resourcesToDestroy)
+            {
+                VtsResources.resourcesToDestroy.Add(ut);
+            }
             ut = null;
         }
     }
@@ -145,6 +196,7 @@ public class VtsTexture : IDisposable
     public readonly bool monochromatic;
 }
 
+// class that represents single mesh provided by the vts
 public class VtsMesh : IDisposable
 {
     private static float ExtractFloat(vts.Mesh m, int byteOffset, GpuType type, bool normalized)
@@ -283,7 +335,10 @@ public class VtsMesh : IDisposable
     {
         if (um)
         {
-            UnityEngine.Mesh.DestroyImmediate(um, true);
+            lock (VtsResources.resourcesToDestroy)
+            {
+                VtsResources.resourcesToDestroy.Add(um);
+            }
             um = null;
         }
     }

@@ -6,11 +6,12 @@ Shader "Vts/LitOpaque"
 		{
 			"Queue" = "Geometry"
 			"RenderType" = "Opaque"
-			"LightMode" = "ForwardBase"
 		}
 
 		Pass
 		{
+			Tags { "LightMode" = "ForwardBase" }
+
 			Cull Off
 
 			CGPROGRAM
@@ -19,7 +20,7 @@ Shader "Vts/LitOpaque"
 			#pragma target 3.0
 			#pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight
 			#pragma multi_compile __ VTS_ATMOSPHERE
-			#include "VtsLit.cginc"
+			#include "VtsShadowed.cginc"
 			ENDCG
 		}
 

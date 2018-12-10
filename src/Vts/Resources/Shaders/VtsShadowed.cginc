@@ -44,10 +44,10 @@ v2f vert(vIn v)
 
 fOut frag(v2f i)
 {
-	VTS_FRAG_CLIP(i)
-
 	fOut o;
 	VTS_FRAG_COMMON(i, o)
+
+	VTS_FRAG_CLIP(i)
 
 	// shadow
 	o.color.rgb *= SHADOW_ATTENUATION(i);

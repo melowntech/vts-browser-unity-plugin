@@ -10,6 +10,8 @@ Shader "Vts/UnlitOpaque"
 
 		Pass
 		{
+			Tags { "LightMode" = "ForwardBase" }
+
 			Cull Off
 
 			CGPROGRAM

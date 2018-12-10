@@ -38,10 +38,10 @@ v2f vert(vIn v)
 
 fOut frag(v2f i)
 {
-	VTS_FRAG_CLIP(i)
-
 	fOut o;
 	VTS_FRAG_COMMON(i, o)
+
+	VTS_FRAG_CLIP(i)
 
 	// atmosphere
 	float atmDensity = vtsAtmDensity(i.viewPos);

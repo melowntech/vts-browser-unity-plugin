@@ -32,7 +32,8 @@ public class VtsMap : MonoBehaviour
 {
     private void Awake()
     {
-        VtsLog.Dummy();
+        VtsLog.Init();
+        VtsResources.Init();
         Debug.Assert(map == null);
         map = new Map(CreateConfig);
         map.EventLoadTexture += VtsResources.LoadTexture;

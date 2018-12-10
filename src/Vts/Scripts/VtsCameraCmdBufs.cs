@@ -39,15 +39,15 @@ public class VtsCameraCmdBufs : VtsCameraBase
         opaque.name = "Vts Opaque";
         transparent = new CommandBuffer();
         transparent.name = "Vts Transparent";
-        geodata = new CommandBuffer();
-        geodata.name = "Vts Geodata";
-        infographics = new CommandBuffer();
-        infographics.name = "Vts Infographics";
+        //geodata = new CommandBuffer();
+        //geodata.name = "Vts Geodata";
+        //infographics = new CommandBuffer();
+        //infographics.name = "Vts Infographics";
 
         ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, opaque);
-        ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, transparent);
-        ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, geodata);
-        ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
+        ucam.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, transparent);
+        //ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, geodata);
+        //ucam.AddCommandBuffer(CameraEvent.BeforeImageEffectsOpaque, infographics);
     }
 
     private void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawTask> tasks, Material renderMaterial)
@@ -114,7 +114,7 @@ public class VtsCameraCmdBufs : VtsCameraBase
 
     private CommandBuffer opaque;
     private CommandBuffer transparent;
-    private CommandBuffer geodata;
-    private CommandBuffer infographics;
+    //private CommandBuffer geodata;
+    //private CommandBuffer infographics;
 }
 

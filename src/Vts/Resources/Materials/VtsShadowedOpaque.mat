@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: VtsLitTransparent
-  m_Shader: {fileID: 4800000, guid: dedb902cd11259d42bccc6c9d8dc662b, type: 3}
+  m_Name: VtsShadowedOpaque
+  m_Shader: {fileID: 4800000, guid: 9e9624dde5b63cf4abcc66bf65851482, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
