@@ -30,38 +30,51 @@ using vts;
 [RequireComponent(typeof(VtsMap))]
 public class VtsMapMakeLocal : MonoBehaviour
 {
-    public static bool MakeLocal(MonoBehaviour behavior, double[] longLatAlt)
+    public static bool MakeLocal(MonoBehaviour behavior, double[] navPt)
     {
-        Util.CheckArray(longLatAlt, 3);
+        Util.CheckArray(navPt, 3);
         Map map = behavior.GetComponent<VtsMap>().GetVtsMap();
         if (!map.GetMapconfigAvailable())
             return false;
-        double[] p = map.Convert(longLatAlt, Srs.Navigation, Srs.Physical);
+        double[] p = map.Convert(navPt, Srs.Navigation, Srs.Physical);
         { // swap YZ
             double tmp = p[1];
             p[1] = p[2];
             p[2] = tmp;
         }
         Vector3 v = Vector3.Scale(VtsUtil.V2U3(p), behavior.transform.localScale);
-        float m = v.magnitude;
-        behavior.transform.position = new Vector3(0, -m, 0); // altitude
-        behavior.transform.rotation =
-            Quaternion.Euler(0, (float)longLatAlt[0] + 90.0f, 0) // align to north
-            * Quaternion.FromToRotation(-v, behavior.transform.position); // latlon
+        if (map.GetProjected())
+        {
+            behavior.transform.position = -v;
+        }
+        else
+        {
+            float m = v.magnitude;
+            behavior.transform.position = new Vector3(0, -m, 0); // altitude
+            behavior.transform.rotation =
+                Quaternion.Euler(0, (float)navPt[0] + 90.0f, 0) // align to north
+                * Quaternion.FromToRotation(-v, behavior.transform.position); // latlon
+        }
         return true;
     }
 
     private void Update()
     {
-        if (MakeLocal(this, new double[3] { longitude, latitude, altitude }))
+        if (MakeLocal(this, new double[3] { x, y, z }))
         {
             if (singleUse)
                 Destroy(this);
         }
     }
 
-    public double longitude;
-    public double latitude;
-    public double altitude;
+    [Tooltip("Navigation SRS X (Longitude)")]
+    public double x;
+
+    [Tooltip("Navigation SRS Y (Latitude)")]
+    public double y;
+
+    [Tooltip("Navigation SRS Z (Altitude)")]
+    public double z;
+
     public bool singleUse = true;
 }
