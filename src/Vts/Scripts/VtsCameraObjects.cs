@@ -67,8 +67,11 @@ public class VtsCameraObjects : VtsCameraBase
 
         foreach (VtsMesh m in partsToRemove)
         {
-            foreach (GameObject o in opaquePartsCache[m])
-                Destroy(o);
+            foreach (GameObject p in opaquePartsCache[m])
+            {
+                Destroy(p.GetComponent<MeshRenderer>().material);
+                Destroy(p);
+            }
             opaquePartsCache.Remove(m);
         }
     }
@@ -80,7 +83,10 @@ public class VtsCameraObjects : VtsCameraBase
         if (parts.Count > 0)
         {
             foreach (GameObject p in parts)
+            {
+                Destroy(p.GetComponent<MeshRenderer>().material);
                 Destroy(p);
+            }
             parts.Clear();
         }
         foreach (DrawTask t in tasks)
@@ -105,7 +111,10 @@ public class VtsCameraObjects : VtsCameraBase
         {
             // deflate
             foreach (GameObject p in transparentPartsCache.GetRange(draws.transparent.Count, -changeCount))
+            {
+                Destroy(p.GetComponent<MeshRenderer>().material);
                 Destroy(p);
+            }
             transparentPartsCache.RemoveRange(draws.transparent.Count, -changeCount);
         }
         Debug.Assert(draws.transparent.Count == transparentPartsCache.Count);
