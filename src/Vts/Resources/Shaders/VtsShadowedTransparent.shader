@@ -4,7 +4,7 @@ Shader "Vts/LitTransparent"
 	{
 		Tags
 		{
-			"Queue" = "Transparent"
+			"Queue" = "AlphaTest"
 			"RenderType" = "Transparent"
 			"ForceNoShadowCasting" = "True"
 			"IgnoreProjector" = "True"

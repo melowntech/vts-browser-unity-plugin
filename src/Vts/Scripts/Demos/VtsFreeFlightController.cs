@@ -31,14 +31,18 @@ public class VtsFreeFlightController : MonoBehaviour
     public float cameraMouseSensitivity = 8;
     public float currentSpeed = 50;
     public bool horizontalOnly = true;
+    public bool lockCursorAtInit = true;
 
     private float yaw = 0.0f;
     private float pitch = 0.0f;
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (lockCursorAtInit)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     void Update()

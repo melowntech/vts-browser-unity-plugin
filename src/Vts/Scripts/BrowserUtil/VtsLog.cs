@@ -25,6 +25,7 @@
  */
 
 using vts;
+using UnityEngine;
 
 // class to initialize vts logging
 public static class VtsLog
@@ -33,11 +34,17 @@ public static class VtsLog
     public static void Init()
     {}
 
+    private static void LogCallback(string msg)
+    {
+        Debug.Log(msg);
+    }
+
     static VtsLog()
     {
+        BrowserInterop.vtsLogClearSinks();
+        BrowserInterop.vtsLogAddSink((uint)LogLevel.default_, LogCallback);
         BrowserInterop.vtsLogSetMaskCode((uint)LogLevel.default_);
-        Util.CheckInterop();
-        BrowserInterop.vtsLogSetFile("vts-unity.log");
+        //BrowserInterop.vtsLogSetFile("vts-unity.log");
         Util.CheckInterop();
         Util.Log(LogLevel.info4, "Initialized VTS logging in Unity");
     }

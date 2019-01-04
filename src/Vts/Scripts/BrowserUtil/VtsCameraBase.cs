@@ -100,6 +100,9 @@ public abstract class VtsCameraBase : MonoBehaviour
             ucam.farClipPlane = (float)f;
         }
         vcam.SetProj(ucam.fieldOfView, ucam.nearClipPlane, ucam.farClipPlane);
+        Matrix4x4 proj = VtsUtil.V2U44(vcam.GetProj());
+        if (proj[0] == proj[0] && proj[0] != 0)
+            ucam.projectionMatrix = proj;
 
         // statistics
         Statistics = vcam.GetStatistics();
