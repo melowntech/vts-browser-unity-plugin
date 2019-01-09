@@ -27,6 +27,7 @@
 using UnityEngine;
 using vts;
 
+[RequireComponent(typeof(VtsCameraBase))]
 public class VtsNavigation : MonoBehaviour
 {
     private void Start()

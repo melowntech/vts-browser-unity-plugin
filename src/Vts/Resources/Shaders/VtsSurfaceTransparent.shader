@@ -18,7 +18,7 @@ Shader "Vts/SurfaceTransparent"
 		Blend SrcAlpha OneMinusSrcAlpha
 		ZWrite Off
 		Cull Off
-		Offset 0, -10
+		Offset 0, -1000
 
 		CGPROGRAM
 		#pragma surface surf Lambert fullforwardshadows vertex:vert alphatest:_Cutout

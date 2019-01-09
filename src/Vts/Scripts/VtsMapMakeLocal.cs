@@ -27,13 +27,14 @@
 using UnityEngine;
 using vts;
 
+[DisallowMultipleComponent]
 [RequireComponent(typeof(VtsMap))]
 public class VtsMapMakeLocal : MonoBehaviour
 {
-    public static bool MakeLocal(MonoBehaviour behavior, double[] navPt)
+    public static bool MakeLocal(VtsMap umap, double[] navPt)
     {
         Util.CheckArray(navPt, 3);
-        Map map = behavior.GetComponent<VtsMap>().GetVtsMap();
+        Map map = umap.GetVtsMap();
         if (!map.GetMapconfigAvailable())
             return false;
         double[] p = map.Convert(navPt, Srs.Navigation, Srs.Physical);
@@ -42,25 +43,25 @@ public class VtsMapMakeLocal : MonoBehaviour
             p[1] = p[2];
             p[2] = tmp;
         }
-        Vector3 v = Vector3.Scale(VtsUtil.V2U3(p), behavior.transform.localScale);
+        Vector3 v = Vector3.Scale(VtsUtil.V2U3(p), umap.transform.localScale);
         if (map.GetProjected())
         {
-            behavior.transform.position = -v;
+            umap.transform.position = -v;
         }
         else
         {
             float m = v.magnitude;
-            behavior.transform.position = new Vector3(0, -m, 0); // altitude
-            behavior.transform.rotation =
+            umap.transform.position = new Vector3(0, -m, 0); // altitude
+            umap.transform.rotation =
                 Quaternion.Euler(0, (float)navPt[0] + 90.0f, 0) // align to north
-                * Quaternion.FromToRotation(-v, behavior.transform.position); // latlon
+                * Quaternion.FromToRotation(-v, umap.transform.position); // latlon
         }
         return true;
     }
 
     private void Update()
     {
-        if (MakeLocal(this, new double[3] { x, y, z }))
+        if (MakeLocal(GetComponent<VtsMap>(), new double[3] { x, y, z }))
         {
             if (singleUse)
                 Destroy(this);

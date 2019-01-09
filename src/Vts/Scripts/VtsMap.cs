@@ -28,6 +28,7 @@ using System.Threading;
 using UnityEngine;
 using vts;
 
+[DisallowMultipleComponent]
 public class VtsMap : MonoBehaviour
 {
     private void Awake()

@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4644185475565776}
   - component: {fileID: 33545766958928156}
   - component: {fileID: 23420714750678954}
+  - component: {fileID: 114395900247422816}
   m_Layer: 0
   m_Name: VtsShadowedTransparent
   m_TagString: Untagged
@@ -83,3 +84,14 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1447127621452838}
   m_Mesh: {fileID: 0}
+--- !u!114 &114395900247422816
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1447127621452838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf7f4062943f5e44e80cea90474cbc3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

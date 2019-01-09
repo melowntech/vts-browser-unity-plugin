@@ -64,6 +64,7 @@ public class VtsColliderProbe : MonoBehaviour
 
     private void UpdateParts()
     {
+        VtsMapShiftingOrigin shiftingOriginMap = mapObject.GetComponent<VtsMapShiftingOrigin>();
         double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
 
         Dictionary<VtsMesh, DrawTask> tasksByMesh = new Dictionary<VtsMesh, DrawTask>();
@@ -84,6 +85,7 @@ public class VtsColliderProbe : MonoBehaviour
                 partsCache.Add(tbm.Key, o);
                 UnityEngine.Mesh msh = (tbm.Value.mesh as VtsMesh).Get();
                 o.GetComponent<MeshCollider>().sharedMesh = msh;
+                o.GetComponent<VtsObjectShiftingOrigin>().map = shiftingOriginMap;
                 VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(tbm.Value.data.mv, System.Convert.ToDouble))));
             }
             partsToRemove.Remove(tbm.Key);

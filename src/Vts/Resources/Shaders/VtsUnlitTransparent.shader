@@ -17,7 +17,7 @@ Shader "Vts/UnlitTransparent"
 			Blend SrcAlpha OneMinusSrcAlpha
 			ZWrite Off
 			Cull Off
-			Offset 0, -10
+			Offset 0, -1000
 
 			CGPROGRAM
 			#pragma vertex vert

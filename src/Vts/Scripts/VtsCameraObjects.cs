@@ -39,6 +39,7 @@ public class VtsCameraObjects : VtsCameraBase
 
     protected override void CameraDraw()
     {
+        shiftingOriginMap = mapObject.GetComponent<VtsMapShiftingOrigin>();
         conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
         UpdateOpaqueDraws();
         UpdateTransparentDraws();
@@ -132,6 +133,7 @@ public class VtsCameraObjects : VtsCameraBase
     {
         o.layer = renderLayer;
         o.GetComponent<MeshFilter>().mesh = (t.mesh as VtsMesh).Get();
+        o.GetComponent<VtsObjectShiftingOrigin>().map = shiftingOriginMap;
         Material mat = o.GetComponent<MeshRenderer>().material;
         UpdateMaterial(mat);
         bool monochromatic = false;
@@ -161,5 +163,6 @@ public class VtsCameraObjects : VtsCameraBase
     private readonly Dictionary<VtsMesh, List<GameObject>> opaquePartsCache = new Dictionary<VtsMesh, List<GameObject>>();
     private readonly List<GameObject> transparentPartsCache = new List<GameObject>();
     private double[] conv;
+    private VtsMapShiftingOrigin shiftingOriginMap;
 }
 
