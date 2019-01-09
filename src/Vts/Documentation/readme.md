@@ -62,6 +62,15 @@ Hit the Play button. It is really this simple :D
   This is required for the Vts Camera Objects and the Vts Collider Probe scripts to overcome floating point precision issues, but will limit the playable area only to close neighborhood.
   See the online documentation for details.
 
+- Vts Map Shifting Origin: attach to the Game Object with Vts Map.
+  When a focused object moves further from world origin than a configured threshold, this script will repeat the process that Vts Map Make Local does, such that the focus object is moved back to the world origin.
+  This scripts transforms all Game Objects that are marked with Vts Object Shifting Origin Base component.
+
+- Vts Object Shifting Origin (Base): attach to any Game Objects, except the map.
+  This component marks the Game Object to be moved by Vts Map Shifting Origin script.
+  It is required on the Game Object that is selected as focus for the shifting.
+  This script is also automatically attached to all objects instantiated by Vts Camera Objects and Vts Collider Probe.
+
 ## Notes
 
 ### Map Configuration
