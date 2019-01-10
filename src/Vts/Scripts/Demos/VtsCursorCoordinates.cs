@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class VtsCoordinates : MonoBehaviour
+public class VtsCursorCoordinates : MonoBehaviour
 {
     public UnityEngine.UI.Text coordsUnity;
     public UnityEngine.UI.Text coordsVts;
