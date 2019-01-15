@@ -21,8 +21,8 @@ Contact us at vts-plugin@melown.com for further support (check the github issues
 
 ## Demos
 
-Try the demo scenes.
-Experiment with different settings :D
+Try the demo scenes!
+They are simple and should give you basic understanding how things works.
 
 ## Getting Started
 
@@ -58,13 +58,13 @@ Hit the Play button. It is really this simple :D
   It will change Control Transformation to Vts on the Vts Camera script in order to work properly.
 
 - Vts Map Make Local: attach to the Game Object with Vts Map.
-  This script will transform the Game Object in such way that the configured latitude and longitude coordinates are at the origin of Unity world coordinates.
-  This is required for the Vts Camera Objects and the Vts Collider Probe scripts to overcome floating point precision issues, but will limit the playable area only to close neighborhood.
+  This script will move/rotate the Game Object in such way that the configured latitude and longitude coordinates are at the origin of Unity world coordinates.
+  This is required for the Vts Camera Objects and Vts Collider Probe scripts to overcome floating point precision issues, but will limit the playable area only to close neighborhood.
   See the online documentation for details.
 
 - Vts Map Shifting Origin: attach to the Game Object with Vts Map.
   When a focused object moves further from world origin than a configured threshold, this script will repeat the process that Vts Map Make Local does, such that the focus object is moved back to the world origin.
-  This scripts transforms all Game Objects that are marked with Vts Object Shifting Origin Base component.
+  This script transforms all Game Objects that are marked with Vts Object Shifting Origin Base component to maintain their relative positions and orientations with the map.
 
 - Vts Object Shifting Origin (Base): attach to any Game Objects, except the map.
   This component marks the Game Object to be moved by Vts Map Shifting Origin script.
@@ -89,7 +89,7 @@ These methods also take into account the transformation of the Game Object itsel
 ### VTS as Native Plugin
 
 The whole VTS Browser library is composed of several 3rd-party libraries and many c++ sources with complicated build rules.
-This makes it unsuitable to be directly build by Unity Editor from sources.
+This makes it unsuitable to be build directly by Unity Editor from sources.
 Therefore, precompiled binaries are packaged.
 
 Officially supported platforms:

@@ -15,10 +15,13 @@
   - This allows you to customize the rendering process
   - Provided shaders:
     - Unlit
-    - Unlit with shadows
-    - Optionally with custom atmosphere that works with whole-planet views and transitions to street-level views
+    - Unlit with received shadows
+    - Surface shader
+    - All shaders with optional custom atmosphere that works with whole-planet views
 - Supports multiple cameras
-- Support for physical collision
+- Support for physical collisions
+- Real-world coordinate transformations
+- Shifting origin
 
 ## Documentation
 
@@ -36,7 +39,7 @@ Documentation for the whole VTS is at
 Build instructions are the same as for the [VTS Browser Build Wrapper](https://github.com/Melown/vts-browser-cpp-build-wrapper/blob/master/README.md).
 Just start in the root folder of this repository to ensure that the settings from CMakeLists.txt here are applied too.
 
-## Using the plugin In Unity
+## Using the Plugin In Unity
 
 Unity 2018 or newer is required.
 
@@ -47,17 +50,17 @@ In all cases, make sure to configure the plugins in the Unity Inspector to only 
 ### On Windows
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.dll -\> \<This Repository\>/build/result/relwithdebinfo/vts-browser.dll
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.dll -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.dll
 
 ### On Mac
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/result/relwithdebinfo/vts-browser.bundle
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.bundle
 
 ### For iOS
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build-ios/result/relwithdebinfo/vts-browser.framework
+ - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build-ios/result/\<build-type\>/vts-browser.framework
  - After you make the build in Unity, open the XCode project:
    - in the project, Build Settings, Linking, set _Runpath Search Paths_ to _@executable_path_ and _@executable_path/Frameworks_
    - in Build Phases, Copy Files, add vts-browser.framework to Destination Frameworks
