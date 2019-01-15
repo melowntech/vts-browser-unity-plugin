@@ -29,6 +29,7 @@ using System.Text;
 using UnityEngine;
 using vts;
 
+[DisallowMultipleComponent]
 public class VtsColliderProbe : MonoBehaviour
 {
     private void Start()
@@ -42,6 +43,7 @@ public class VtsColliderProbe : MonoBehaviour
     private void FixedUpdate()
     {
         // update current colliders
+        vcam.RenderUpdate();
         draws.Load(vmap, vcam);
         UpdateParts();
 
@@ -62,8 +64,21 @@ public class VtsColliderProbe : MonoBehaviour
         Statistics = vcam.GetStatistics();
     }
 
+    public void OriginShifted()
+    {
+        originHasShifted = true;
+    }
+
     private void UpdateParts()
     {
+        if (originHasShifted)
+        {
+            originHasShifted = false;
+            foreach (var p in partsCache)
+                Destroy(p.Value);
+            partsCache.Clear();
+        }
+
         VtsMapShiftingOrigin shiftingOriginMap = mapObject.GetComponent<VtsMapShiftingOrigin>();
         double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
 
@@ -115,5 +130,6 @@ public class VtsColliderProbe : MonoBehaviour
     private vts.Camera vcam;
     private Transform probTrans;
     private Transform mapTrans;
+    private bool originHasShifted = false;
 }
 

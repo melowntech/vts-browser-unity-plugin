@@ -36,6 +36,8 @@ public enum VtsDataControl
 
 // this class is common functionality for both vts cameras
 // it handles view and proj matrices, shader properties, rendering background
+[DisallowMultipleComponent]
+[RequireComponent(typeof(UnityEngine.Camera))]
 public abstract class VtsCameraBase : MonoBehaviour
 {
     protected virtual void Start()
@@ -74,12 +76,7 @@ public abstract class VtsCameraBase : MonoBehaviour
 
     private void Update()
     {
-        // draw current frame
-        draws.Load(vmap, vcam);
-        CameraDraw();
-        UpdateBackground();
-
-        // prepare for next frame
+        // sync transformation etc.
         vcam.SetViewportSize((uint)ucam.pixelWidth, (uint)ucam.pixelHeight);
         double[] Mu = Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ));
         if (controlTransformation == VtsDataControl.Vts)
@@ -104,11 +101,20 @@ public abstract class VtsCameraBase : MonoBehaviour
         if (proj[0] == proj[0] && proj[0] != 0)
             ucam.projectionMatrix = proj;
 
+        // draw
+        vcam.RenderUpdate();
+        draws.Load(vmap, vcam);
+        CameraDraw();
+        UpdateBackground();
+
         // statistics
         Statistics = vcam.GetStatistics();
     }
 
     protected abstract void CameraDraw();
+
+    public virtual void OriginShifted()
+    {}
 
     protected void UpdateMaterial(Material mat)
     {
@@ -138,6 +144,12 @@ public abstract class VtsCameraBase : MonoBehaviour
         {
             mat.DisableKeyword("VTS_ATMOSPHERE");
         }
+    }
+
+    protected void UpdateMaterialDynamic(Material mat)
+    {
+        mat.SetVector(shaderPropertyAtmCameraPosition, VtsUtil.V2U3(draws.camera.eye) / (float)draws.celestial.majorRadius);
+        mat.SetMatrix(shaderPropertyAtmViewInv, VtsUtil.V2U44(Math.Inverse44(draws.camera.view)));
     }
 
     private void UpdateBackground()

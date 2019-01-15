@@ -513,7 +513,6 @@ GameObject:
   - component: {fileID: 1245295811}
   - component: {fileID: 1245295810}
   - component: {fileID: 1245295809}
-  - component: {fileID: 1245295816}
   - component: {fileID: 1245295817}
   - component: {fileID: 1245295815}
   m_Layer: 0
@@ -536,7 +535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapObject: {fileID: 548558747}
   controlTransformation: 0
-  controlNearFar: 0
+  controlNearFar: 1
   Config: '{ "traverseModeSurfaces":3, "maxTexelToPixelScale":1.2 }'
   Statistics: This will show statistics at play
   atmosphere: 1
@@ -641,23 +640,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 548558751}
---- !u!114 &1245295816
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1245295808}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b05765d548fe43443b51c3e1be13932f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapObject: {fileID: 548558747}
-  colliderPrefab: {fileID: 1447127621452838, guid: 18c3e4367be48c047a2cee18704023bf,
-    type: 2}
-  collidersDistance: 10000
-  collidersLod: 15
-  Statistics: This will show statistics at play
 --- !u!114 &1245295817
 MonoBehaviour:
   m_ObjectHideFlags: 0

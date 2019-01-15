@@ -60,11 +60,11 @@ public class VtsMap : MonoBehaviour
         map = null;
     }
 
-    private void LateUpdate()
+    private void Update()
     {
         Util.Log(LogLevel.debug, "Unity update frame index: " + frameIndex++);
         Debug.Assert(map != null);
-        map.RenderTick(Time.deltaTime);
+        map.RenderUpdate(Time.deltaTime);
 
         // statistics
         Statistics = map.GetStatistics();
@@ -80,8 +80,9 @@ public class VtsMap : MonoBehaviour
         Util.CheckArray(point, 3);
         { // convert from unity world to (local) vts physical
             double[] point4 = new double[4] { point[0], point[1], point[2], 1 };
-            point4 = Math.Mul44x4(VtsUtil.U2V44(transform.worldToLocalMatrix), point4);
-            point[0] = point4[0]; point[1] = point4[1]; point[2] = point4[2];
+            //point4 = Math.Mul44x4(VtsUtil.U2V44(transform.worldToLocalMatrix), point4);
+            point4 = Math.Mul44x4(Math.Inverse44(VtsUtil.U2V44(transform.localToWorldMatrix)), point4);
+            point = new double[3] { point4[0], point4[1], point4[2] };
         }
         { // swap YZ
             double tmp = point[1];
@@ -104,7 +105,7 @@ public class VtsMap : MonoBehaviour
         { // convert from (local) vts physical to unity world
             double[] point4 = new double[4] { point[0], point[1], point[2], 1 };
             point4 = Math.Mul44x4(VtsUtil.U2V44(transform.localToWorldMatrix), point4);
-            point[0] = point4[0]; point[1] = point4[1]; point[2] = point4[2];
+            point = new double[3] { point4[0], point4[1], point4[2] };
         }
         return point;
     }

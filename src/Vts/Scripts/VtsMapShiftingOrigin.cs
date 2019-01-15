@@ -54,15 +54,17 @@ public class VtsMapShiftingOrigin : MonoBehaviour
 
     private void PerformShift()
     {
-        Debug.Log("Performing Origin Shift");
+        //Debug.Log("Performing Origin Shift");
         Debug.Assert(focusObject.GetComponent<VtsObjectShiftingOriginBase>()); // the focus object must be moved
-        Vector3 fp = focusObject.transform.position;
-        double[] originalNavigationPoint = umap.UnityToVtsNavigation(new double[3] { 0, 0, 0 });
-        double[] targetNavigationPoint = umap.UnityToVtsNavigation(VtsUtil.U2V3(fp));
-        float Yrot = (float)(targetNavigationPoint[0] - originalNavigationPoint[0]) * Mathf.Sign((float)originalNavigationPoint[1]);
-        //Debug.Log("navigation coordinates of origin: " + VtsUtil.V2U3(targetNavigationPoint).ToString("F5"));
+        double[] originalNavigationPoint = umap.UnityToVtsNavigation(zero3d);
+        double[] targetNavigationPoint = umap.UnityToVtsNavigation(VtsUtil.U2V3(focusObject.transform.position));
         if (!VtsMapMakeLocal.MakeLocal(umap, targetNavigationPoint))
+        {
             Debug.Assert(false, "failed shifting origin");
+            return;
+        }
+        Vector3 move = -focusObject.transform.position;
+        float Yrot = (float)(targetNavigationPoint[0] - originalNavigationPoint[0]) * Mathf.Sign((float)originalNavigationPoint[1]);
         foreach (VtsObjectShiftingOriginBase obj in FindObjectsOfType<VtsObjectShiftingOriginBase>())
         {
             // ask if the object allows to be transformed by this map
@@ -75,12 +77,20 @@ public class VtsMapShiftingOrigin : MonoBehaviour
                 if (!obj.transform.parent || !obj.transform.parent.GetComponentInParent<VtsObjectShiftingOriginBase>()
                     && obj == obj.GetComponents<VtsObjectShiftingOriginBase>()[0])
                 {
-                    obj.transform.localPosition -= fp;
-                    obj.transform.RotateAround(new Vector3(0,0,0), new Vector3(0, 1, 0), Yrot);
+                    obj.transform.localPosition += move;
+                    obj.transform.RotateAround(Vector3.zero, Vector3.up, Yrot);
                 }
                 // notify the object that it was transformed
                 obj.OnAfterOriginShift();
             }
         }
+
+        foreach (VtsCameraBase cam in FindObjectsOfType<VtsCameraBase>())
+            cam.OriginShifted();
+
+        //foreach (VtsColliderProbe col in FindObjectsOfType<VtsColliderProbe>())
+        //    col.OriginShifted();
     }
+
+    static readonly double[] zero3d = new double[3] { 0, 0, 0 };
 }
