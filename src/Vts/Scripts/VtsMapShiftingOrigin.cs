@@ -31,8 +31,9 @@ using vts;
 [RequireComponent(typeof(VtsMap))]
 public class VtsMapShiftingOrigin : MonoBehaviour
 {
-    public VtsObjectShiftingOriginBase focusObject;
+    public GameObject focusObject;
     public float distanceThreshold = 2000;
+    public bool updateColliders = false;
 
     private VtsMap umap;
     private Map vmap;
@@ -54,8 +55,10 @@ public class VtsMapShiftingOrigin : MonoBehaviour
 
     private void PerformShift()
     {
-        //Debug.Log("Performing Origin Shift");
-        Debug.Assert(focusObject.GetComponent<VtsObjectShiftingOriginBase>()); // the focus object must be moved
+        // the focus object must be moved
+        Debug.Assert(focusObject.GetComponentInParent<VtsObjectShiftingOriginBase>());
+
+        // compute the transformation change
         double[] originalNavigationPoint = umap.UnityToVtsNavigation(zero3d);
         double[] targetNavigationPoint = umap.UnityToVtsNavigation(VtsUtil.U2V3(focusObject.transform.position));
         if (!VtsMapMakeLocal.MakeLocal(umap, targetNavigationPoint))
@@ -65,31 +68,44 @@ public class VtsMapShiftingOrigin : MonoBehaviour
         }
         Vector3 move = -focusObject.transform.position;
         float Yrot = (float)(targetNavigationPoint[0] - originalNavigationPoint[0]) * Mathf.Sign((float)originalNavigationPoint[1]);
+
+        // find objects that will be transformed
+        var objs = new System.Collections.Generic.List<VtsObjectShiftingOriginBase>();
         foreach (VtsObjectShiftingOriginBase obj in FindObjectsOfType<VtsObjectShiftingOriginBase>())
         {
             // ask if the object allows to be transformed by this map
             if (obj.enabled && obj.OnBeforeOriginShift(this))
+                objs.Add(obj);
+        }
+
+        // actually transform the objects
+        foreach (VtsObjectShiftingOriginBase obj in objs)
+        {
+            // only transform object's topmost ancestor - its childs will inherit the change
+            // an object is shifted only once even if it has multiple VtsObjectShiftingOriginBase components
+            if (!obj.transform.parent || !obj.transform.parent.GetComponentInParent<VtsObjectShiftingOriginBase>()
+                && obj == obj.GetComponents<VtsObjectShiftingOriginBase>()[0])
             {
-                // only transform object's topmost ancestor
-                // its childs will inherit the transformation change
-                // other objects may still be interested to react to the change
-                // furthermore, the object is only shifted once even if it has multiple VtsObjectShiftingOriginBase components
-                if (!obj.transform.parent || !obj.transform.parent.GetComponentInParent<VtsObjectShiftingOriginBase>()
-                    && obj == obj.GetComponents<VtsObjectShiftingOriginBase>()[0])
-                {
-                    obj.transform.localPosition += move;
-                    obj.transform.RotateAround(Vector3.zero, Vector3.up, Yrot);
-                }
-                // notify the object that it was transformed
-                obj.OnAfterOriginShift();
+                obj.transform.localPosition += move;
+                obj.transform.RotateAround(Vector3.zero, Vector3.up, Yrot);
             }
         }
 
-        foreach (VtsCameraBase cam in FindObjectsOfType<VtsCameraBase>())
-            cam.OriginShifted();
+        // notify the object that it was transformed
+        foreach (VtsObjectShiftingOriginBase obj in objs)
+            obj.OnAfterOriginShift();
 
-        //foreach (VtsColliderProbe col in FindObjectsOfType<VtsColliderProbe>())
-        //    col.OriginShifted();
+        // force all objects cameras to recompute positions -> improves precision
+        foreach (VtsCameraBase cam in FindObjectsOfType<VtsCameraBase>())
+        cam.OriginShifted();
+
+        // force all collider probes to recompute positions -> improves precision
+        // warning: this has big performance impact!
+        if (updateColliders)
+        {
+            foreach (VtsColliderProbe col in FindObjectsOfType<VtsColliderProbe>())
+                col.OriginShifted();
+        }
     }
 
     static readonly double[] zero3d = new double[3] { 0, 0, 0 };
