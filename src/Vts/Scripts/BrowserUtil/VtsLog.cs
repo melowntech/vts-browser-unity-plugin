@@ -27,6 +27,10 @@
 using vts;
 using UnityEngine;
 
+#if ENABLE_IL2CPP
+using AOT;
+#endif
+
 // class to initialize vts logging
 public static class VtsLog
 {
@@ -34,6 +38,9 @@ public static class VtsLog
     public static void Init()
     {}
 
+#if ENABLE_IL2CPP
+    [MonoPInvokeCallback(typeof(BrowserInterop.vtsLogCallbackType))]
+#endif
     private static void LogCallback(string msg)
     {
         Debug.Log(msg);
