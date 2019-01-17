@@ -104,6 +104,7 @@ public abstract class VtsCameraBase : MonoBehaviour
         // draw
         vcam.RenderUpdate();
         draws.Load(vmap, vcam);
+        PrepareShaderData();
         CameraDraw();
         UpdateBackground();
 
@@ -116,27 +117,37 @@ public abstract class VtsCameraBase : MonoBehaviour
     public virtual void OriginShifted()
     {}
 
+    private void PrepareShaderData()
+    {
+        var cel = draws.celestial;
+        var atm = cel.atmosphere;
+        shaderValueAtmSizes = new Vector4(
+                (float)(atm.boundaryThickness / cel.majorRadius),
+                (float)(cel.majorRadius / cel.minorRadius),
+                (float)(1.0 / cel.majorRadius),
+                0);
+        shaderValueAtmCoefficients = new Vector4(
+                (float)atm.horizontalExponent,
+                (float)atm.colorGradientExponent,
+                0,
+                0);
+        shaderValueAtmCameraPosition = VtsUtil.V2U3(draws.camera.eye) / (float)cel.majorRadius;
+        shaderValueAtmViewInv = VtsUtil.V2U44(Math.Inverse44(draws.camera.view));
+        shaderValueAtmColorHorizon = VtsUtil.V2U4(atm.colorHorizon);
+        shaderValueAtmColorZenith = VtsUtil.V2U4(atm.colorZenith);
+    }
+
     protected void UpdateMaterial(Material mat)
     {
         VtsTexture tex = draws.celestial.atmosphere.densityTexture as VtsTexture;
         if (atmosphere && tex != null)
         {
-            var cel = draws.celestial;
-            var atm = cel.atmosphere;
-            mat.SetVector(shaderPropertyAtmSizes, new Vector4(
-                (float)(atm.boundaryThickness / cel.majorRadius),
-                (float)(cel.majorRadius / cel.minorRadius),
-                (float)(1.0 / cel.majorRadius),
-                0));
-            mat.SetVector(shaderPropertyAtmCoefficients, new Vector4(
-                (float)atm.horizontalExponent,
-                (float)atm.colorGradientExponent,
-                0,
-                0));
-            mat.SetVector(shaderPropertyAtmCameraPosition, VtsUtil.V2U3(draws.camera.eye) / (float)cel.majorRadius);
-            mat.SetMatrix(shaderPropertyAtmViewInv, VtsUtil.V2U44(Math.Inverse44(draws.camera.view)));
-            mat.SetVector(shaderPropertyAtmColorHorizon, VtsUtil.V2U4(atm.colorHorizon));
-            mat.SetVector(shaderPropertyAtmColorZenith, VtsUtil.V2U4(atm.colorZenith));
+            mat.SetVector(shaderPropertyAtmSizes, shaderValueAtmSizes);
+            mat.SetVector(shaderPropertyAtmCoefficients, shaderValueAtmCoefficients);
+            mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
+            mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
+            mat.SetVector(shaderPropertyAtmColorHorizon, shaderValueAtmColorHorizon);
+            mat.SetVector(shaderPropertyAtmColorZenith, shaderValueAtmColorZenith);
             mat.SetTexture("vtsTexAtmDensity", tex.Get());
             mat.EnableKeyword("VTS_ATMOSPHERE");
         }
@@ -148,8 +159,8 @@ public abstract class VtsCameraBase : MonoBehaviour
 
     protected void UpdateMaterialDynamic(Material mat)
     {
-        mat.SetVector(shaderPropertyAtmCameraPosition, VtsUtil.V2U3(draws.camera.eye) / (float)draws.celestial.majorRadius);
-        mat.SetMatrix(shaderPropertyAtmViewInv, VtsUtil.V2U44(Math.Inverse44(draws.camera.view)));
+        mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
+        mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
     }
 
     private void UpdateBackground()
@@ -218,6 +229,13 @@ public abstract class VtsCameraBase : MonoBehaviour
     protected int shaderPropertyAtmCoefficients;
     protected int shaderPropertyAtmCameraPosition;
     protected int shaderPropertyAtmCorners;
+
+    protected Vector4 shaderValueAtmSizes;
+    protected Vector4 shaderValueAtmCoefficients;
+    protected Vector3 shaderValueAtmCameraPosition;
+    protected Matrix4x4 shaderValueAtmViewInv;
+    protected Vector4 shaderValueAtmColorHorizon;
+    protected Vector4 shaderValueAtmColorZenith;
 
     protected readonly Draws draws = new Draws();
 

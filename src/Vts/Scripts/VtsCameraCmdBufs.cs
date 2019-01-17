@@ -67,22 +67,12 @@ public class VtsCameraCmdBufs : VtsCameraBase
             VtsTexture atmTex = draws.celestial.atmosphere.densityTexture as VtsTexture;
             if (atmosphere && atmTex != null)
             {
-                var cel = draws.celestial;
-                var atm = cel.atmosphere;
-                mat.SetVector(shaderPropertyAtmSizes, new Vector4(
-                    (float)(atm.boundaryThickness / cel.majorRadius),
-                    (float)(cel.majorRadius / cel.minorRadius),
-                    (float)(1.0 / cel.majorRadius),
-                    0));
-                mat.SetVector(shaderPropertyAtmCoefficients, new Vector4(
-                    (float)atm.horizontalExponent,
-                    (float)atm.colorGradientExponent,
-                    0,
-                    0));
-                mat.SetVector(shaderPropertyAtmCameraPosition, VtsUtil.V2U3(draws.camera.eye) / (float)cel.majorRadius);
-                mat.SetMatrix(shaderPropertyAtmViewInv, VtsUtil.V2U44(Math.Inverse44(draws.camera.view)));
-                mat.SetVector(shaderPropertyAtmColorHorizon, VtsUtil.V2U4(atm.colorHorizon));
-                mat.SetVector(shaderPropertyAtmColorZenith, VtsUtil.V2U4(atm.colorZenith));
+                mat.SetVector(shaderPropertyAtmSizes, shaderValueAtmSizes);
+                mat.SetVector(shaderPropertyAtmCoefficients, shaderValueAtmCoefficients);
+                mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
+                mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
+                mat.SetVector(shaderPropertyAtmColorHorizon, shaderValueAtmColorHorizon);
+                mat.SetVector(shaderPropertyAtmColorZenith, shaderValueAtmColorZenith);
                 mat.SetTexture("vtsTexAtmDensity", atmTex.Get());
             }
             bool monochromatic = false;
