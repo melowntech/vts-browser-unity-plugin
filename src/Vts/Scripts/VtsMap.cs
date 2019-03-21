@@ -113,7 +113,7 @@ public class VtsMap : MonoBehaviour
     private Thread dataThread;
     private uint frameIndex;
 
-    [SerializeField] private string ConfigUrl = "https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json";
+    [SerializeField] private string ConfigUrl = "https://cdn.melown.com/vts/melown2015/unity/world/mapConfig.json";
     [SerializeField] private string AuthUrl = "";
     [SerializeField, TextArea] private string CreateConfig;
     [SerializeField, TextArea] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000 }";

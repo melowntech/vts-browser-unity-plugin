@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f03c95ca65f8bd448aad7085afe4e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ConfigUrl: https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json
+  ConfigUrl: https://cdn.melown.com/vts/melown2015/unity/world/mapConfig.json
   AuthUrl: 
   CreateConfig: 
   RunConfig: '{ "targetResourcesMemoryKB":500000 }'

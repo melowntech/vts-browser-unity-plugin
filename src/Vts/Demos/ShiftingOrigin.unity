@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f03c95ca65f8bd448aad7085afe4e41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ConfigUrl: https://cdn.melown.com/mario/store/melown2015/map-config/melown/Melown-Earth-Intergeo-2017/mapConfig.json
+  ConfigUrl: https://cdn.melown.com/vts/melown2015/unity/world/mapConfig.json
   AuthUrl: 
   CreateConfig: 
   RunConfig: '{ "targetResourcesMemoryKB":500000 }'
@@ -318,9 +318,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a3aa6ece2ffcce4a9b1d78425a5dce5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  x: 14.43625463
-  y: 50.07533045
-  z: 350
+  x: 14.825274
+  y: 50.291587
+  z: 300
   singleUse: 1
 --- !u!114 &548558751
 MonoBehaviour:
@@ -333,8 +333,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61dd175cfe2d92f48b45447ad029899f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  focusObject: {fileID: 1245295815}
-  distanceThreshold: 2000
+  focusObject: {fileID: 1245295808}
+  distanceThreshold: 100
+  updateColliders: 0
 --- !u!1 &671263010
 GameObject:
   m_ObjectHideFlags: 0
@@ -535,7 +536,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapObject: {fileID: 548558747}
   controlTransformation: 0
-  controlNearFar: 1
+  controlNearFar: 0
   Config: '{ "traverseModeSurfaces":3, "maxTexelToPixelScale":1.2 }'
   Statistics: This will show statistics at play
   atmosphere: 1

@@ -45,9 +45,6 @@ Hit the Play button. It is really this simple :D
 
 - Vts Camera Objects: this is an alternative to Vts Camera Cmd Bufs.
   This script will instantiate and maintain new Game Objects that represent chunks of the map.
-  This is useful eg. to cast shadows.
-  However, the objects may suffer from precision issues.
-  See the online documentation for extensive explanation.
 
 - Vts Collider Probe: attach this script to object around which you would like the map to be physically interactive.
   This script, much like Vts Camera Objects, instantiates new Game Objects with mesh colliders.
@@ -63,7 +60,7 @@ Hit the Play button. It is really this simple :D
   See the online documentation for details.
 
 - Vts Map Shifting Origin: attach to the Game Object with Vts Map.
-  When a focused object moves further from world origin than a configured threshold, this script will repeat the process that Vts Map Make Local does, such that the focus object is moved back to the world origin.
+  When the focused object moves further from world origin than a configured threshold, this script will repeat the process that Vts Map Make Local does, such that the focus object is moved back to the world origin.
   This script transforms all Game Objects that are marked with Vts Object Shifting Origin Base component to maintain their relative positions and orientations with the map.
 
 - Vts Object Shifting Origin (Base): attach to any Game Objects, except the map.
@@ -77,7 +74,7 @@ Hit the Play button. It is really this simple :D
 
 The mapconfig specifies, among other, coordinate systems and data sources.
 
-The default map configuration uses our Intergeo example.
+The default map configuration uses our open example.
 You may change the mapconfig url in the Vts Map component to any other, including your own instance of VTS backend.
 See our VTS documentation for more information about map configuration.
 
