@@ -3,7 +3,7 @@
 VTS 3D Geospatial Software Stack is a state-of-the-art, full-stack open source platform for 3D geospatial application development.
 Consisting of 3D streaming backend components and of JavaScript and C++ frontend libraries, VTS provides for interactive 3D rendering of geospatial content on the Web, on the desktop or on mobile.
 
-This plugin integrates the VTS browser library into Unity 3D.
+This plugin integrates the c++ VTS browser library into Unity 3D.
 
 ## Online Documentation
 
@@ -56,12 +56,11 @@ Hit the Play button. It is really this simple :D
 
 - Vts Map Make Local: attach to the Game Object with Vts Map.
   This script will move/rotate the Game Object in such way that the configured latitude and longitude coordinates are at the origin of Unity world coordinates.
-  This is required for the Vts Camera Objects and Vts Collider Probe scripts to overcome floating point precision issues, but will limit the playable area only to close neighborhood.
-  See the online documentation for details.
+  This is required for the Vts Camera Objects and Vts Collider Probe scripts to overcome floating point precision issues.
 
 - Vts Map Shifting Origin: attach to the Game Object with Vts Map.
   When the focused object moves further from world origin than a configured threshold, this script will repeat the process that Vts Map Make Local does, such that the focus object is moved back to the world origin.
-  This script transforms all Game Objects that are marked with Vts Object Shifting Origin Base component to maintain their relative positions and orientations with the map.
+  This script transforms all Game Objects that are marked with Vts Object Shifting Origin (Base) component to maintain their relative positions and orientations with the map.
 
 - Vts Object Shifting Origin (Base): attach to any Game Objects, except the map.
   This component marks the Game Object to be moved by Vts Map Shifting Origin script.
@@ -74,14 +73,15 @@ Hit the Play button. It is really this simple :D
 
 The mapconfig specifies, among other, coordinate systems and data sources.
 
-The default map configuration uses our open example.
+The default map configuration uses our free and open example datasets.
 You may change the mapconfig url in the Vts Map component to any other, including your own instance of VTS backend.
 See our VTS documentation for more information about map configuration.
 
 ### Coordinate Conversions
 
-When the mapconfig is loaded, the Vts Map component provides methods UnityToVtsNavigation and VtsNavigationToUnity for coordinate conversions.
+The Vts Map component provides methods UnityToVtsNavigation and VtsNavigationToUnity for coordinate conversions.
 These methods also take into account the transformation of the Game Object itself, eg. the transformation made by Vts Map Make Local script.
+These methods will fail if the mapconfig is not yet loaded.
 
 ### VTS as Native Plugin
 
@@ -102,7 +102,7 @@ If your target platform/architecture is not supported, you may try to build the 
 Please note, we provide NO support for webgl player in this plugin.
 Use our javascript browser library if you want to use VTS on a website.
 
-### Vts Cache
+### VTS Cache
 
 The VTS browser library is caching all downloaded files.
 The cache is located at:
