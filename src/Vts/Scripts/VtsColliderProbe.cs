@@ -56,7 +56,7 @@ public class VtsColliderProbe : MonoBehaviour
         // enforce fixed traversal mode
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("{ \"fixedTraversalDistance\":").Append(collidersDistance).Append(", \"fixedTraversalLod\":").Append(collidersLod).Append(", \"traverseModeSurfaces\":4, \"traverseModeGeodata\":0 }");
+            builder.Append("{ \"fixedTraversalDistance\":").Append(collidersDistance).Append(", \"fixedTraversalLod\":").Append(collidersLod).Append(", \"traverseModeSurfaces\":5, \"traverseModeGeodata\":0 }");
             vcam.SetOptions(builder.ToString());
         }
 
@@ -82,8 +82,8 @@ public class VtsColliderProbe : MonoBehaviour
         VtsMapShiftingOrigin shiftingOriginMap = mapObject.GetComponent<VtsMapShiftingOrigin>();
         double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
 
-        Dictionary<VtsMesh, DrawTask> tasksByMesh = new Dictionary<VtsMesh, DrawTask>();
-        foreach (DrawTask t in draws.colliders)
+        Dictionary<VtsMesh, DrawSimpleTask> tasksByMesh = new Dictionary<VtsMesh, DrawSimpleTask>();
+        foreach (DrawSimpleTask t in draws.colliders)
         {
             VtsMesh k = t.mesh as VtsMesh;
             if (!tasksByMesh.ContainsKey(k))
@@ -92,7 +92,7 @@ public class VtsColliderProbe : MonoBehaviour
 
         HashSet<VtsMesh> partsToRemove = new HashSet<VtsMesh>(partsCache.Keys);
 
-        foreach (KeyValuePair<VtsMesh, DrawTask> tbm in tasksByMesh)
+        foreach (KeyValuePair<VtsMesh, DrawSimpleTask> tbm in tasksByMesh)
         {
             if (!partsCache.ContainsKey(tbm.Key))
             {

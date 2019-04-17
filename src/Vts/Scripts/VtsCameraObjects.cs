@@ -63,18 +63,18 @@ public class VtsCameraObjects : VtsCameraBase
             opaquePartsCache.Clear();
         }
 
-        Dictionary<VtsMesh, List<DrawTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawTask>>();
-        foreach (DrawTask t in draws.opaque)
+        Dictionary<VtsMesh, List<DrawSurfaceTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawSurfaceTask>>();
+        foreach (DrawSurfaceTask t in draws.opaque)
         {
             VtsMesh k = t.mesh as VtsMesh;
             if (!tasksByMesh.ContainsKey(k))
-                tasksByMesh.Add(k, new List<DrawTask>());
+                tasksByMesh.Add(k, new List<DrawSurfaceTask>());
             tasksByMesh[k].Add(t);
         }
 
         HashSet<VtsMesh> partsToRemove = new HashSet<VtsMesh>(opaquePartsCache.Keys);
 
-        foreach (KeyValuePair<VtsMesh, List<DrawTask>> tbm in tasksByMesh)
+        foreach (KeyValuePair<VtsMesh, List<DrawSurfaceTask>> tbm in tasksByMesh)
         {
             if (!opaquePartsCache.ContainsKey(tbm.Key))
                 opaquePartsCache.Add(tbm.Key, new List<GameObject>(tbm.Value.Count));
@@ -96,7 +96,7 @@ public class VtsCameraObjects : VtsCameraBase
         }
     }
 
-    private void UpdateOpaqueParts(List<DrawTask> tasks, List<GameObject> parts)
+    private void UpdateOpaqueParts(List<DrawSurfaceTask> tasks, List<GameObject> parts)
     {
         if (parts.Count == tasks.Count)
             return;
@@ -106,7 +106,7 @@ public class VtsCameraObjects : VtsCameraBase
                 DestroyWithMaterial(p);
             parts.Clear();
         }
-        foreach (DrawTask t in tasks)
+        foreach (DrawSurfaceTask t in tasks)
         {
             GameObject o = Instantiate(opaquePrefab);
             parts.Add(o);
@@ -135,14 +135,14 @@ public class VtsCameraObjects : VtsCameraBase
 
         // update the parts
         int index = 0;
-        foreach (DrawTask t in draws.transparent)
+        foreach (DrawSurfaceTask t in draws.transparent)
         {
             GameObject o = transparentPartsCache[index++];
             UpdatePart(o, t);
         }
     }
 
-    private void UpdatePart(GameObject o, DrawTask t)
+    private void UpdatePart(GameObject o, DrawSurfaceTask t)
     {
         o.layer = renderLayer;
         o.GetComponent<MeshFilter>().mesh = (t.mesh as VtsMesh).Get();

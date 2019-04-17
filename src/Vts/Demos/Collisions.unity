@@ -491,8 +491,8 @@ MonoBehaviour:
   mapObject: {fileID: 858116321}
   colliderPrefab: {fileID: 1447127621452838, guid: 18c3e4367be48c047a2cee18704023bf,
     type: 2}
-  collidersDistance: 200
-  collidersLod: 18
+  collidersDistance: 50
+  collidersLod: 20
   Statistics: This will show statistics at play
 --- !u!114 &1581886403
 MonoBehaviour:
