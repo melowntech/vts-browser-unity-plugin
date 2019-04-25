@@ -32,7 +32,7 @@ Browser documentation is available at its own
 [wiki](https://github.com/melown/vts-browser-cpp/wiki).
 
 Documentation for the whole VTS is at
-[Read the Docs](https://melown.readthedocs.io).
+[VTS Geospatial](https://vts-geospatial.org).
 
 ## Building
 
