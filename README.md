@@ -50,17 +50,29 @@ In all cases, make sure to configure the plugins in the Unity Inspector to only 
 ### On Windows
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.dll -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.dll
+ - \<Unity Project\>/Assets/Vts/Plugins/Windows/vts-browser.dll -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.dll
+ - Configure the vts-browser.dll to be used in Editor and Standalone, x86_64, Windows
+
+### On UWP (Universal Windows Platform)
+
+ - beware that support for UWP is experimental
+ - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - \<Unity Project\>/Assets/Vts/Plugins/Uwp/vts-browser.dll -\> \<This Repository\>/build-uwp/result/\<build-type\>/vts-browser.dll
+ - Configure the vts-browser.dll to be used in WSAPlayer, UWP, x64, il2cpp
+ - After you make the build in Unity, open the Visual Studio project:
+   - add internetClient capability to the manifest file
 
 ### On Mac
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.bundle -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.bundle
+ - \<Unity Project\>/Assets/Vts/Plugins/Mac/vts-browser.bundle -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.bundle
+ - Configure the vts-browser.bundle to be used in Editor and Standalone, x86_64, OSX
 
 ### For iOS
 
  - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/vts-browser.framework -\> \<This Repository\>/build-ios/result/\<build-type\>/vts-browser.framework
+ - \<Unity Project\>/Assets/Vts/Plugins/Ios/vts-browser.framework -\> \<This Repository\>/build-ios/result/\<build-type\>/vts-browser.framework
+ - Configure the vts-browser.framework to be used in iOS
  - After you make the build in Unity, open the XCode project:
    - in the project, Build Settings, Linking, set _Runpath Search Paths_ to _@executable_path_ and _@executable_path/Frameworks_
    - in Build Phases, Copy Files, add vts-browser.framework to Destination Frameworks
@@ -68,7 +80,8 @@ In all cases, make sure to configure the plugins in the Unity Inspector to only 
 
 ### For Linux
 
- - Build the vts-browser library on linux and copy it to \<Unity Project\>/Assets/Vts/Plugins/libvts-browser.so
+ - Build the vts-browser library on linux and copy it to \<Unity Project\>/Assets/Vts/Plugins/Linux/libvts-browser.so
+ - Configure the libvts-browser.so to be used in Standalone, x86_64, Linux
 
 ## Bug Reports
 
