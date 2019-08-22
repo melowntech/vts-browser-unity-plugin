@@ -78,7 +78,7 @@ public class VtsSearch : MonoBehaviour
         p[2] = it.position.z;
         nav.SetPoint(p); // location of the result
         nav.SetViewExtent(it.radius > 3000 ? it.radius * 2 : 6000); // some reasonable view extent (zoom)
-        nav.SetOptions("{\"navigationType\":2}"); // switch to fly-over navigation mode
+        nav.SetOptions("{\"type\":\"flyOver\"}");
     }
 
     void Start()

@@ -53,7 +53,7 @@ public class VtsNavigation : MonoBehaviour
                 pan[0] = Input.GetAxis("Mouse X") * mousePanSpeed;
                 pan[1] = -Input.GetAxis("Mouse Y") * mousePanSpeed;
                 nav.Pan(pan);
-                nav.SetOptions("{\"navigationType\":1}"); // quick navigation mode
+                nav.SetOptions("{\"type\":\"quick\"}");
             }
             if (Input.GetMouseButton(1))
             {
@@ -61,11 +61,15 @@ public class VtsNavigation : MonoBehaviour
                 rot[0] = Input.GetAxis("Mouse X") * mouseRotateSpeed;
                 rot[1] = -Input.GetAxis("Mouse Y") * mouseRotateSpeed;
                 nav.Rotate(rot);
-                nav.SetOptions("{\"navigationType\":1}"); // quick navigation mode
+                nav.SetOptions("{\"type\":\"quick\"}");
             }
             {
                 double zoom = Input.GetAxis("Mouse ScrollWheel") * mouseZoomSpeed;
-                nav.Zoom(zoom);
+                if (zoom != 0)
+                {
+                    nav.Zoom(zoom);
+                    nav.SetOptions("{\"type\":\"quick\"}");
+                }
             }
         }
         ucam.fieldOfView = (float)nav.GetFov();

@@ -146,7 +146,7 @@ MonoBehaviour:
   mapObject: {fileID: 858116321}
   controlTransformation: 0
   controlNearFar: 0
-  Config: '{ "traverseModeSurfaces":3, "maxTexelToPixelScale":1.2 }'
+  Config: '{ "traverseModeSurfaces":"balanced", "traverseModeGeodata":"none" }'
   Statistics: This will show statistics at play
   atmosphere: 1
   backgroundMaterial: {fileID: 2100000, guid: 3e83f2df2a270e94ca3c325a39ebd735, type: 2}
@@ -217,7 +217,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 87850303}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8, z: 0}
+  m_LocalPosition: {x: 0, y: 0.8, z: 0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1581886405}
@@ -546,9 +546,9 @@ Rigidbody:
   m_AngularDrag: 0.5
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &1581886407
 MonoBehaviour:
   m_ObjectHideFlags: 0

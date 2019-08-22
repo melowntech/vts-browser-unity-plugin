@@ -147,7 +147,7 @@ MonoBehaviour:
   mapObject: {fileID: 858116321}
   controlTransformation: 0
   controlNearFar: 0
-  Config: '{ "traverseModeSurfaces":3, "maxTexelToPixelScale":1.2, "lodBlending":2
+  Config: '{ "traverseModeSurfaces":"balanced", "traverseModeGeodata":"none", "lodBlending":2
     }'
   Statistics: This will show statistics at play
   atmosphere: 1

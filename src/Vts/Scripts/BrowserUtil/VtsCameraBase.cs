@@ -204,7 +204,7 @@ public abstract class VtsCameraBase : MonoBehaviour
     public VtsDataControl controlTransformation;
     public VtsDataControl controlNearFar;
 
-    [SerializeField, TextArea] private string Config = "{ \"traverseModeSurfaces\":3, \"maxTexelToPixelScale\":1.2 }";
+    [SerializeField, TextArea] private string Config = "{ \"traverseModeSurfaces\":\"balanced\", \"traverseModeGeodata\":\"none\" }";
 
 #pragma warning disable
     [SerializeField, TextArea(0, 20)] private string Statistics = "This will show statistics at play";
