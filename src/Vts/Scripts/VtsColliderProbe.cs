@@ -29,7 +29,6 @@ using System.Text;
 using UnityEngine;
 using vts;
 
-[DisallowMultipleComponent]
 public class VtsColliderProbe : MonoBehaviour
 {
     private void Start()
