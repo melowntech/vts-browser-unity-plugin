@@ -36,7 +36,6 @@ public enum VtsDataControl
 
 // this class is common functionality for both vts cameras
 // it handles view and proj matrices, shader properties, rendering background
-[DisallowMultipleComponent]
 [RequireComponent(typeof(UnityEngine.Camera))]
 public abstract class VtsCameraBase : MonoBehaviour
 {

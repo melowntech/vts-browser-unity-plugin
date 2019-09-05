@@ -37,6 +37,12 @@ public class VtsColliderProbe : MonoBehaviour
         vcam = new vts.Camera(vmap);
         probTrans = GetComponent<Transform>();
         mapTrans = mapObject.GetComponent<Transform>();
+        partsGroup = new GameObject(name + " - parts").transform;
+    }
+
+    protected void OnDestroy()
+    {
+        Destroy(partsGroup);
     }
 
     private void FixedUpdate()
@@ -95,11 +101,12 @@ public class VtsColliderProbe : MonoBehaviour
         {
             if (!partsCache.ContainsKey(tbm.Key))
             {
-                GameObject o = Instantiate(colliderPrefab);
+                GameObject o = Instantiate(colliderPrefab, partsGroup);
                 partsCache.Add(tbm.Key, o);
                 UnityEngine.Mesh msh = (tbm.Value.mesh as VtsMesh).Get();
                 o.GetComponent<MeshCollider>().sharedMesh = msh;
-                o.GetComponent<VtsObjectShiftingOrigin>().map = shiftingOriginMap;
+                if (shiftingOriginMap)
+                    VtsUtil.GetOrAddComponent<VtsObjectShiftingOrigin>(o).map = shiftingOriginMap;
                 VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(tbm.Value.data.mv, System.Convert.ToDouble))));
             }
             partsToRemove.Remove(tbm.Key);
@@ -130,5 +137,6 @@ public class VtsColliderProbe : MonoBehaviour
     private Transform probTrans;
     private Transform mapTrans;
     private bool originHasShifted = false;
+    private Transform partsGroup;
 }
 

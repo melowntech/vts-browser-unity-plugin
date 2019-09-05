@@ -33,8 +33,12 @@ public class VtsCameraObjects : VtsCameraBase
     protected override void Start()
     {
         base.Start();
-        var cam = GetComponent<UnityEngine.Camera>();
-        cam.cullingMask |= 1 << renderLayer;
+        partsGroup = new GameObject(name + " - parts").transform;
+    }
+
+    protected void OnDestroy()
+    {
+        Destroy(partsGroup);
     }
 
     protected override void CameraDraw()
@@ -108,7 +112,7 @@ public class VtsCameraObjects : VtsCameraBase
         }
         foreach (DrawSurfaceTask t in tasks)
         {
-            GameObject o = Instantiate(opaquePrefab);
+            GameObject o = Instantiate(opaquePrefab, partsGroup);
             parts.Add(o);
             UpdatePart(o, t);
         }
@@ -121,7 +125,7 @@ public class VtsCameraObjects : VtsCameraBase
         while (changeCount > 0)
         {
             // inflate
-            transparentPartsCache.Add(Instantiate(transparentPrefab));
+            transparentPartsCache.Add(Instantiate(transparentPrefab, partsGroup));
             changeCount--;
         }
         if (changeCount < 0)
@@ -144,9 +148,9 @@ public class VtsCameraObjects : VtsCameraBase
 
     private void UpdatePart(GameObject o, DrawSurfaceTask t)
     {
-        o.layer = renderLayer;
         o.GetComponent<MeshFilter>().mesh = (t.mesh as VtsMesh).Get();
-        o.GetComponent<VtsObjectShiftingOrigin>().map = shiftingOriginMap;
+        if (shiftingOriginMap)
+            VtsUtil.GetOrAddComponent<VtsObjectShiftingOrigin>(o).map = shiftingOriginMap;
         Material mat = o.GetComponent<MeshRenderer>().material;
         UpdateMaterial(mat);
         bool monochromatic = false;
@@ -169,7 +173,7 @@ public class VtsCameraObjects : VtsCameraBase
         VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
     }
 
-    private void DestroyWithMaterial(GameObject p)
+    private static void DestroyWithMaterial(GameObject p)
     {
         Destroy(p.GetComponent<MeshRenderer>().material);
         Destroy(p);
@@ -177,10 +181,10 @@ public class VtsCameraObjects : VtsCameraBase
 
     public GameObject opaquePrefab;
     public GameObject transparentPrefab;
-    public int renderLayer = 31;
 
     private readonly Dictionary<VtsMesh, List<GameObject>> opaquePartsCache = new Dictionary<VtsMesh, List<GameObject>>();
     private readonly List<GameObject> transparentPartsCache = new List<GameObject>();
+    private Transform partsGroup;
 
     private double[] conv;
     private VtsMapShiftingOrigin shiftingOriginMap;

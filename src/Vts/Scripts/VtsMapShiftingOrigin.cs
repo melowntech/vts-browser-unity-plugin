@@ -97,7 +97,7 @@ public class VtsMapShiftingOrigin : MonoBehaviour
 
         // force all objects cameras to recompute positions -> improves precision
         foreach (VtsCameraBase cam in FindObjectsOfType<VtsCameraBase>())
-        cam.OriginShifted();
+            cam.OriginShifted();
 
         // force all collider probes to recompute positions -> improves precision
         // warning: this has big performance impact!
@@ -108,5 +108,5 @@ public class VtsMapShiftingOrigin : MonoBehaviour
         }
     }
 
-    static readonly double[] zero3d = new double[3] { 0, 0, 0 };
+    private static readonly double[] zero3d = new double[3] { 0, 0, 0 };
 }

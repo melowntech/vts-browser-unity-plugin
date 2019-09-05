@@ -159,6 +159,7 @@ public class VtsTexture : IDisposable
 
     public VtsTexture(vts.Texture t)
     {
+        id = t.id;
         vt = t;
         monochromatic = t.components == 1;
     }
@@ -169,6 +170,7 @@ public class VtsTexture : IDisposable
         {
             Debug.Assert(vt != null);
             ut = new Texture2D((int)vt.width, (int)vt.height, ExtractFormat(vt), false);
+            ut.name = id;
             ut.LoadRawTextureData(vt.data);
             ut.filterMode = ExtractFilterMode(vt.filterMode);
             ut.wrapMode = ExtractWrapMode(vt.wrapMode);
@@ -194,6 +196,7 @@ public class VtsTexture : IDisposable
     private vts.Texture vt;
     private Texture2D ut;
     public readonly bool monochromatic;
+    public readonly string id;
 }
 
 // class that represents single mesh provided by the vts
@@ -291,6 +294,7 @@ public class VtsMesh : IDisposable
 
     public VtsMesh(vts.Mesh m)
     {
+        id = m.id;
         // assume that attribute 0 is vertex positions
         vertices = ExtractBuffer3(m, 0);
         // assume that attribute 1 is internal texture coordinates (used with textures that are packed with the mesh)
@@ -317,13 +321,14 @@ public class VtsMesh : IDisposable
         {
             Debug.Assert(vertices != null);
             um = new UnityEngine.Mesh();
+            um.name = id;
             um.vertices = vertices;
             um.uv = uv0;
             um.uv2 = uv1;
             um.SetIndices(indices, topology, 0);
             um.RecalculateBounds();
             um.RecalculateNormals();
-            um.UploadMeshData(false); // upload to gpu
+            um.UploadMeshData(false); // keep copy of the mesh in cpu memory
             vertices = null;
             uv0 = uv1 = null;
             indices = null;
@@ -349,4 +354,5 @@ public class VtsMesh : IDisposable
     private int[] indices;
     private MeshTopology topology;
     private UnityEngine.Mesh um;
+    public readonly string id;
 }
