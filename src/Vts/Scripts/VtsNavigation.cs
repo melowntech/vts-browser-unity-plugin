@@ -42,8 +42,8 @@ public class VtsNavigation : MonoBehaviour
     {
         if (nav == null)
         {
-            Debug.Assert(cam.GetVtsCamera() != null);
-            nav = new Navigation(cam.GetVtsCamera());
+            Debug.Assert(cam.Camera != null);
+            nav = new Navigation(cam.Camera);
         }
         if (UnityEngine.EventSystems.EventSystem.current == null || !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
@@ -83,8 +83,5 @@ public class VtsNavigation : MonoBehaviour
     private VtsCameraBase cam;
     private Navigation nav;
 
-    public Navigation GetVtsNavigation()
-    {
-        return nav;
-    }
+    public Navigation Navigation { get { return nav; } }
 }

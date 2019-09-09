@@ -33,7 +33,7 @@ public class VtsColliderProbe : MonoBehaviour
 {
     private void Start()
     {
-        vmap = mapObject.GetComponent<VtsMap>().GetVtsMap();
+        vmap = mapObject.GetComponent<VtsMap>().Map;
         vcam = new vts.Camera(vmap);
         probTrans = GetComponent<Transform>();
         mapTrans = mapObject.GetComponent<Transform>();

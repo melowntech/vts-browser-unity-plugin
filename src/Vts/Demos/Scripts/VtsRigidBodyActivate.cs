@@ -30,21 +30,29 @@ public class VtsRigidBodyActivate : MonoBehaviour
 {
     public GameObject map;
 
-    private int step;
+    private Rigidbody rb;
+    private CollisionDetectionMode ccd;
+    private int step = 0;
 
     void Start()
     {
-        GetComponent<Rigidbody>().isKinematic = true;
+        rb = GetComponent<Rigidbody>();
+        ccd = rb.collisionDetectionMode;
+        rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+        rb.isKinematic = true;
     }
 
     void FixedUpdate()
     {
-        if (step++ < 30)
-            return;
-        if (map.GetComponent<VtsMap>().GetVtsMap().GetMapRenderComplete())
+        if (map.GetComponent<VtsMap>().Map.GetMapRenderComplete())
         {
-            GetComponent<Rigidbody>().isKinematic = false;
+            if (step++ < 5)
+                return; // the map has to be complete for several consecutive steps
+            rb.isKinematic = false;
+            rb.collisionDetectionMode = ccd;
             Destroy(this); // destroy this component
         }
+        else
+            step = 0;
     }
 }

@@ -41,7 +41,7 @@ public class VtsMapShiftingOrigin : MonoBehaviour
     private void Start()
     {
         umap = GetComponent<VtsMap>();
-        vmap = umap.GetVtsMap();
+        vmap = umap.Map;
     }
 
     private void LateUpdate()
@@ -59,7 +59,7 @@ public class VtsMapShiftingOrigin : MonoBehaviour
         Debug.Assert(focusObject.GetComponentInParent<VtsObjectShiftingOriginBase>());
 
         // compute the transformation change
-        double[] originalNavigationPoint = umap.UnityToVtsNavigation(zero3d);
+        double[] originalNavigationPoint = umap.UnityToVtsNavigation(VtsUtil.ZeroV);
         double[] targetNavigationPoint = umap.UnityToVtsNavigation(VtsUtil.U2V3(focusObject.transform.position));
         if (!VtsMapMakeLocal.MakeLocal(umap, targetNavigationPoint))
         {
@@ -107,6 +107,4 @@ public class VtsMapShiftingOrigin : MonoBehaviour
                 col.OriginShifted();
         }
     }
-
-    private static readonly double[] zero3d = new double[3] { 0, 0, 0 };
 }

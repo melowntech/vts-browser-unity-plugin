@@ -16,7 +16,7 @@ public class VtsObjectCoordinates : MonoBehaviour
     {
         coordsUnity.text = "";
         coordsVts.text = "";
-        if (!map.GetVtsMap().GetMapconfigAvailable())
+        if (!map.Map.GetMapconfigAvailable())
             return;
         double[] p = VtsUtil.U2V3(transform.position);
         p = map.UnityToVtsNavigation(p);

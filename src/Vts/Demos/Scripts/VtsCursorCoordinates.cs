@@ -18,7 +18,7 @@ public class VtsCursorCoordinates : MonoBehaviour
     {
         coordsUnity.text = "";
         coordsVts.text = "";
-        if (!map.GetVtsMap().GetMapconfigAvailable())
+        if (!map.Map.GetMapconfigAvailable())
             return;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;

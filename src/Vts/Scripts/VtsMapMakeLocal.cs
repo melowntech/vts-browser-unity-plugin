@@ -34,7 +34,7 @@ public class VtsMapMakeLocal : MonoBehaviour
     public static bool MakeLocal(VtsMap umap, double[] navPt)
     {
         Util.CheckArray(navPt, 3);
-        Map map = umap.GetVtsMap();
+        Map map = umap.Map;
         if (!map.GetMapconfigAvailable())
             return false;
         double[] p = map.Convert(navPt, Srs.Navigation, Srs.Physical);

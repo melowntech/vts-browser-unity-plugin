@@ -46,6 +46,7 @@ public class VtsMap : MonoBehaviour
 
     private void Start()
     {
+        Debug.Assert(map != null);
         map.SetMapconfigPath(ConfigUrl, AuthUrl);
         if (RunConfig.Length > 0)
             map.SetOptions(RunConfig);
@@ -53,11 +54,13 @@ public class VtsMap : MonoBehaviour
 
     private void OnDestroy()
     {
-        Debug.Assert(map != null);
-        map.RenderDeinitialize();
-        dataThread.Join();
-        map.Dispose();
-        map = null;
+        if (map != null)
+        {
+            map.RenderDeinitialize();
+            dataThread.Join();
+            map.Dispose();
+            map = null;
+        }
     }
 
     private void Update()
@@ -113,19 +116,16 @@ public class VtsMap : MonoBehaviour
     private Thread dataThread;
     private uint frameIndex;
 
+    // disable warning that the field is not assigned or used
+#pragma warning disable
     [SerializeField] private string ConfigUrl = "https://cdn.melown.com/vts/melown2015/unity/world/mapConfig.json";
     [SerializeField] private string AuthUrl = "";
     [SerializeField, TextArea] private string CreateConfig;
     [SerializeField, TextArea] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000 }";
-
-#pragma warning disable
     [SerializeField, TextArea(0,20)] private string Statistics = "This will show statistics at play";
 #pragma warning restore
 
     private Map map;
 
-    public Map GetVtsMap()
-    {
-        return map;
-    }
+    public Map Map { get { return map; } }
 }

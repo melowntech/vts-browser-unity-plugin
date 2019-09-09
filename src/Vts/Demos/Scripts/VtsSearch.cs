@@ -83,7 +83,7 @@ public class VtsSearch : MonoBehaviour
 
     void Start()
     {
-        map = GetComponent<VtsMap>().GetVtsMap();
+        map = GetComponent<VtsMap>().Map;
         input.interactable = false;
         dropDown.interactable = false;
     }
@@ -92,7 +92,7 @@ public class VtsSearch : MonoBehaviour
     {
         if (nav == null)
         {
-            nav = FindObjectOfType<UnityEngine.Camera>().GetComponent<VtsNavigation>().GetVtsNavigation();
+            nav = FindObjectOfType<UnityEngine.Camera>().GetComponent<VtsNavigation>().Navigation;
             return;
         }
         if (map.GetMapconfigAvailable() && map.GetSearchable())

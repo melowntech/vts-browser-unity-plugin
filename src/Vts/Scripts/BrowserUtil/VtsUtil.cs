@@ -140,6 +140,8 @@ public static class VtsUtil
 
     public static readonly Matrix4x4 InvertZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 
+    public static readonly double[] ZeroV = new double[3] { 0, 0, 0 };
+
     public static T GetOrAddComponent<T>(GameObject o) where T : Component
     {
         T component = o.GetComponent<T>();

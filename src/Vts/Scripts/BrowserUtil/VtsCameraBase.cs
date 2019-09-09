@@ -41,7 +41,7 @@ public abstract class VtsCameraBase : MonoBehaviour
 {
     protected virtual void Start()
     {
-        vmap = mapObject.GetComponent<VtsMap>().GetVtsMap();
+        vmap = mapObject.GetComponent<VtsMap>().Map;
         Debug.Assert(vmap != null);
         vcam = new vts.Camera(vmap);
         ucam = GetComponent<UnityEngine.Camera>();
@@ -203,9 +203,8 @@ public abstract class VtsCameraBase : MonoBehaviour
     public VtsDataControl controlTransformation;
     public VtsDataControl controlNearFar;
 
-    [SerializeField, TextArea] private string Config = "{ \"traverseModeSurfaces\":\"balanced\", \"traverseModeGeodata\":\"none\" }";
-
 #pragma warning disable
+    [SerializeField, TextArea] private string Config = "{ \"traverseModeSurfaces\":\"balanced\", \"traverseModeGeodata\":\"none\", \"lodBlending\":0 }";
     [SerializeField, TextArea(0, 20)] private string Statistics = "This will show statistics at play";
 #pragma warning restore
 
@@ -246,9 +245,6 @@ public abstract class VtsCameraBase : MonoBehaviour
 
     private CommandBuffer backgroundCmds;
 
-    public vts.Camera GetVtsCamera()
-    {
-        return vcam;
-    }
+    public vts.Camera Camera { get { return vcam; } }
 }
 
