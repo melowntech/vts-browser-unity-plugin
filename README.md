@@ -4,6 +4,8 @@
 
 [This Unity Plugin](https://github.com/Melown/vts-browser-unity-plugin) integrates the VTS Browser into the popular Unity 3D game engine.
 
+[Asset Store](https://assetstore.unity.com/packages/tools/terrain/vts-landscape-streaming-plugin-125885) prebuild version of the plugin available on Unity Asset Store.
+
 ## Example Screenshots
 
 <img src="screenshots/hillerod-parking.png" width="430" title="Car"><img src="screenshots/earth.png" width="430" title="Earth"><img src="screenshots/alps-aircraft.png" width="860" title="Aircraft"><img src="screenshots/mercury.png" width="430" title="Mercury"><img src="screenshots/hillerod-castle.png" width="430" title="Car"><img src="screenshots/imst.png" width="430" title="Imst"><img src="screenshots/karlstejn-searching.png" width="430" title="Searching">
@@ -34,44 +36,40 @@ Browser documentation is available at its own
 Documentation for the whole VTS is at
 [VTS Geospatial](https://vts-geospatial.org).
 
-## Building
+## Building the Plugin from Source Code
 
 Build instructions are the same as for the [VTS Browser Build Wrapper](https://github.com/Melown/vts-browser-cpp-build-wrapper/blob/master/README.md).
 Just start in the root folder of this repository to ensure that the settings from CMakeLists.txt here are applied too.
 
-## Using the Plugin In Unity
+## Using the Plugin in Unity
 
 Unity 2018 or newer is required.
 
-The simplest way is to create a few symbolic/directory links on the filesystem for each Unity project.
-
-In all cases, make sure to configure the plugins in the Unity Inspector to only include them on the relevant platforms.
-
 ### On Windows
 
- - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/Windows/vts-browser.dll -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.dll
+ - Symlink \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - Symlink \<Unity Project\>/Assets/Vts/Plugins/Windows/vts-browser.dll -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.dll
  - Configure the vts-browser.dll to be used in Editor and Standalone, x86_64, Windows
 
 ### On UWP (Universal Windows Platform)
 
  - beware that support for UWP is experimental
- - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/Uwp/vts-browser.dll -\> \<This Repository\>/build-uwp/result/\<build-type\>/vts-browser.dll
+ - Symlink \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - Symlink \<Unity Project\>/Assets/Vts/Plugins/Uwp/vts-browser.dll -\> \<This Repository\>/build-uwp/result/\<build-type\>/vts-browser.dll
  - Configure the vts-browser.dll to be used in WSAPlayer, UWP, x64, il2cpp
  - After you make the build in Unity, open the Visual Studio project:
    - add internetClient capability to the manifest file
 
 ### On Mac
 
- - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/Mac/vts-browser.bundle -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.bundle
+ - Symlink \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - Symlink \<Unity Project\>/Assets/Vts/Plugins/Mac/vts-browser.bundle -\> \<This Repository\>/build/result/\<build-type\>/vts-browser.bundle
  - Configure the vts-browser.bundle to be used in Editor and Standalone, x86_64, OSX
 
 ### For iOS
 
- - \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
- - \<Unity Project\>/Assets/Vts/Plugins/Ios/vts-browser.framework -\> \<This Repository\>/build-ios/result/\<build-type\>/vts-browser.framework
+ - Symlink \<Unity Project\>/Assets/Vts -\> \<This Repository\>/src/Vts
+ - Symlink \<Unity Project\>/Assets/Vts/Plugins/Ios/vts-browser.framework -\> \<This Repository\>/build-ios/result/\<build-type\>/vts-browser.framework
  - Configure the vts-browser.framework to be used in iOS
  - After you make the build in Unity, open the XCode project:
    - in the project, Build Settings, Linking, set _Runpath Search Paths_ to _@executable_path_ and _@executable_path/Frameworks_
@@ -88,7 +86,7 @@ In all cases, make sure to configure the plugins in the Unity Inspector to only 
 For bug reports or enhancement suggestions use the
 [Issue tracker](https://github.com/melown/vts-browser-unity-plugin/issues).
 
-## How to Contribute
+## How To Contribute
 
 Check the [CONTRIBUTING.md](https://github.com/Melown/vts-browser-cpp/blob/master/CONTRIBUTING.md) on the VTS Browser CPP repository.
 It applies equally here.
