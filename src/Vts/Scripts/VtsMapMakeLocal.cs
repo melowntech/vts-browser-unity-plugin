@@ -25,6 +25,7 @@
  */
 
 using UnityEngine;
+using UnityEditor;
 using vts;
 
 [DisallowMultipleComponent]
@@ -61,12 +62,26 @@ public class VtsMapMakeLocal : MonoBehaviour
 
     private void Update()
     {
-        if (MakeLocal(GetComponent<VtsMap>(), new double[3] { x, y, z }))
+        VtsMap um = GetComponent<VtsMap>();
+        if (defaultPosition)
         {
-            if (singleUse)
-                Destroy(this);
+            vts.Map m = um.Map;
+            if (!m.GetMapconfigAvailable())
+                return;
+            vts.Position pos = m.GetDefaultPosition();
+            if (!MakeLocal(um, new double[3] { pos.data.point[0], pos.data.point[1], pos.data.point[2] + zOffset }))
+                return;
         }
+        else
+        {
+            if (!MakeLocal(um, new double[3] { x, y, z }))
+                return;
+        }
+        if (singleUse)
+            Destroy(this);
     }
+
+    public bool defaultPosition = false;
 
     [Tooltip("Navigation SRS X (Longitude)")]
     public double x;
@@ -77,5 +92,48 @@ public class VtsMapMakeLocal : MonoBehaviour
     [Tooltip("Navigation SRS Z (Altitude)")]
     public double z;
 
+    [Tooltip("Navigation SRS Z (Altitude) offset")]
+    public double zOffset;
+
     public bool singleUse = true;
+}
+
+[CustomEditor(typeof(VtsMapMakeLocal))]
+[CanEditMultipleObjects]
+public class VtsMapMakeLocalEditor : Editor
+{
+    SerializedProperty defaultPosition;
+    SerializedProperty x;
+    SerializedProperty y;
+    SerializedProperty z;
+    SerializedProperty zOff;
+    SerializedProperty singleUse;
+
+    void OnEnable()
+    {
+        defaultPosition = serializedObject.FindProperty("defaultPosition");
+        x = serializedObject.FindProperty("x");
+        y = serializedObject.FindProperty("y");
+        z = serializedObject.FindProperty("z");
+        zOff = serializedObject.FindProperty("zOffset");
+        singleUse = serializedObject.FindProperty("singleUse");
+    }
+
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
+        EditorGUILayout.PropertyField(defaultPosition);
+        if (!defaultPosition.boolValue)
+        {
+            EditorGUILayout.PropertyField(x);
+            EditorGUILayout.PropertyField(y);
+            EditorGUILayout.PropertyField(z);
+        }
+        else
+        {
+            EditorGUILayout.PropertyField(zOff);
+        }
+        EditorGUILayout.PropertyField(singleUse);
+        serializedObject.ApplyModifiedProperties();
+    }
 }

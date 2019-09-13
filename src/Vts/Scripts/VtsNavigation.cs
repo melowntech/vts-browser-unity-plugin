@@ -73,11 +73,16 @@ public class VtsNavigation : MonoBehaviour
             }
         }
         ucam.fieldOfView = (float)nav.GetFov();
+        position = nav.GetPosition().ToUrl();
     }
 
     public double mousePanSpeed = 30;
     public double mouseRotateSpeed = 30;
     public double mouseZoomSpeed = 10;
+
+#pragma warning disable
+    [SerializeField, TextArea(0, 3)] private string position = "This will show position at play";
+#pragma warning restore
 
     private UnityEngine.Camera ucam;
     private VtsCameraBase cam;
