@@ -9,15 +9,14 @@ struct vIn
 {
 	float4 vertex : POSITION;
 	float3 normal : NORMAL;
-	VTS_VIN_UV
+	VTS_VIN
 };
 
 struct v2f
 {
 	float4 pos : SV_POSITION;
 	float3 normal : NORMAL;
-	VTS_V2F_COMMON
-	VTS_V2F_CLIP
+	VTS_V2F
 	SHADOW_COORDS(3)
 };
 
@@ -26,9 +25,7 @@ struct fOut
 	float4 color : SV_Target;
 };
 
-VTS_UNI_SAMP
-VTS_UNI_COMMON
-VTS_UNI_CLIP
+VTS_UNI
 
 v2f vert(vIn v)
 {
@@ -36,8 +33,7 @@ v2f vert(vIn v)
 	o.pos = UnityObjectToClipPos(v.vertex);
 	o.viewPos = UnityObjectToViewPos(v.vertex);
 	o.normal = UnityObjectToWorldNormal(v.normal);
-	VTS_VERT_UV(v, o)
-	VTS_VERT_CLIP(v, o)
+	VTS_VERT(v, o)
 	TRANSFER_SHADOW(o)
 	return o;
 }
@@ -45,16 +41,9 @@ v2f vert(vIn v)
 fOut frag(v2f i)
 {
 	fOut o;
-	VTS_FRAG_COMMON(i, o.color)
-
-	VTS_FRAG_CLIP(i)
-
-	// shadow
+	VTS_FRAG(i, o.color)
 	o.color.rgb *= SHADOW_ATTENUATION(i);
-
-	// atmosphere
 	float atmDensity = vtsAtmDensity(i.viewPos);
 	o.color = vtsAtmColor(atmDensity, o.color);
-
 	return o;
 }

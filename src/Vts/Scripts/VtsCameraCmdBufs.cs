@@ -47,43 +47,14 @@ public class VtsCameraCmdBufs : VtsCameraBase
     private void RegenerateCommandBuffer(CommandBuffer buffer, List<DrawSurfaceTask> tasks, Material renderMaterial)
     {
         buffer.Clear();
-        if (atmosphere && draws.celestial.atmosphere.densityTexture as VtsTexture != null)
-            buffer.EnableShaderKeyword("VTS_ATMOSPHERE");
-        else
-            buffer.DisableShaderKeyword("VTS_ATMOSPHERE");
         buffer.SetViewMatrix(Matrix4x4.identity);
         buffer.SetProjectionMatrix(ucam.projectionMatrix);
         foreach (DrawSurfaceTask t in tasks)
         {
             if (t.mesh == null)
                 continue;
-            MaterialPropertyBlock mat = new MaterialPropertyBlock();
-            VtsTexture atmTex = draws.celestial.atmosphere.densityTexture as VtsTexture;
-            if (atmosphere && atmTex != null)
-            {
-                mat.SetVector(shaderPropertyAtmSizes, shaderValueAtmSizes);
-                mat.SetVector(shaderPropertyAtmCoefficients, shaderValueAtmCoefficients);
-                mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
-                mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
-                mat.SetVector(shaderPropertyAtmColorHorizon, shaderValueAtmColorHorizon);
-                mat.SetVector(shaderPropertyAtmColorZenith, shaderValueAtmColorZenith);
-                mat.SetTexture("vtsTexAtmDensity", atmTex.Get());
-            }
-            bool monochromatic = false;
-            if (t.texColor != null)
-            {
-                var tt = t.texColor as VtsTexture;
-                mat.SetTexture(shaderPropertyMainTex, tt.Get());
-                monochromatic = tt.monochromatic;
-            }
-            if (t.texMask != null)
-                mat.SetTexture(shaderPropertyMaskTex, (t.texMask as VtsTexture).Get());
-            mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
-            mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
-            mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
-            // flags: mask, monochromatic, flat shading, uv source
-            mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
-            buffer.DrawMesh((t.mesh as VtsMesh).Get(), VtsUtil.V2U44(t.data.mv), renderMaterial, 0, -1, mat);
+            UpdateMaterial(propertyBlock, t);
+            buffer.DrawMesh((t.mesh as VtsMesh).Get(), VtsUtil.V2U44(t.data.mv), renderMaterial, 0, -1, propertyBlock);
         }
     }
 

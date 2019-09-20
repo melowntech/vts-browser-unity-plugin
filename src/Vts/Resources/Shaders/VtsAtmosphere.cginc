@@ -6,7 +6,7 @@ float4 vtsTexAtmDensity_TexelSize;
 float4x4 vtsUniAtmViewInv;
 float4 vtsUniAtmColorHorizon;
 float4 vtsUniAtmColorZenith;
-float4 vtsUniAtmSizes; // atmosphere thickness (divided by major axis), major / minor axes ratio, inverze major axis
+float4 vtsUniAtmSizes; // atmosphere thickness (divided by major axis), major / minor axes ratio, inverse major axis
 float4 vtsUniAtmCoefs; // horizontal exponent, colorGradientExponent
 float3 vtsUniAtmCameraPosition; // world position of camera (divided by major axis)
 

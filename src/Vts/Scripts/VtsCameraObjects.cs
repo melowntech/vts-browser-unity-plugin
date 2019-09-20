@@ -62,7 +62,7 @@ public class VtsCameraObjects : VtsCameraBase
             foreach (var l in opaquePartsCache)
             {
                 foreach (var p in l.Value)
-                    DestroyWithMaterial(p);
+                    Destroy(p);
             }
             opaquePartsCache.Clear();
         }
@@ -89,14 +89,22 @@ public class VtsCameraObjects : VtsCameraBase
         foreach (VtsMesh m in partsToRemove)
         {
             foreach (GameObject p in opaquePartsCache[m])
-                DestroyWithMaterial(p);
+                Destroy(p);
             opaquePartsCache.Remove(m);
         }
 
-        foreach (var l in opaquePartsCache)
+        if (shaderValueAtmEnabled)
         {
-            foreach (var p in l.Value)
-                UpdateMaterialDynamic(p.GetComponent<MeshRenderer>().material);
+            foreach (var l in opaquePartsCache)
+            {
+                foreach (var p in l.Value)
+                {
+                    var mr = p.GetComponent<MeshRenderer>();
+                    mr.GetPropertyBlock(propertyBlock);
+                    UpdateAtmosphereDynamic(propertyBlock);
+                    mr.SetPropertyBlock(propertyBlock);
+                }
+            }
         }
     }
 
@@ -107,7 +115,7 @@ public class VtsCameraObjects : VtsCameraBase
         if (parts.Count > 0)
         {
             foreach (GameObject p in parts)
-                DestroyWithMaterial(p);
+                Destroy(p);
             parts.Clear();
         }
         foreach (DrawSurfaceTask t in tasks)
@@ -132,7 +140,7 @@ public class VtsCameraObjects : VtsCameraBase
         {
             // deflate
             foreach (GameObject p in transparentPartsCache.GetRange(draws.transparent.Count, -changeCount))
-                DestroyWithMaterial(p);
+                Destroy(p);
             transparentPartsCache.RemoveRange(draws.transparent.Count, -changeCount);
         }
         Debug.Assert(draws.transparent.Count == transparentPartsCache.Count);
@@ -151,32 +159,9 @@ public class VtsCameraObjects : VtsCameraBase
         o.GetComponent<MeshFilter>().mesh = (t.mesh as VtsMesh).Get();
         if (shiftingOriginMap)
             VtsUtil.GetOrAddComponent<VtsObjectShiftingOrigin>(o).map = shiftingOriginMap;
-        Material mat = o.GetComponent<MeshRenderer>().material;
-        UpdateMaterial(mat);
-        bool monochromatic = false;
-        if (t.texColor != null)
-        {
-            var tt = t.texColor as VtsTexture;
-            mat.SetTexture(shaderPropertyMainTex, tt.Get());
-            monochromatic = tt.monochromatic;
-        }
-        if (t.texMask != null)
-        {
-            var tt = t.texMask as VtsTexture;
-            mat.SetTexture(shaderPropertyMaskTex, tt.Get());
-        }
-        mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
-        mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
-        mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
-        // flags: mask, monochromatic, flat shading, uv source
-        mat.SetVector(shaderPropertyFlags, new Vector4(t.texMask == null ? 0 : 1, monochromatic ? 1 : 0, 0, t.data.externalUv ? 1 : 0));
+        UpdateMaterial(propertyBlock, t);
         VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
-    }
-
-    private static void DestroyWithMaterial(GameObject p)
-    {
-        Destroy(p.GetComponent<MeshRenderer>().material);
-        Destroy(p);
+        o.GetComponent<MeshRenderer>().SetPropertyBlock(propertyBlock);
     }
 
     public GameObject opaquePrefab;
