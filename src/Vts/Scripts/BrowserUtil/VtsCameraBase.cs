@@ -26,7 +26,6 @@
  
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEditor;
 using vts;
 
 public enum VtsDataControl
@@ -54,7 +53,10 @@ public abstract class VtsCameraBase : MonoBehaviour
         shaderPropertyUvMat = Shader.PropertyToID("_UvMat");
         shaderPropertyUvClip = Shader.PropertyToID("_UvClip");
         shaderPropertyColor = Shader.PropertyToID("_Color");
+        shaderPropertyBlendingCoverage = Shader.PropertyToID("_BlendingCoverage");
         shaderPropertyFlags = Shader.PropertyToID("_Flags");
+        shaderPropertyFrameIndex = Shader.PropertyToID("_FrameIndex");
+        shaderPropertyTexBlueNoise = Shader.PropertyToID("_BlueNoiseTex");
 
         shaderPropertyAtmViewInv = Shader.PropertyToID("vtsUniAtmViewInv");
         shaderPropertyAtmColorHorizon = Shader.PropertyToID("vtsUniAtmColorHorizon");
@@ -138,11 +140,11 @@ public abstract class VtsCameraBase : MonoBehaviour
         shaderValueAtmColorHorizon = VtsUtil.V2U4(atm.colorHorizon);
         shaderValueAtmColorZenith = VtsUtil.V2U4(atm.colorZenith);
         shaderValueAtmEnabled = Shader.IsKeywordEnabled("VTS_ATMOSPHERE") && draws.celestial.atmosphere.densityTexture != null;
+        shaderValueFrameIndex++;
     }
 
-    private void UpdateAtmosphere(MaterialPropertyBlock mat)
+    private void InitAtmosphere(MaterialPropertyBlock mat)
     {
-        UpdateAtmosphereDynamic(mat);
         mat.SetVector(shaderPropertyAtmSizes, shaderValueAtmSizes);
         mat.SetVector(shaderPropertyAtmCoefficients, shaderValueAtmCoefficients);
         mat.SetVector(shaderPropertyAtmColorHorizon, shaderValueAtmColorHorizon);
@@ -150,16 +152,21 @@ public abstract class VtsCameraBase : MonoBehaviour
         mat.SetTexture(shaderPropertyAtmTexDensity, (draws.celestial.atmosphere.densityTexture as VtsTexture).Get());
     }
 
-    protected void UpdateAtmosphereDynamic(MaterialPropertyBlock mat)
-    {
-        mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
-        mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
-    }
-
     protected void UpdateMaterial(MaterialPropertyBlock mat, DrawSurfaceTask t)
     {
         if (shaderValueAtmEnabled)
-            UpdateAtmosphere(mat);
+        {
+            mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
+            mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
+        }
+        mat.SetFloat(shaderPropertyBlendingCoverage, float.IsNaN(t.data.blendingCoverage) ? -1 : t.data.blendingCoverage);
+        mat.SetInt(shaderPropertyFrameIndex, shaderValueFrameIndex);
+    }
+
+    protected void InitMaterial(MaterialPropertyBlock mat, DrawSurfaceTask t)
+    {
+        if (shaderValueAtmEnabled)
+            InitAtmosphere(mat);
         if (t.texColor != null)
             mat.SetTexture(shaderPropertyMainTex, (t.texColor as VtsTexture).Get());
         if (t.texMask != null)
@@ -167,8 +174,9 @@ public abstract class VtsCameraBase : MonoBehaviour
         mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
         mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
         mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
+        mat.SetTexture(shaderPropertyTexBlueNoise, blueNoiseTexture);
 
-        // _Flags: mask, monochromatic, flat shading, uv source, lodBlendingWithDithering
+        // _Flags: mask, monochromatic, flat shading, uv source
         int flags = 0;
         if (t.texMask != null)
             flags |= 1 << 0;
@@ -176,9 +184,9 @@ public abstract class VtsCameraBase : MonoBehaviour
             flags |= 1 << 1;
         if (t.data.externalUv)
             flags |= 1 << 3;
-        // todo lodBlendingWithDithering
         mat.SetInt(shaderPropertyFlags, flags);
-        //mat.SetInt(shaderPropertyFrameIndex, 0);
+
+        UpdateMaterial(mat, t);
     }
 
     private void UpdateBackground()
@@ -188,7 +196,8 @@ public abstract class VtsCameraBase : MonoBehaviour
             return;
 
         propertyBlock.Clear();
-        UpdateAtmosphere(propertyBlock);
+        UpdateMaterial(propertyBlock, new DrawSurfaceTask());
+        InitAtmosphere(propertyBlock);
         double mr = draws.celestial.majorRadius;
         double[] camPos = draws.camera.eye;
         for (int i = 0; i < 3; i++)
@@ -230,12 +239,17 @@ public abstract class VtsCameraBase : MonoBehaviour
     public UnityEngine.Mesh backgroundMesh;
     private CommandBuffer backgroundCmds;
 
+    public Texture2DArray blueNoiseTexture;
+
     private int shaderPropertyMainTex;
     private int shaderPropertyMaskTex;
     private int shaderPropertyUvMat;
     private int shaderPropertyUvClip;
     private int shaderPropertyColor;
+    private int shaderPropertyBlendingCoverage;
     private int shaderPropertyFlags;
+    private int shaderPropertyFrameIndex;
+    private int shaderPropertyTexBlueNoise;
 
     private int shaderPropertyAtmViewInv;
     private int shaderPropertyAtmColorHorizon;
@@ -252,7 +266,8 @@ public abstract class VtsCameraBase : MonoBehaviour
     private Matrix4x4 shaderValueAtmViewInv;
     private Vector4 shaderValueAtmColorHorizon;
     private Vector4 shaderValueAtmColorZenith;
-    protected bool shaderValueAtmEnabled;
+    private bool shaderValueAtmEnabled;
+    private int shaderValueFrameIndex;
 
     protected readonly Draws draws = new Draws();
 
@@ -264,18 +279,5 @@ public abstract class VtsCameraBase : MonoBehaviour
     protected MaterialPropertyBlock propertyBlock;
 
     public vts.Camera Camera { get { return vcam; } }
-
-
-    [MenuItem("Vts/Atmosphere/Enable")]
-    public static void EnableAtmosphere()
-    {
-        Shader.EnableKeyword("VTS_ATMOSPHERE");
-    }
-
-    [MenuItem("Vts/Atmosphere/Disable")]
-    public static void DisableAtmosphere()
-    {
-        Shader.DisableKeyword("VTS_ATMOSPHERE");
-    }
 }
 

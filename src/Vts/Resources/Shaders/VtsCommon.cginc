@@ -4,13 +4,13 @@
 #endif
 
 #ifdef VTSH_MANUAL_CLIP
-#	define VTS_V2F_CLIPPING \
+#	define VTSH_V2F_CLIPPING \
 		float4 clip : TEXCOORD2;
 #	define VTS_FRAG_CLIPPING(i) \
 		if (any(i.clip <= 0.0)) \
 			clip(-1.0);
 #else
-#	define VTS_V2F_CLIPPING \
+#	define VTSH_V2F_CLIPPING \
 		float4 clip : SV_ClipDistance0;
 #	define VTS_FRAG_CLIPPING(i)
 #endif
@@ -24,9 +24,9 @@
 #define VTS_V2F \
 	float3 viewPos : TEXCOORD0; \
 	float2 _uvTex : TEXCOORD1; \
-	VTS_V2F_CLIPPING
+	VTSH_V2F_CLIPPING
 
-// _Flags: mask, monochromatic, flat shading, uv source, lodBlendingWithDithering
+// _Flags: mask, monochromatic, flat shading, uv source
 
 #define VTS_UNI \
 	sampler2D _MainTex; \
@@ -35,6 +35,7 @@
 	float4x4 _UvMat; \
 	float4 _Color; \
 	float4 _UvClip; \
+	float _BlendingCoverage; \
 	int _Flags; \
 	int _FrameIndex; \
 	bool getFlag(int i) { return (_Flags & (1 << i)) != 0; }
@@ -54,15 +55,15 @@
 		if (tex2D(_MaskTex, i._uvTex).r < 0.5) \
 			clip(-1.0); \
 	} \
-	if (getFlag(4)) \
+	if (_BlendingCoverage > -0.5) \
 	{ \
-		float3 uv = ComputeScreenPos(i.pos); \
+		float4 cp = ComputeScreenPos(i.pos); \
+		float3 uv = float3(cp.xy, _FrameIndex % 16); \
 		float smpl = UNITY_SAMPLE_TEX2DARRAY_LOD(_BlueNoiseTex, uv, 0); \
-		if (_UvMat[0][3] < smpl) \
+		if (_BlendingCoverage < smpl) \
 			clip(-1.0); \
 	} \
 	if (getFlag(1)) \
 		color = color.rrra; \
 	color *= _Color;
-
 

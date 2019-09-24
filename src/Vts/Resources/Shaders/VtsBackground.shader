@@ -22,7 +22,7 @@ Shader "Vts/Background"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma target 3.0
+			#pragma target 3.5
 			#define VTS_ATMOSPHERE 1
 			#include "UnityCG.cginc"
 			#include "VtsCommon.cginc"

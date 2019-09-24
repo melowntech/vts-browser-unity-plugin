@@ -98,6 +98,8 @@ public class VtsMapMakeLocal : MonoBehaviour
     public bool singleUse = true;
 }
 
+
+#if (UNITY_EDITOR)
 [CustomEditor(typeof(VtsMapMakeLocal))]
 [CanEditMultipleObjects]
 public class VtsMapMakeLocalEditor : Editor
@@ -137,3 +139,4 @@ public class VtsMapMakeLocalEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif

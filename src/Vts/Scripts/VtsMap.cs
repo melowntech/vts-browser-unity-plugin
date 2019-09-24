@@ -36,6 +36,10 @@ public class VtsMap : MonoBehaviour
         VtsLog.Init();
         VtsResources.Init();
         Debug.Assert(map == null);
+        if (VtsAtmosphere)
+            Shader.EnableKeyword("VTS_ATMOSPHERE");
+        else
+            Shader.DisableKeyword("VTS_ATMOSPHERE");
         map = new Map(CreateConfig);
         map.EventLoadTexture += VtsResources.LoadTexture;
         map.EventLoadMesh += VtsResources.LoadMesh;
@@ -123,6 +127,7 @@ public class VtsMap : MonoBehaviour
     [SerializeField, TextArea] private string CreateConfig;
     [SerializeField, TextArea] private string RunConfig = "{ \"targetResourcesMemoryKB\":500000 }";
     [SerializeField, TextArea(0,20)] private string Statistics = "This will show statistics at play";
+    [SerializeField] private bool VtsAtmosphere = true;
 #pragma warning restore
 
     private Map map;

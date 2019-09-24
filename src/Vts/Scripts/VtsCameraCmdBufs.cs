@@ -53,7 +53,7 @@ public class VtsCameraCmdBufs : VtsCameraBase
         {
             if (t.mesh == null)
                 continue;
-            UpdateMaterial(propertyBlock, t);
+            InitMaterial(propertyBlock, t);
             buffer.DrawMesh((t.mesh as VtsMesh).Get(), VtsUtil.V2U44(t.data.mv), renderMaterial, 0, -1, propertyBlock);
         }
     }

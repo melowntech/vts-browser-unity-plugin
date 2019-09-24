@@ -17,7 +17,7 @@ Shader "Vts/UnlitOpaque"
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma target 3.0
+			#pragma target 3.5
 			#pragma multi_compile __ VTS_ATMOSPHERE
 			#include "VtsUnlit.cginc"
 			ENDCG
