@@ -28,6 +28,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using vts;
 
+namespace vts
+{
+    public static partial class Extensions
+    {
+        internal static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key) where TValue : new()
+        {
+            TValue val;
+            if (!dict.TryGetValue(key, out val))
+            {
+                val = new TValue();
+                dict.Add(key, val);
+            }
+            return val;
+        }
+    }
+}
+
 public class VtsCameraObjects : VtsCameraBase
 {
     protected override void Start()
@@ -45,63 +62,124 @@ public class VtsCameraObjects : VtsCameraBase
     {
         shiftingOriginMap = mapObject.GetComponent<VtsMapShiftingOrigin>();
         conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
-        UpdateDrawsSimple(opaquePrefab, draws.opaque, opaquePartsCache);
-        UpdateDrawsSimple(transparentPrefab, draws.transparent, transparentPartsCache);
+        UpdateSurfacesCache(opaquePrefab, draws.opaque, opaquePartsCache);
+        UpdateSurfacesCache(transparentPrefab, draws.transparent, transparentPartsCache);
+        originHasShifted = false;
     }
 
     public override void OriginShifted()
     {
-        //originHasShifted = true;
+        originHasShifted = true;
     }
 
-    private void UpdateDrawsSimple(GameObject prefab, List<DrawSurfaceTask> tasks, List<GameObject> partsCache)
+    private void UpdateSurfacesCache(GameObject prefab, List<DrawSurfaceTask> tasks, Dictionary<VtsMesh, List<Part>> partsCache)
     {
-        // resize the partsCache
-        int changeCount = tasks.Count - partsCache.Count;
-        while (changeCount > 0)
+        /*
+        // full clear on shift
+        if (originHasShifted)
         {
-            // inflate
-            partsCache.Add(Instantiate(prefab, partsGroup));
-            changeCount--;
+            foreach (var l in partsCache)
+                foreach (var p in l.Value)
+                    Destroy(p.go);
+            partsCache.Clear();
         }
-        if (changeCount < 0)
-        {
-            // deflate
-            foreach (GameObject p in partsCache.GetRange(tasks.Count, -changeCount))
-                Destroy(p);
-            partsCache.RemoveRange(tasks.Count, -changeCount);
-        }
-        Debug.Assert(tasks.Count == partsCache.Count);
+        */
 
-        // update the parts
-        int index = 0;
-        foreach (DrawSurfaceTask t in tasks)
+        // organize tasks by meshes
+        Dictionary<VtsMesh, List<DrawSurfaceTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawSurfaceTask>>();
+        foreach (var t in tasks)
         {
-            GameObject o = partsCache[index++];
-            UpdatePart(o, t);
+            List<DrawSurfaceTask> ts = tasksByMesh.GetOrCreate(t.mesh as VtsMesh);
+            ts.Add(t);
+        }
+
+        // remove obsolete cache entries
+        {
+            HashSet<VtsMesh> keys = new HashSet<VtsMesh>();
+            keys.UnionWith(partsCache.Keys);
+            keys.ExceptWith(tasksByMesh.Keys);
+            foreach (var k in keys)
+            {
+                foreach (var j in partsCache[k])
+                    Destroy(j.go);
+                partsCache.Remove(k);
+            }
+        }
+
+        // update remaining cache entries
+        foreach (var k in tasksByMesh)
+        {
+            List<DrawSurfaceTask> ts = k.Value;
+            List<Part> ps = partsCache.GetOrCreate(k.Key);
+
+            // update current objects
+            int updatable = ts.Count < ps.Count ? ts.Count : ps.Count;
+            for (int i = 0; i < updatable; i++)
+                UpdatePart(ps[i], ts[i]);
+
+            // update the rest of the cache
+            int changeCount = ts.Count - ps.Count;
+            while (changeCount > 0)
+            {
+                // inflate
+                ps.Add(InitPart(prefab, ts[updatable++]));
+                changeCount--;
+            }
+            if (changeCount < 0)
+            {
+                // deflate
+                foreach (var p in ps.GetRange(updatable, -changeCount))
+                    Destroy(p.go);
+                ps.RemoveRange(updatable, -changeCount);
+            }
+            Debug.Assert(ts.Count == ps.Count);
         }
     }
 
-    private void UpdatePart(GameObject o, DrawSurfaceTask t)
+    private void UpdateTransform(Part part, DrawSurfaceTask task)
     {
-        o.GetComponent<MeshFilter>().mesh = (t.mesh as VtsMesh).Get();
+        VtsUtil.Matrix2Transform(part.go.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(task.data.mv, System.Convert.ToDouble))));
+    }
+
+    private Part InitPart(GameObject prefab, DrawSurfaceTask task)
+    {
+        Part part = new Part();
+        part.go = Instantiate(prefab, partsGroup);
+        UpdateTransform(part, task);
+        part.mf = part.go.GetOrAddComponent<MeshFilter>();
+        part.mf.mesh = (task.mesh as VtsMesh).Get();
+        InitMaterial(propertyBlock, task);
+        part.mr = part.go.GetOrAddComponent<MeshRenderer>();
+        part.mr.SetPropertyBlock(propertyBlock);
         if (shiftingOriginMap)
-            VtsUtil.GetOrAddComponent<VtsObjectShiftingOrigin>(o).map = shiftingOriginMap;
-        VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(t.data.mv, System.Convert.ToDouble))));
-        InitMaterial(propertyBlock, t);
-        o.GetComponent<MeshRenderer>().SetPropertyBlock(propertyBlock);
+            part.go.GetOrAddComponent<VtsObjectShiftingOrigin>().map = shiftingOriginMap;
+        return part;
+    }
+
+    private void UpdatePart(Part part, DrawSurfaceTask task)
+    {
+        if (originHasShifted)
+            UpdateTransform(part, task);
+        part.mr.GetPropertyBlock(propertyBlock);
+        UpdateMaterial(propertyBlock, task);
+        part.mr.SetPropertyBlock(propertyBlock);
     }
 
     public GameObject opaquePrefab;
     public GameObject transparentPrefab;
 
-    //private readonly Dictionary<VtsMesh, List<GameObject>> opaquePartsCache = new Dictionary<VtsMesh, List<GameObject>>();
-    private readonly List<GameObject> opaquePartsCache = new List<GameObject>();
-    private readonly List<GameObject> transparentPartsCache = new List<GameObject>();
+    private readonly Dictionary<VtsMesh, List<Part>> opaquePartsCache = new Dictionary<VtsMesh, List<Part>>();
+    private readonly Dictionary<VtsMesh, List<Part>> transparentPartsCache = new Dictionary<VtsMesh, List<Part>>();
     private Transform partsGroup;
 
     private double[] conv;
     private VtsMapShiftingOrigin shiftingOriginMap;
-    //private bool originHasShifted = false;
+    private bool originHasShifted = false;
 }
 
+internal class Part
+{
+    public GameObject go;
+    public MeshFilter mf;
+    public MeshRenderer mr;
+}

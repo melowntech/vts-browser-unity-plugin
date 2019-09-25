@@ -141,12 +141,18 @@ public static class VtsUtil
     public static readonly Matrix4x4 InvertZ = Matrix4x4.Scale(new Vector3(1, 1, -1));
 
     public static readonly double[] ZeroV = new double[3] { 0, 0, 0 };
+}
 
-    public static T GetOrAddComponent<T>(GameObject o) where T : Component
+namespace vts
+{
+    public static partial class Extensions
     {
-        T component = o.GetComponent<T>();
-        if (component == null)
-            component = o.AddComponent<T>();
-        return component;
+        public static T GetOrAddComponent<T>(this GameObject o) where T : Component
+        {
+            T component = o.GetComponent<T>();
+            if (component == null)
+                component = o.AddComponent<T>();
+            return component;
+        }
     }
 }

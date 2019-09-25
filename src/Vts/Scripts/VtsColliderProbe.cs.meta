@@ -6,8 +6,8 @@ MonoImporter:
   defaultReferences:
   - mapObject: {instanceID: 0}
   - colliderPrefab: {fileID: 1447127621452838, guid: 18c3e4367be48c047a2cee18704023bf,
-      type: 2}
-  executionOrder: 0
+      type: 3}
+  executionOrder: -501
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

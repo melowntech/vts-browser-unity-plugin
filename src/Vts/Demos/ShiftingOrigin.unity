@@ -304,6 +304,7 @@ MonoBehaviour:
   CreateConfig: 
   RunConfig: '{ "targetResourcesMemoryKB":500000 }'
   Statistics: This will show statistics at play
+  VtsAtmosphere: 1
 --- !u!4 &548558749
 Transform:
   m_ObjectHideFlags: 0
@@ -563,7 +564,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapObject: {fileID: 548558747}
   controlTransformation: 0
-  controlNearFar: 1
+  controlNearFar: 0
   Config: '{ "traverseModeSurfaces":"balanced", "traverseModeGeodata":"none" }'
   Statistics: This will show statistics at play
   backgroundMaterial: {fileID: 2100000, guid: 3e83f2df2a270e94ca3c325a39ebd735, type: 2}
@@ -627,8 +628,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 10000
+  near clip plane: 1
+  far clip plane: 100000
   field of view: 60
   orthographic: 0
   orthographic size: 5

@@ -106,7 +106,7 @@ public class VtsColliderProbe : MonoBehaviour
                 UnityEngine.Mesh msh = (tbm.Value.mesh as VtsMesh).Get();
                 o.GetComponent<MeshCollider>().sharedMesh = msh;
                 if (shiftingOriginMap)
-                    VtsUtil.GetOrAddComponent<VtsObjectShiftingOrigin>(o).map = shiftingOriginMap;
+                    o.GetOrAddComponent<VtsObjectShiftingOrigin>().map = shiftingOriginMap;
                 VtsUtil.Matrix2Transform(o.transform, VtsUtil.V2U44(Math.Mul44x44(conv, System.Array.ConvertAll(tbm.Value.data.mv, System.Convert.ToDouble))));
             }
             partsToRemove.Remove(tbm.Key);

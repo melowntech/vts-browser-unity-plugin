@@ -143,6 +143,12 @@ public abstract class VtsCameraBase : MonoBehaviour
         shaderValueFrameIndex++;
     }
 
+    private void UpdateAtmosphere(MaterialPropertyBlock mat)
+    {
+        mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
+        mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
+    }
+
     private void InitAtmosphere(MaterialPropertyBlock mat)
     {
         mat.SetVector(shaderPropertyAtmSizes, shaderValueAtmSizes);
@@ -155,10 +161,9 @@ public abstract class VtsCameraBase : MonoBehaviour
     protected void UpdateMaterial(MaterialPropertyBlock mat, DrawSurfaceTask t)
     {
         if (shaderValueAtmEnabled)
-        {
-            mat.SetVector(shaderPropertyAtmCameraPosition, shaderValueAtmCameraPosition);
-            mat.SetMatrix(shaderPropertyAtmViewInv, shaderValueAtmViewInv);
-        }
+            UpdateAtmosphere(mat);
+        mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
+        mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
         mat.SetFloat(shaderPropertyBlendingCoverage, float.IsNaN(t.data.blendingCoverage) ? -1 : t.data.blendingCoverage);
         mat.SetInt(shaderPropertyFrameIndex, shaderValueFrameIndex);
     }
@@ -167,37 +172,32 @@ public abstract class VtsCameraBase : MonoBehaviour
     {
         if (shaderValueAtmEnabled)
             InitAtmosphere(mat);
-        if (t.texColor != null)
-            mat.SetTexture(shaderPropertyMainTex, (t.texColor as VtsTexture).Get());
-        if (t.texMask != null)
-            mat.SetTexture(shaderPropertyMaskTex, (t.texMask as VtsTexture).Get());
+        UpdateMaterial(mat, t);
         mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
-        mat.SetVector(shaderPropertyUvClip, VtsUtil.V2U4(t.data.uvClip));
-        mat.SetVector(shaderPropertyColor, VtsUtil.V2U4(t.data.color));
-        mat.SetTexture(shaderPropertyTexBlueNoise, blueNoiseTexture);
-
-        // _Flags: mask, monochromatic, flat shading, uv source
-        int flags = 0;
+        int flags = 0; // _Flags: mask, monochromatic, flat shading, uv source
         if (t.texMask != null)
+        {
             flags |= 1 << 0;
-        if (t.texColor != null && (t.texColor as VtsTexture).monochromatic)
+            mat.SetTexture(shaderPropertyMaskTex, (t.texMask as VtsTexture).Get());
+        }
+        if ((t.texColor as VtsTexture).monochromatic)
             flags |= 1 << 1;
         if (t.data.externalUv)
             flags |= 1 << 3;
         mat.SetInt(shaderPropertyFlags, flags);
-
-        UpdateMaterial(mat, t);
+        mat.SetTexture(shaderPropertyMainTex, (t.texColor as VtsTexture).Get());
+        mat.SetTexture(shaderPropertyTexBlueNoise, blueNoiseTexture);
     }
 
     private void UpdateBackground()
     {
         backgroundCmds.Clear();
+        propertyBlock.Clear();
         if (!shaderValueAtmEnabled)
             return;
 
-        propertyBlock.Clear();
-        UpdateMaterial(propertyBlock, new DrawSurfaceTask());
         InitAtmosphere(propertyBlock);
+        UpdateAtmosphere(propertyBlock);
         double mr = draws.celestial.majorRadius;
         double[] camPos = draws.camera.eye;
         for (int i = 0; i < 3; i++)

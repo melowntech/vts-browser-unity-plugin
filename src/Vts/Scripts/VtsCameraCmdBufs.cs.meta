@@ -12,7 +12,7 @@ MonoImporter:
   - opaqueMaterial: {fileID: 2100000, guid: d959ee906a1141742a0a0e846fe01868, type: 2}
   - transparentMaterial: {fileID: 2100000, guid: 185ea5bd609af1146917eaef98ec5ab9,
       type: 2}
-  executionOrder: 0
+  executionOrder: 503
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 
