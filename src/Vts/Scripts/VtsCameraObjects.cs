@@ -74,17 +74,6 @@ public class VtsCameraObjects : VtsCameraBase
 
     private void UpdateSurfacesCache(GameObject prefab, List<DrawSurfaceTask> tasks, Dictionary<VtsMesh, List<Part>> partsCache)
     {
-        /*
-        // full clear on shift
-        if (originHasShifted)
-        {
-            foreach (var l in partsCache)
-                foreach (var p in l.Value)
-                    Destroy(p.go);
-            partsCache.Clear();
-        }
-        */
-
         // organize tasks by meshes
         Dictionary<VtsMesh, List<DrawSurfaceTask>> tasksByMesh = new Dictionary<VtsMesh, List<DrawSurfaceTask>>();
         foreach (var t in tasks)
@@ -95,15 +84,15 @@ public class VtsCameraObjects : VtsCameraBase
 
         // remove obsolete cache entries
         {
-            HashSet<VtsMesh> keys = new HashSet<VtsMesh>();
-            keys.UnionWith(partsCache.Keys);
-            keys.ExceptWith(tasksByMesh.Keys);
-            foreach (var k in keys)
+            tmpKeys.UnionWith(partsCache.Keys);
+            tmpKeys.ExceptWith(tasksByMesh.Keys);
+            foreach (var k in tmpKeys)
             {
                 foreach (var j in partsCache[k])
                     Destroy(j.go);
                 partsCache.Remove(k);
             }
+            tmpKeys.Clear();
         }
 
         // update remaining cache entries
@@ -168,6 +157,7 @@ public class VtsCameraObjects : VtsCameraBase
     public GameObject opaquePrefab;
     public GameObject transparentPrefab;
 
+    private readonly HashSet<VtsMesh> tmpKeys = new HashSet<VtsMesh>();
     private readonly Dictionary<VtsMesh, List<Part>> opaquePartsCache = new Dictionary<VtsMesh, List<Part>>();
     private readonly Dictionary<VtsMesh, List<Part>> transparentPartsCache = new Dictionary<VtsMesh, List<Part>>();
     private Transform partsGroup;
