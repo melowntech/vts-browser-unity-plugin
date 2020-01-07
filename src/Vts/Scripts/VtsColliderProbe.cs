@@ -87,8 +87,8 @@ public class VtsColliderProbe : MonoBehaviour
         VtsMapShiftingOrigin shiftingOriginMap = mapObject.GetComponent<VtsMapShiftingOrigin>();
         double[] conv = Math.Mul44x44(Math.Mul44x44(VtsUtil.U2V44(mapTrans.localToWorldMatrix), VtsUtil.U2V44(VtsUtil.SwapYZ)), Math.Inverse44(draws.camera.view));
 
-        Dictionary<VtsMesh, DrawSimpleTask> tasksByMesh = new Dictionary<VtsMesh, DrawSimpleTask>();
-        foreach (DrawSimpleTask t in draws.colliders)
+        Dictionary<VtsMesh, DrawColliderTask> tasksByMesh = new Dictionary<VtsMesh, DrawColliderTask>();
+        foreach (DrawColliderTask t in draws.colliders)
         {
             VtsMesh k = t.mesh as VtsMesh;
             if (!tasksByMesh.ContainsKey(k))
@@ -97,7 +97,7 @@ public class VtsColliderProbe : MonoBehaviour
 
         HashSet<VtsMesh> partsToRemove = new HashSet<VtsMesh>(partsCache.Keys);
 
-        foreach (KeyValuePair<VtsMesh, DrawSimpleTask> tbm in tasksByMesh)
+        foreach (KeyValuePair<VtsMesh, DrawColliderTask> tbm in tasksByMesh)
         {
             if (!partsCache.ContainsKey(tbm.Key))
             {
