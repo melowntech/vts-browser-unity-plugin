@@ -8,14 +8,14 @@ This plugin integrates the c++ VTS browser library into Unity 3D.
 ## Online Documentation
 
 Detailed Vts Unity Plugin documentation is at the
-[github wiki](https://github.com/Melown/vts-browser-unity-plugin/wiki).
+[github wiki](https://github.com/melowntech/vts-browser-unity-plugin/wiki).
 
 Complete source code for the plugin is at
-[github](https://github.com/Melown/vts-browser-unity-plugin).
+[github](https://github.com/melowntech/vts-browser-unity-plugin).
 Use the github issues for questions, reporting problems or suggestions.
 
 Documentation for the whole VTS is at
-[Read the Docs](https://melown.readthedocs.io).
+[Read the Docs](https://vts-geospatial.org/).
 
 Contact us at vts-plugin@melown.com for further support (check the github issues first!).
 

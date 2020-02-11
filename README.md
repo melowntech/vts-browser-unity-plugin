@@ -1,8 +1,8 @@
 # VTS Browser Integration Plugin For Unity 3D Game Engine
 
-[VTS Browser CPP](https://github.com/melown/vts-browser-cpp) is a collection of libraries that bring VTS client capabilities to your native applications.
+[VTS Browser CPP](https://github.com/melowntech/vts-browser-cpp) is a collection of libraries that bring VTS client capabilities to your native applications.
 
-[This Unity Plugin](https://github.com/Melown/vts-browser-unity-plugin) integrates the VTS Browser into the popular Unity 3D game engine.
+[This Unity Plugin](https://github.com/melowntech/vts-browser-unity-plugin) integrates the VTS Browser into the popular Unity 3D game engine.
 
 [Asset Store](https://assetstore.unity.com/packages/tools/terrain/vts-landscape-streaming-plugin-125885) prebuild version of the plugin available on Unity Asset Store.
 
@@ -28,17 +28,17 @@
 ## Documentation
 
 The Unity Plugin documentation is at the
-[wiki](https://github.com/Melown/vts-browser-unity-plugin/wiki).
+[wiki](https://github.com/melowntech/vts-browser-unity-plugin/wiki).
 
 Browser documentation is available at its own
-[wiki](https://github.com/melown/vts-browser-cpp/wiki).
+[wiki](https://github.com/melowntech/vts-browser-cpp/wiki).
 
 Documentation for the whole VTS is at
 [VTS Geospatial](https://vts-geospatial.org).
 
 ## Building the Plugin from Source Code
 
-Build instructions are the same as for the [VTS Browser Build Wrapper](https://github.com/Melown/vts-browser-cpp-build-wrapper/blob/master/README.md).
+Build instructions are the same as for the [VTS Browser Build Wrapper](https://github.com/melowntech/vts-browser-cpp-build-wrapper/blob/master/README.md).
 Just start in the root folder of this repository to ensure that the settings from CMakeLists.txt here are applied too.
 
 ## Using the Plugin in Unity
@@ -84,11 +84,11 @@ Unity 2018 or newer is required.
 ## Bug Reports
 
 For bug reports or enhancement suggestions use the
-[Issue tracker](https://github.com/melown/vts-browser-unity-plugin/issues).
+[Issue tracker](https://github.com/melowntech/vts-browser-unity-plugin/issues).
 
 ## How To Contribute
 
-Check the [CONTRIBUTING.md](https://github.com/Melown/vts-browser-cpp/blob/master/CONTRIBUTING.md) on the VTS Browser CPP repository.
+Check the [CONTRIBUTING.md](https://github.com/melowntech/vts-browser-cpp/blob/master/CONTRIBUTING.md) on the VTS Browser CPP repository.
 It applies equally here.
 
 ## License
