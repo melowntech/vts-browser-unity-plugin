@@ -45,7 +45,6 @@ public class VtsMap : MonoBehaviour
         map.EventLoadMesh += VtsResources.LoadMesh;
         dataThread = new Thread(new ThreadStart(DataEntry));
         dataThread.Start();
-        map.RenderInitialize();
     }
 
     private void Start()
