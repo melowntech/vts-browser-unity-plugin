@@ -32,16 +32,16 @@
 	sampler2D _MainTex; \
 	sampler2D _MaskTex; \
 	UNITY_DECLARE_TEX2DARRAY(_BlueNoiseTex); \
-	float4x4 _UvMat; \
-	float4 _Color; \
+	float4 _UvTrans; \
 	float4 _UvClip; \
+	float4 _Color; \
 	float _BlendingCoverage; \
 	int _Flags; \
 	int _FrameIndex; \
 	bool getFlag(int i) { return (_Flags & (1 << i)) != 0; }
 
 #define VTS_VERT(i,o) \
-	o._uvTex = mul((float3x3)_UvMat, float3(getFlag(3) ? i.texcoord1.xy : i.texcoord.xy, 1.0)).xy; \
+	o._uvTex = getFlag(3) ? i.texcoord1.xy * _UvTrans.xy + _UvTrans.zw : i.texcoord.xy; \
 	o.clip[0] = (i.texcoord1[0] - _UvClip[0]) * +1.0; \
 	o.clip[1] = (i.texcoord1[1] - _UvClip[1]) * +1.0; \
 	o.clip[2] = (i.texcoord1[0] - _UvClip[2]) * -1.0; \

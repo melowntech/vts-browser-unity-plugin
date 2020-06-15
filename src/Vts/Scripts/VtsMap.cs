@@ -59,7 +59,7 @@ public class VtsMap : MonoBehaviour
     {
         if (map != null)
         {
-            map.RenderDeinitialize();
+            map.RenderFinalize();
             dataThread.Join();
             map.Dispose();
             map = null;

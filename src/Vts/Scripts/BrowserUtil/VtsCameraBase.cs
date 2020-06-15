@@ -50,7 +50,7 @@ public abstract class VtsCameraBase : MonoBehaviour
 
         shaderPropertyMainTex = Shader.PropertyToID("_MainTex");
         shaderPropertyMaskTex = Shader.PropertyToID("_MaskTex");
-        shaderPropertyUvMat = Shader.PropertyToID("_UvMat");
+        shaderPropertyUvTrans = Shader.PropertyToID("_UvTrans");
         shaderPropertyUvClip = Shader.PropertyToID("_UvClip");
         shaderPropertyColor = Shader.PropertyToID("_Color");
         shaderPropertyBlendingCoverage = Shader.PropertyToID("_BlendingCoverage");
@@ -173,7 +173,7 @@ public abstract class VtsCameraBase : MonoBehaviour
         if (shaderValueAtmEnabled)
             InitAtmosphere(mat);
         UpdateMaterial(mat, t);
-        mat.SetMatrix(shaderPropertyUvMat, VtsUtil.V2U33(t.data.uvm));
+        mat.SetVector(shaderPropertyUvTrans, VtsUtil.V2U4(t.data.uvTrans));
         int flags = 0; // _Flags: mask, monochromatic, flat shading, uv source
         if (t.texMask != null)
         {
@@ -243,7 +243,7 @@ public abstract class VtsCameraBase : MonoBehaviour
 
     private int shaderPropertyMainTex;
     private int shaderPropertyMaskTex;
-    private int shaderPropertyUvMat;
+    private int shaderPropertyUvTrans;
     private int shaderPropertyUvClip;
     private int shaderPropertyColor;
     private int shaderPropertyBlendingCoverage;

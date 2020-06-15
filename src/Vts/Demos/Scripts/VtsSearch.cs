@@ -34,17 +34,11 @@ using vts;
 #pragma warning disable
 
 [Serializable]
-internal struct Position
-{
-    public double x, y, z;
-}
-
-[Serializable]
 internal class Item
 {
-    public string displayName;
-    public Position position;
-    public double radius;
+    public string title;
+    public double lat;
+    public double lon;
     // there is actually more information in the json, but not needed in this example
 }
 
@@ -73,11 +67,11 @@ public class VtsSearch : MonoBehaviour
         double[] p = new double[3];
         p[1] = 270;
         nav.SetRotation(p); // nadir view
-        p[0] = it.position.x;
-        p[1] = it.position.y;
-        p[2] = it.position.z;
+        p[0] = it.lon;
+        p[1] = it.lat;
+        p[2] = 0;
         nav.SetPoint(p); // location of the result
-        nav.SetViewExtent(it.radius > 3000 ? it.radius * 2 : 6000); // some reasonable view extent (zoom)
+        nav.SetViewExtent(6000); // some reasonable view extent (zoom)
         nav.SetOptions("{\"type\":\"flyOver\"}");
     }
 
@@ -107,7 +101,7 @@ public class VtsSearch : MonoBehaviour
                 {
                     Item it = JsonUtility.FromJson<Item>(sr);
                     results.Add(it);
-                    Dropdown.OptionData o = new Dropdown.OptionData(it.displayName);
+                    Dropdown.OptionData o = new Dropdown.OptionData(it.title);
                     dropDown.options.Add(o);
                 }
                 dropDown.value = -1;
