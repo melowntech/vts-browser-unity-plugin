@@ -8,7 +8,7 @@
 
 ## Example Screenshots
 
-<img src="screenshots/hillerod-parking.png" width="430" title="Car"><img src="screenshots/earth.png" width="430" title="Earth"><img src="screenshots/alps-aircraft.png" width="860" title="Aircraft"><img src="screenshots/mercury.png" width="430" title="Mercury"><img src="screenshots/hillerod-castle.png" width="430" title="Car"><img src="screenshots/imst.png" width="430" title="Imst"><img src="screenshots/karlstejn-searching.png" width="430" title="Searching">
+<img src="screenshots/hillerod-parking.png" width="420" title="Car"><img src="screenshots/earth.png" width="420" title="Earth"><img src="screenshots/alps-aircraft.png" width="840" title="Aircraft"><img src="screenshots/mercury.png" width="420" title="Mercury"><img src="screenshots/hillerod-castle.png" width="420" title="Car"><img src="screenshots/imst.png" width="420" title="Imst"><img src="screenshots/karlstejn-searching.png" width="420" title="Searching">
 
 ## Features
 
