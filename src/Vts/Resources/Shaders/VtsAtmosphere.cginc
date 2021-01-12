@@ -73,7 +73,7 @@ float vtsAtmDensityDir(float3 fragDir, float fragDist)
 	if (y > atmRad)
 		return 0.0; // the ray does not cross the atmosphere
 
-	float t1e = x - sqrt(1.0 - y2); // t1 at ellipse
+	float t1e = x - sqrt(1.0 - y2 + 1e-7); // t1 at ellipse
 
 	// fill holes in terrain if the ray passes through the planet
 	if (y < 0.998 && x >= 0.0 && ts[1] > 1000.0)
@@ -81,7 +81,7 @@ float vtsAtmDensityDir(float3 fragDir, float fragDist)
 
 	// approximate the planet by the ellipsoid if the mesh is too rough
 	if (y <= 1.0)
-		ts[1] = lerp(ts[1], t1e, clamp((l - 1.4) / 0.1, 0.0, 1.0));
+		ts[1] = lerp(ts[1], t1e, clamp(l * 10.0 - 14.0, 0.0, 1.0));
 
 	// to improve accuracy, swap direction of the ray to point out of the terrain
 	bool swapDirection = ts[1] < 1000.0 && x >= 0.0;
